@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NASA Mission Control - Planetary Journey</title>
+    <title>NASA Mission Control - Advanced Spacecraft</title>
     <style>
         :root {
             --bg-dark: #030712;
-            --panel-bg: rgba(15, 23, 42, 0.92);
+            --panel-bg: rgba(15, 23, 42, 0.95);
             --nasa-blue: #0284c7;
             --accent-green: #22c55e;
             --accent-amber: #f59e0b;
@@ -65,7 +65,6 @@
             background: radial-gradient(circle at center, #090d16 0%, #020617 100%);
         }
 
-        /* Bảng hiển thị thông tin hành tinh & hành trình */
         .mission-sidebar {
             width: 360px;
             background: var(--panel-bg);
@@ -106,7 +105,6 @@
             font-weight: bold;
         }
 
-        /* Khung hiển thị hình ảnh hành tinh */
         .planet-card {
             display: flex;
             align-items: center;
@@ -154,11 +152,42 @@
             width: 100%;
             letter-spacing: 1px;
             transition: 0.2s;
+            margin-bottom: 8px;
         }
 
         .btn-launch:hover {
             background: #0369a1;
             box-shadow: 0 0 12px rgba(56, 189, 248, 0.4);
+        }
+
+        #landingModal {
+            display: none;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 90%;
+            max-width: 500px;
+            background: rgba(11, 61, 145, 0.98);
+            border: 3px solid var(--text-glow);
+            border-radius: 16px;
+            padding: 25px;
+            z-index: 50;
+            text-align: center;
+            box-shadow: 0 0 50px rgba(0, 0, 0, 0.9);
+        }
+
+        #landingModal h2 {
+            color: var(--accent-amber);
+            margin-bottom: 12px;
+            font-size: 1.4rem;
+        }
+
+        #landingModal p {
+            font-size: 0.95rem;
+            color: #e2e8f0;
+            line-height: 1.6;
+            margin-bottom: 20px;
         }
     </style>
 </head>
@@ -167,28 +196,25 @@
     <header>
         <div class="logo-area">
             <span style="font-size: 1.2rem;">🛰️</span>
-            <h1>NASA MISSION CONTROL - HÀNH TRÌNH KHÁM PHÁ</h1>
+            <h1>NASA MISSION CONTROL - ADVANCED SPACECRAFT</h1>
         </div>
         <div class="system-time" id="sysTime">SYS_TIME: 00:00:00</div>
     </header>
 
     <div class="main-container">
-        <!-- Bảng điều khiển & chỉ số hành trình -->
         <div class="mission-sidebar">
-            
             <div class="panel-box">
-                <h3>📊 THÔNG SỐ HÀNH TRÌNH</h3>
+                <h3>📊 THÔNG SỐ CẤP ĐỘ</h3>
+                <div class="metric-row">
+                    <span>Cấp độ (Level):</span>
+                    <span class="metric-val" id="levelVal">1 / 7</span>
+                </div>
                 <div class="metric-row">
                     <span>Quãng đường:</span>
                     <span class="metric-val" id="distanceVal">0 mét</span>
                 </div>
-                <div class="metric-row">
-                    <span>Mục tiêu kế tiếp:</span>
-                    <span class="metric-val" id="nextTargetVal">Sao Thủy</span>
-                </div>
             </div>
 
-            <!-- Khung hiển thị hình ảnh hành tinh đang đến -->
             <div class="panel-box">
                 <h3>🪐 MỤC TIÊU HIỆN TẠI</h3>
                 <div class="planet-card">
@@ -203,12 +229,17 @@
             <div class="panel-box">
                 <h3>⚙️ ĐIỀU KHIỂN SỨ MỆNH</h3>
                 <button class="btn-launch" onclick="toggleMission()">TẠM DỪNG / TIẾP TỤC</button>
+                <button class="btn-launch" style="background: linear-gradient(135deg, #16a34a, #15803d);" onclick="forceLand()">XUỐNG XE (KHÁM PHÁ)</button>
             </div>
-
         </div>
 
-        <!-- Màn hình radar không gian -->
         <canvas id="missionCanvas"></canvas>
+    </div>
+
+    <div id="landingModal">
+        <h2 id="modalTitle">🌕 Đã Hạ Cánh Thành Công!</h2>
+        <p id="modalDesc">Phi hành gia đã thực hiện nhiệm vụ khảo sát bề mặt hành tinh thành công.</p>
+        <button class="btn-launch" onclick="resumeFlight()">TRỞ LẠI TÀU VŨ TRỤ & BAY TIẾP</button>
     </div>
 
     <script>
@@ -227,20 +258,20 @@
             document.getElementById('sysTime').innerText = `SYS_TIME: ${now.toTimeString().split(' ')[0]}`;
         }, 1000);
 
-        // Danh sách các hành tinh trong sứ mệnh
         const missionPlanets = [
-            { name: "Sao Thủy", eng: "Mercury", emoji: "☿️", distanceThreshold: 0, desc: "Hành tinh nhỏ nhất, nhiệt độ khắc nghiệt." },
-            { name: "Sao Kim", eng: "Venus", emoji: "♀️", distanceThreshold: 1500, desc: "Hành tinh nóng nhất với khí quyển CO2 dày đặc." },
-            { name: "Trái Đất", eng: "Earth", emoji: "🌍", distanceThreshold: 3500, desc: "Ngôi nhà xanh của chúng ta, duy trì sự sống." },
-            { name: "Sao Hỏa", eng: "Mars", emoji: "🔴", distanceThreshold: 6000, desc: "Hành tinh Đỏ với ngọn núi lửa Olympus Mons." },
-            { name: "Sao Mộc", eng: "Jupiter", emoji: "🟠", distanceThreshold: 9500, desc: "Hành tinh khổng lồ lớn nhất Hệ Mặt Trời." },
-            { name: "Sao Thổ", eng: "Saturn", emoji: "🪐", distanceThreshold: 14000, desc: "Nổi tiếng với hệ thống vành đai băng rực rỡ." },
-            { name: "Sao Hải Vương", eng: "Neptune", emoji: "🌊", distanceThreshold: 20000, desc: "Hành tinh băng giá ở rìa ngoài Hệ Mặt Trời." }
+            { level: 1, name: "Sao Thủy", eng: "Mercury", emoji: "☿️", color: "#94a3b8", distanceThreshold: 0, desc: "Khảo sát miệng núi lửa và nhiệt độ cực đoan." },
+            { level: 2, name: "Sao Kim", eng: "Venus", emoji: "♀️", color: "#facc15", distanceThreshold: 1500, desc: "Phân tích lớp khí quyển CO2 dày đặc và áp suất." },
+            { level: 3, name: "Trái Đất", eng: "Earth", emoji: "🌍", color: "#38bdf8", distanceThreshold: 3500, desc: "Quê hương loài người, kiểm tra sinh quyển." },
+            { level: 4, name: "Sao Hỏa", eng: "Mars", emoji: "🔴", color: "#ef4444", distanceThreshold: 6000, desc: "Tìm kiếm dấu vết nước và khảo sát núi lửa Olympus." },
+            { level: 5, name: "Sao Mộc", eng: "Jupiter", emoji: "🟠", color: "#f97316", distanceThreshold: 9500, desc: "Nghiên cứu cơn bão Vết Đỏ Lớn khổng lồ." },
+            { level: 6, name: "Sao Thổ", eng: "Saturn", emoji: "🪐", color: "#fde047", distanceThreshold: 14000, desc: "Phân tích cấu trúc thành phần vành đai băng." },
+            { level: 7, name: "Sao Hải Vương", eng: "Neptune", emoji: "🌊", color: "#2563eb", distanceThreshold: 20000, desc: "Khảo sát những cơn gió siêu tốc độ ở rìa hệ." }
         ];
 
-        let distanceMeters = 0;
-        let currentPlanetIdx = 0;
+        let distanceMeters = 13970; // Giữ nguyên mốc bạn đang chơi ở Sao Mộc
+        let currentPlanetIdx = 4;
         let isRunning = true;
+        let isLandingMode = false;
         let stars = [];
 
         for (let i = 0; i < 150; i++) {
@@ -253,15 +284,27 @@
         }
 
         function toggleMission() {
-            isRunning = !isRunning;
+            if (!isLandingMode) isRunning = !isRunning;
+        }
+
+        function forceLand() {
+            isRunning = false;
+            let p = missionPlanets[currentPlanetIdx];
+            document.getElementById('modalTitle').innerText = `🌕 Đã Hạ Cánh Xuống ${p.name}!`;
+            document.getElementById('modalDesc').innerText = `Nhiệm vụ Level ${p.level}: ${p.desc} - Phi hành gia đã hoàn thành xuất sắc!`;
+            document.getElementById('landingModal').style.display = "block";
+        }
+
+        function resumeFlight() {
+            document.getElementById('landingModal').style.display = "none";
+            isRunning = true;
         }
 
         function updateMission() {
-            if (!isRunning) return;
+            if (!isRunning || isLandingMode) return;
 
-            distanceMeters += 2; // Tăng quãng đường theo thời gian thực
+            distanceMeters += 2;
 
-            // Kiểm tra chuyển đổi hành tinh dựa trên số mét đã đi
             let nextIdx = currentPlanetIdx;
             for (let i = 0; i < missionPlanets.length; i++) {
                 if (distanceMeters >= missionPlanets[i].distanceThreshold) {
@@ -272,13 +315,12 @@
             if (nextIdx !== currentPlanetIdx) {
                 currentPlanetIdx = nextIdx;
                 updatePlanetUI();
+                forceLand();
             }
 
             document.getElementById('distanceVal').innerText = `${distanceMeters} mét`;
-            let nextTarget = currentPlanetIdx + 1 < missionPlanets.length ? missionPlanets[currentPlanetIdx + 1].name : "Rìa Vũ Trụ";
-            document.getElementById('nextTargetVal').innerText = nextTarget;
+            document.getElementById('levelVal').innerText = `${missionPlanets[currentPlanetIdx].level} / 7`;
 
-            // Cập nhật sao bay
             stars.forEach(s => {
                 s.x -= s.speed;
                 if (s.x < 0) s.x = canvas.width;
@@ -292,36 +334,101 @@
             document.getElementById('planetDesc').innerText = p.desc;
         }
 
+        function drawSpacecraft(x, y) {
+            ctx.save();
+            
+            // Lửa động cơ phản lực phía sau
+            ctx.fillStyle = "#38bdf8";
+            ctx.shadowBlur = 15;
+            ctx.shadowColor = "#38bdf8";
+            ctx.beginPath();
+            ctx.moveTo(x - 30, y);
+            ctx.lineTo(x - 55, y - 8);
+            ctx.lineTo(x - 45, y);
+            ctx.lineTo(x - 55, y + 8);
+            ctx.closePath();
+            ctx.fill();
+
+            // Thân chính phi thuyền (Màu trắng bạc hiện đại giống X-37B)
+            ctx.fillStyle = "#cbd5e1";
+            ctx.beginPath();
+            ctx.moveTo(x + 35, y);
+            ctx.lineTo(x - 10, y - 16);
+            ctx.lineTo(x - 30, y - 10);
+            ctx.lineTo(x - 35, y + 10);
+            ctx.lineTo(x - 10, y + 16);
+            ctx.closePath();
+            ctx.fill();
+
+            // Sọc đen khí động học ở mũi tàu
+            ctx.fillStyle = "#0f172a";
+            ctx.beginPath();
+            ctx.moveTo(x + 35, y);
+            ctx.lineTo(x + 15, y - 6);
+            ctx.lineTo(x + 15, y + 6);
+            ctx.closePath();
+            ctx.fill();
+
+            // Cánh phụ góc cạnh
+            ctx.fillStyle = "#64748b";
+            ctx.beginPath();
+            ctx.moveTo(x, y - 12);
+            ctx.lineTo(x - 20, y - 32);
+            ctx.lineTo(x - 28, y - 12);
+            ctx.closePath();
+            ctx.fill();
+
+            ctx.beginPath();
+            ctx.moveTo(x, y + 12);
+            ctx.lineTo(x - 20, y + 32);
+            ctx.lineTo(x - 28, y + 12);
+            ctx.closePath();
+            ctx.fill();
+
+            // Buồng lái phát sáng neon xanh
+            ctx.fillStyle = "#38bdf8";
+            ctx.shadowBlur = 10;
+            ctx.shadowColor = "#38bdf8";
+            ctx.beginPath();
+            ctx.ellipse(x + 5, y, 10, 5, 0, 0, Math.PI * 2);
+            ctx.fill();
+
+            ctx.restore();
+        }
+
         function draw() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-            // Vẽ bầu trời sao
+            // 1. Vẽ sao
             ctx.fillStyle = "#ffffff";
             stars.forEach(s => {
                 ctx.fillRect(s.x, s.y, s.size, s.size);
             });
 
-            // Vẽ tàu vũ trụ phi hành gia ở trung tâm màn hình
-            let shipX = canvas.width / 3;
-            let shipY = canvas.height / 2;
+            // 2. Vẽ hành tinh lướt qua
+            missionPlanets.forEach((p, idx) => {
+                let planetScreenX = canvas.width - (distanceMeters - p.distanceThreshold) * 0.8 + (idx * 1400);
+                let planetY = canvas.height / 3;
 
-            ctx.fillStyle = "#38bdf8";
-            ctx.beginPath();
-            ctx.moveTo(shipX + 20, shipY);
-            ctx.lineTo(shipX - 15, shipY - 12);
-            ctx.lineTo(shipX - 10, shipY);
-            ctx.lineTo(shipX - 15, shipY + 12);
-            ctx.closePath();
-            ctx.fill();
+                if (planetScreenX > -150 && planetScreenX < canvas.width + 150) {
+                    ctx.save();
+                    ctx.shadowBlur = 25;
+                    ctx.shadowColor = p.color;
+                    ctx.fillStyle = p.color;
+                    ctx.beginPath();
+                    ctx.arc(planetScreenX, planetY, 55, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.restore();
 
-            // Vẽ ngọn lửa động cơ tàu
-            ctx.fillStyle = "#f59e0b";
-            ctx.beginPath();
-            ctx.moveTo(shipX - 10, shipY - 6);
-            ctx.lineTo(shipX - 25, shipY);
-            ctx.lineTo(shipX - 10, shipY + 6);
-            ctx.closePath();
-            ctx.fill();
+                    ctx.fillStyle = "#f8fafc";
+                    ctx.font = "bold 14px Courier New";
+                    ctx.textAlign = "center";
+                    ctx.fillText(`Level ${p.level}: ${p.name}`, planetScreenX, planetY - 70);
+                }
+            });
+
+            // 3. Vẽ phi thuyền mẫu mới cực ngầu
+            drawSpacecraft(180, canvas.height / 2);
 
             updateMission();
             requestAnimationFrame(draw);
