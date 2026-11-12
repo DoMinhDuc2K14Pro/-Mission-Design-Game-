@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NASA Mission Control - 9 Solar Missions</title>
+    <title>NASA Mission Control - 9 Solar Missions & Meteors</title>
     <style>
         :root {
             --bg-dark: #030712;
@@ -63,6 +63,7 @@
             display: block;
             flex: 1;
             background: radial-gradient(circle at center, #090d16 0%, #020617 100%);
+            cursor: crosshair;
         }
 
         .mission-sidebar {
@@ -160,7 +161,6 @@
             box-shadow: 0 0 12px rgba(56, 189, 248, 0.4);
         }
 
-        /* Modal Khảo Sát Bề Mặt - Tối ưu cho trẻ nhỏ với các nút chức năng hình ảnh */
         #landingModal {
             display: none;
             position: absolute;
@@ -193,7 +193,6 @@
             margin-bottom: 12px;
         }
 
-        /* Bảng chức năng tương tác to rõ, ít chữ */
         .action-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
@@ -258,6 +257,10 @@
                     <span>Khoảng cách:</span>
                     <span class="metric-val" id="distanceVal">0 mét</span>
                 </div>
+                <div class="metric-row">
+                    <span>Thiên thạch phá hủy:</span>
+                    <span class="metric-val" id="scoreVal">0</span>
+                </div>
             </div>
 
             <div class="panel-box">
@@ -281,14 +284,13 @@
         <canvas id="missionCanvas"></canvas>
     </div>
 
-    <!-- MODAL KHẢO SÁT BỀ MẶT VỚI NHIỀU CHỨC NĂNG TƯƠNG TÁC -->
+    <!-- MODAL KHẢO SÁT BỀ MẶT -->
     <div id="landingModal">
         <h2 id="modalTitle">🌕 Đã Hạ Cánh Khảo Sát!</h2>
         <canvas id="astronautCanvas"></canvas>
         
         <div id="actionStatus">Bấm các nút bên dưới để thực hiện nhiệm vụ!</div>
 
-        <!-- Các chức năng tương tác hình ảnh trực quan -->
         <div class="action-grid">
             <button class="action-btn" onclick="doAction('photo')">📸<span>CHỤP ẢNH</span></button>
             <button class="action-btn" onclick="doAction('rock')">🧪<span>LẤY MẪU</span></button>
@@ -326,11 +328,14 @@
             { level: 9, name: "Sao Hải Vương", eng: "Neptune", emoji: "🌊", color1: "#60a5fa", color2: "#1e40af", distanceThreshold: 25000, temp: "-200°C" }
         ];
 
-        let distanceMeters = 0;
+        let distanceMeters = 710;
         let currentPlanetIdx = 0;
         let isRunning = true;
         let isLandingMode = false;
+        let meteorsDestroyed = 0;
         let stars = [];
+        let meteors = [];
+        let lasers = [];
 
         for (let i = 0; i < 150; i++) {
             stars.push({
@@ -340,6 +345,25 @@
                 speed: Math.random() * 2 + 0.5
             });
         }
+
+        // Bắn tia laser khi click chuột vào canvas
+        canvas.addEventListener('click', (e) => {
+            if (!isRunning || isLandingMode) return;
+            const rect = canvas.getBoundingClientRect();
+            let mouseX = e.clientX - rect.left;
+            let mouseY = e.clientY - rect.top;
+
+            let shipX = 180;
+            let shipY = canvas.height / 2;
+
+            lasers.push({
+                x: shipX + 35,
+                y: shipY,
+                targetX: mouseX,
+                targetY: mouseY,
+                speed: 15
+            });
+        });
 
         function toggleMission() {
             if (!isLandingMode) isRunning = !isRunning;
@@ -417,6 +441,45 @@
             if (!isRunning || isLandingMode) return;
 
             distanceMeters += 2;
+
+            // Sinh thiên thạch ngẫu nhiên
+            if (Math.random() < 0.02) {
+                meteors.push({
+                    x: canvas.width + 50,
+                    y: Math.random() * canvas.height,
+                    size: Math.random() * 20 + 15,
+                    speed: Math.random() * 3 + 2
+                });
+            }
+
+            // Cập nhật vị trí thiên thạch
+            meteors.forEach((m, index) => {
+                m.x -= m.speed;
+                // Va chạm với tàu (x=180, y=canvas.height/2)
+                let shipX = 180;
+                let shipY = canvas.height / 2;
+                let dist = Math.hypot(m.x - shipX, m.y - shipY);
+                if (dist < m.size + 15) {
+                    meteors.splice(index, 1); // Phá hủy thiên thạch khi chạm tàu
+                }
+                if (m.x < -50) meteors.splice(index, 1);
+            });
+
+            // Cập nhật đạn laser
+            lasers.forEach((l, lIdx) => {
+                l.x += l.speed;
+                // Kiểm tra va chạm laser với thiên thạch
+                meteors.forEach((m, mIdx) => {
+                    let d = Math.hypot(l.x - m.x, l.y - m.y);
+                    if (d < m.size) {
+                        meteors.splice(mIdx, 1);
+                        lasers.splice(lIdx, 1);
+                        meteorsDestroyed++;
+                        document.getElementById('scoreVal').innerText = meteorsDestroyed;
+                    }
+                });
+                if (l.x > canvas.width) lasers.splice(lIdx, 1);
+            });
 
             let nextIdx = currentPlanetIdx;
             for (let i = 0; i < missionPlanets.length; i++) {
@@ -548,6 +611,27 @@
             ctx.fillStyle = "#ffffff";
             stars.forEach(s => {
                 ctx.fillRect(s.x, s.y, s.size, s.size);
+            });
+
+            // Vẽ thiên thạch
+            meteors.forEach(m => {
+                ctx.fillStyle = "#64748b";
+                ctx.strokeStyle = "#94a3b8";
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                ctx.arc(m.x, m.y, m.size, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.stroke();
+            });
+
+            // Vẽ đạn laser
+            lasers.forEach(l => {
+                ctx.strokeStyle = "#ef4444";
+                ctx.lineWidth = 4;
+                ctx.beginPath();
+                ctx.moveTo(l.x, l.y);
+                ctx.lineTo(l.x + 15, l.y);
+                ctx.stroke();
             });
 
             missionPlanets.forEach((p, idx) => {
