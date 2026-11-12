@@ -160,7 +160,7 @@
             box-shadow: 0 0 12px rgba(56, 189, 248, 0.4);
         }
 
-        /* Modal Khảo sát bề mặt với Canvas Animation phi hành gia */
+        /* Modal Khảo Sát Bề Mặt - Tối ưu cho trẻ nhỏ với các nút chức năng hình ảnh */
         #landingModal {
             display: none;
             position: absolute;
@@ -168,11 +168,11 @@
             left: 50%;
             transform: translate(-50%, -50%);
             width: 90%;
-            max-width: 550px;
+            max-width: 600px;
             background: rgba(11, 61, 145, 0.98);
             border: 3px solid var(--text-glow);
             border-radius: 16px;
-            padding: 25px;
+            padding: 20px;
             z-index: 50;
             text-align: center;
             box-shadow: 0 0 50px rgba(0, 0, 0, 0.9);
@@ -180,23 +180,59 @@
 
         #landingModal h2 {
             color: var(--accent-amber);
-            margin-bottom: 10px;
-            font-size: 1.3rem;
-        }
-
-        #landingModal p {
-            font-size: 0.85rem;
-            color: #e2e8f0;
-            margin-bottom: 15px;
+            margin-bottom: 8px;
+            font-size: 1.2rem;
         }
 
         #astronautCanvas {
             width: 100%;
-            height: 180px;
+            height: 160px;
             background: #020617;
             border: 2px solid #334155;
             border-radius: 8px;
+            margin-bottom: 12px;
+        }
+
+        /* Bảng chức năng tương tác to rõ, ít chữ */
+        .action-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
             margin-bottom: 15px;
+        }
+
+        .action-btn {
+            background: rgba(30, 41, 59, 0.9);
+            border: 2px solid #38bdf8;
+            border-radius: 10px;
+            padding: 10px;
+            color: white;
+            cursor: pointer;
+            font-size: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+            transition: 0.2s;
+        }
+
+        .action-btn span {
+            font-size: 0.75rem;
+            font-weight: bold;
+            color: var(--accent-amber);
+        }
+
+        .action-btn:hover {
+            background: #0284c7;
+            transform: scale(1.05);
+        }
+
+        #actionStatus {
+            font-size: 0.85rem;
+            color: #22c55e;
+            height: 20px;
+            margin-bottom: 10px;
+            font-weight: bold;
         }
     </style>
 </head>
@@ -213,44 +249,53 @@
     <div class="main-container">
         <div class="mission-sidebar">
             <div class="panel-box">
-                <h3>📊 THÔNG SỐ NHIỆM VỤ</h3>
+                <h3>📊 THÔNG SỐ</h3>
                 <div class="metric-row">
-                    <span>Cấp độ (Level):</span>
+                    <span>Level:</span>
                     <span class="metric-val" id="levelVal">1 / 9</span>
                 </div>
                 <div class="metric-row">
-                    <span>Quãng đường:</span>
+                    <span>Khoảng cách:</span>
                     <span class="metric-val" id="distanceVal">0 mét</span>
                 </div>
             </div>
 
             <div class="panel-box">
-                <h3>🪐 MỤC TIÊU HIỆN TẠI</h3>
+                <h3>🪐 MỤC TIÊU</h3>
                 <div class="planet-card">
                     <div class="planet-img-container" id="planetEmoji">☀️</div>
                     <div class="planet-details">
                         <h4 id="planetName">Mặt Trời (Sun)</h4>
-                        <p id="planetDesc">Trái tim của hệ mặt trời, nguồn năng lượng vĩnh cửu.</p>
+                        <p id="planetDesc">Nguồn năng lượng chính.</p>
                     </div>
                 </div>
             </div>
 
             <div class="panel-box">
-                <h3>⚙️ ĐIỀU KHIỂN SỨ MỆNH</h3>
-                <button class="btn-launch" onclick="toggleMission()">TẠM DỪNG / TIẾP TỤC</button>
-                <button class="btn-launch" style="background: linear-gradient(135deg, #16a34a, #15803d);" onclick="forceLand()">XUỐNG XE (KHÁM PHÁ)</button>
+                <h3>⚙️ ĐIỀU KHIỂN</h3>
+                <button class="btn-launch" onclick="toggleMission()">⏸️ DỪNG / ▶️ CHẠY</button>
+                <button class="btn-launch" style="background: linear-gradient(135deg, #16a34a, #15803d);" onclick="forceLand()">🛬 XUỐNG XE</button>
             </div>
         </div>
 
         <canvas id="missionCanvas"></canvas>
     </div>
 
-    <!-- MODAL KHẢO SÁT BỀ MẶT KÈM ANIMATION PHI HÀNH GIA -->
+    <!-- MODAL KHẢO SÁT BỀ MẶT VỚI NHIỀU CHỨC NĂNG TƯƠNG TÁC -->
     <div id="landingModal">
-        <h2 id="modalTitle">🌕 Khảo Sát Bề Mặt Thành Công!</h2>
-        <p id="modalDesc">Phi hành gia đang thực hiện nhiệm vụ trên bề mặt hành tinh...</p>
+        <h2 id="modalTitle">🌕 Đã Hạ Cánh Khảo Sát!</h2>
         <canvas id="astronautCanvas"></canvas>
-        <button class="btn-launch" onclick="resumeFlight()">TRỞ LẠI TÀU VŨ TRỤ & BAY TIẾP</button>
+        
+        <div id="actionStatus">Bấm các nút bên dưới để thực hiện nhiệm vụ!</div>
+
+        <!-- Các chức năng tương tác hình ảnh trực quan -->
+        <div class="action-grid">
+            <button class="action-btn" onclick="doAction('photo')">📸<span>CHỤP ẢNH</span></button>
+            <button class="action-btn" onclick="doAction('rock')">🧪<span>LẤY MẪU</span></button>
+            <button class="action-btn" onclick="doAction('temp')">🌡️<span>ĐO NHIỆT ĐỘ</span></button>
+        </div>
+
+        <button class="btn-launch" onclick="resumeFlight()">🚀 BAY TIẾP HÀNH TINH TIẾP THEO</button>
     </div>
 
     <script>
@@ -269,17 +314,16 @@
             document.getElementById('sysTime').innerText = `SYS_TIME: ${now.toTimeString().split(' ')[0]}`;
         }, 1000);
 
-        // 9 Nhiệm vụ bám sát Hệ Mặt Trời (Mặt Trời + 8 hành tinh)
         const missionPlanets = [
-            { level: 1, name: "Mặt Trời", eng: "Sun", emoji: "☀️", color1: "#fde047", color2: "#ea580c", distanceThreshold: 0, desc: "Trái tim của hệ mặt trời, nghiên cứu bức xạ năng lượng." },
-            { level: 2, name: "Sao Thủy", eng: "Mercury", emoji: "☿️", color1: "#cbd5e1", color2: "#475569", distanceThreshold: 1500, desc: "Khảo sát miệng núi lửa và nhiệt độ khắc nghiệt." },
-            { level: 3, name: "Sao Kim", eng: "Venus", emoji: "♀️", color1: "#fde047", color2: "#ca8a04", distanceThreshold: 3200, desc: "Phân tích lớp khí quyển CO2 dày đặc và áp suất." },
-            { level: 4, name: "Trái Đất", eng: "Earth", emoji: "🌍", color1: "#38bdf8", color2: "#1d4ed8", distanceThreshold: 5200, desc: "Quê hương loài người, kiểm tra sinh quyển & đại dương." },
-            { level: 5, name: "Sao Hỏa", eng: "Mars", emoji: "🔴", color1: "#f87171", color2: "#b91c1c", distanceThreshold: 7800, desc: "Tìm kiếm dấu vết nước và khảo sát núi lửa Olympus." },
-            { level: 6, name: "Sao Mộc", eng: "Jupiter", emoji: "🟠", color1: "#fb923c", color2: "#c2410c", distanceThreshold: 11000, desc: "Nghiên cứu cơn bão Vết Đỏ Lớn khổng lồ." },
-            { level: 7, name: "Sao Thổ", eng: "Saturn", emoji: "🪐", color1: "#fef08a", color2: "#a16207", distanceThreshold: 15000, desc: "Phân tích cấu trúc thành phần vành đai băng." },
-            { level: 8, name: "Sao Thiên Vương", eng: "Uranus", emoji: "🌐", color1: "#7dd3fc", color2: "#0284c7", distanceThreshold: 19500, desc: "Khảo sát góc nghiêng trục quay đặc biệt kỳ lạ." },
-            { level: 9, name: "Sao Hải Vương", eng: "Neptune", emoji: "🌊", color1: "#60a5fa", color2: "#1e40af", distanceThreshold: 25000, desc: "Khảo sát những cơn gió siêu tốc độ ở rìa hệ." }
+            { level: 1, name: "Mặt Trời", eng: "Sun", emoji: "☀️", color1: "#fde047", color2: "#ea580c", distanceThreshold: 0, temp: "+5500°C" },
+            { level: 2, name: "Sao Thủy", eng: "Mercury", emoji: "☿️", color1: "#cbd5e1", color2: "#475569", distanceThreshold: 1500, temp: "+430°C" },
+            { level: 3, name: "Sao Kim", eng: "Venus", emoji: "♀️", color1: "#fde047", color2: "#ca8a04", distanceThreshold: 3200, temp: "+465°C" },
+            { level: 4, name: "Trái Đất", eng: "Earth", emoji: "🌍", color1: "#38bdf8", color2: "#1d4ed8", distanceThreshold: 5200, temp: "+15°C" },
+            { level: 5, name: "Sao Hỏa", eng: "Mars", emoji: "🔴", color1: "#f87171", color2: "#b91c1c", distanceThreshold: 7800, temp: "-60°C" },
+            { level: 6, name: "Sao Mộc", eng: "Jupiter", emoji: "🟠", color1: "#fb923c", color2: "#c2410c", distanceThreshold: 11000, temp: "-110°C" },
+            { level: 7, name: "Sao Thổ", eng: "Saturn", emoji: "🪐", color1: "#fef08a", color2: "#a16207", distanceThreshold: 15000, temp: "-140°C" },
+            { level: 8, name: "Sao Thiên Vương", eng: "Uranus", emoji: "🌐", color1: "#7dd3fc", color2: "#0284c7", distanceThreshold: 19500, temp: "-195°C" },
+            { level: 9, name: "Sao Hải Vương", eng: "Neptune", emoji: "🌊", color1: "#60a5fa", color2: "#1e40af", distanceThreshold: 25000, temp: "-200°C" }
         ];
 
         let distanceMeters = 0;
@@ -305,8 +349,8 @@
         function forceLand() {
             isRunning = false;
             let p = missionPlanets[currentPlanetIdx];
-            document.getElementById('modalTitle').innerText = `🌕 Nhiệm vụ Level ${p.level}: Hạ Cánh ${p.name}!`;
-            document.getElementById('modalDesc').innerText = `${p.desc} - Phi hành gia đang thực hiện nhiệm vụ trên bề mặt!`;
+            document.getElementById('modalTitle').innerText = `🌕 Level ${p.level}: Hạ Cánh ${p.name}!`;
+            document.getElementById('actionStatus').innerText = "Bấm các nút chức năng phía dưới để khám phá!";
             document.getElementById('landingModal').style.display = "block";
             startAstronautAnimation();
         }
@@ -317,47 +361,51 @@
             isRunning = true;
         }
 
-        // Animation phi hành gia di chuyển và cắm cờ trên bề mặt hành tinh
+        function doAction(type) {
+            let p = missionPlanets[currentPlanetIdx];
+            if (type === 'photo') {
+                document.getElementById('actionStatus').innerText = "📸 Đã chụp và lưu ảnh hành tinh thành công!";
+            } else if (type === 'rock') {
+                document.getElementById('actionStatus').innerText = "🧪 Đã thu thập mẫu đất đá thành công!";
+            } else if (type === 'temp') {
+                document.getElementById('actionStatus').innerText = `🌡️ Nhiệt độ bề mặt: ${p.temp}`;
+            }
+        }
+
         function startAstronautAnimation() {
             const aCanvas = document.getElementById('astronautCanvas');
             aCanvas.width = aCanvas.clientWidth;
-            aCanvas.height = aCanvas.clientHeight;
+            aCanvas.height = aCanvas.height;
             const aCtx = aCanvas.getContext('2d');
             
-            let astroX = 50;
-            let flagX = aCanvas.width - 80;
+            let astroX = 40;
+            let flagX = aCanvas.width - 70;
 
             function drawAstroScene() {
                 aCtx.clearRect(0, 0, aCanvas.width, aCanvas.height);
 
-                // Nền đất hành tinh
                 aCtx.fillStyle = "#1e293b";
-                aCtx.fillRect(0, aCanvas.height - 30, aCanvas.width, 30);
+                aCtx.fillRect(0, aCanvas.height - 25, aCanvas.width, 25);
 
-                // Vẽ cột cờ NASA
                 aCtx.strokeStyle = "#cbd5e1";
                 aCtx.lineWidth = 3;
                 aCtx.beginPath();
-                aCtx.moveTo(flagX, aCanvas.height - 30);
-                aCtx.lineTo(flagX, aCanvas.height - 90);
+                aCtx.moveTo(flagX, aCanvas.height - 25);
+                aCtx.lineTo(flagX, aCanvas.height - 80);
                 aCtx.stroke();
 
                 aCtx.fillStyle = "#38bdf8";
-                aCtx.fillRect(flagX, aCanvas.height - 90, 35, 25);
+                aCtx.fillRect(flagX, aCanvas.height - 80, 30, 20);
 
-                // Di chuyển phi hành gia đến cắm cờ
-                if (astroX < flagX - 30) {
-                    astroX += 1.2;
+                if (astroX < flagX - 25) {
+                    astroX += 1;
                 }
 
-                // Vẽ phi hành gia đơn giản
                 aCtx.fillStyle = "#f8fafc";
-                // Thân
-                aCtx.fillRect(astroX, aCanvas.height - 65, 16, 25);
-                // Mũ bảo hiểm kính vàng
+                aCtx.fillRect(astroX, aCanvas.height - 55, 14, 22);
                 aCtx.fillStyle = "#f59e0b";
                 aCtx.beginPath();
-                aCtx.arc(astroX + 8, aCanvas.height - 72, 8, 0, Math.PI * 2);
+                aCtx.arc(astroX + 7, aCanvas.height - 61, 7, 0, Math.PI * 2);
                 aCtx.fill();
 
                 astroAnimId = requestAnimationFrame(drawAstroScene);
@@ -396,7 +444,7 @@
             let p = missionPlanets[currentPlanetIdx];
             document.getElementById('planetEmoji').innerText = p.emoji;
             document.getElementById('planetName').innerText = `${p.name} (${p.eng})`;
-            document.getElementById('planetDesc').innerText = p.desc;
+            document.getElementById('planetDesc').innerText = `Nhiệt độ: ${p.temp}`;
         }
 
         function drawPlanetGraphic(x, y, p) {
@@ -410,7 +458,6 @@
             ctx.arc(x, y, 75, 0, Math.PI * 2);
             ctx.fill();
 
-            // Vành đai nếu là Sao Thổ (Level 7)
             if (p.level === 7) {
                 ctx.strokeStyle = "rgba(253, 224, 71, 0.7)";
                 ctx.lineWidth = 9;
