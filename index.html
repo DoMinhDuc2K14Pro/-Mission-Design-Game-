@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NASA Mission Control - 9 Solar Missions & Meteors</title>
+    <title>NASA Mission Control - 9 Solar Missions & Interactive Landing</title>
     <style>
         :root {
             --bg-dark: #030712;
@@ -161,6 +161,7 @@
             box-shadow: 0 0 12px rgba(56, 189, 248, 0.4);
         }
 
+        /* Modal Khảo Sát Bề Mặt */
         #landingModal {
             display: none;
             position: absolute;
@@ -168,7 +169,7 @@
             left: 50%;
             transform: translate(-50%, -50%);
             width: 90%;
-            max-width: 600px;
+            max-width: 620px;
             background: rgba(11, 61, 145, 0.98);
             border: 3px solid var(--text-glow);
             border-radius: 16px;
@@ -184,13 +185,37 @@
             font-size: 1.2rem;
         }
 
-        #astronautCanvas {
+        .view-screen {
+            position: relative;
             width: 100%;
             height: 160px;
             background: #020617;
             border: 2px solid #334155;
             border-radius: 8px;
             margin-bottom: 12px;
+            overflow: hidden;
+        }
+
+        #astronautCanvas {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+
+        /* Khung hiển thị ảnh chụp thực tế hành tinh */
+        #photoDisplay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-size: cover;
+            background-position: center;
+            display: none;
+            z-index: 5;
+            border-radius: 6px;
         }
 
         .action-grid {
@@ -207,7 +232,7 @@
             padding: 10px;
             color: white;
             cursor: pointer;
-            font-size: 1.5rem;
+            font-size: 1.4rem;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -227,9 +252,9 @@
         }
 
         #actionStatus {
-            font-size: 0.85rem;
+            font-size: 0.9rem;
             color: #22c55e;
-            height: 20px;
+            height: 24px;
             margin-bottom: 10px;
             font-weight: bold;
         }
@@ -287,9 +312,13 @@
     <!-- MODAL KHẢO SÁT BỀ MẶT -->
     <div id="landingModal">
         <h2 id="modalTitle">🌕 Đã Hạ Cánh Khảo Sát!</h2>
-        <canvas id="astronautCanvas"></canvas>
         
-        <div id="actionStatus">Bấm các nút bên dưới để thực hiện nhiệm vụ!</div>
+        <div class="view-screen">
+            <canvas id="astronautCanvas"></canvas>
+            <div id="photoDisplay"></div>
+        </div>
+        
+        <div id="actionStatus">Bấm các nút chức năng phía dưới để khám phá!</div>
 
         <div class="action-grid">
             <button class="action-btn" onclick="doAction('photo')">📸<span>CHỤP ẢNH</span></button>
@@ -317,22 +346,22 @@
         }, 1000);
 
         const missionPlanets = [
-            { level: 1, name: "Mặt Trời", eng: "Sun", emoji: "☀️", color1: "#fde047", color2: "#ea580c", distanceThreshold: 0, temp: "+5500°C" },
-            { level: 2, name: "Sao Thủy", eng: "Mercury", emoji: "☿️", color1: "#cbd5e1", color2: "#475569", distanceThreshold: 1500, temp: "+430°C" },
-            { level: 3, name: "Sao Kim", eng: "Venus", emoji: "♀️", color1: "#fde047", color2: "#ca8a04", distanceThreshold: 3200, temp: "+465°C" },
-            { level: 4, name: "Trái Đất", eng: "Earth", emoji: "🌍", color1: "#38bdf8", color2: "#1d4ed8", distanceThreshold: 5200, temp: "+15°C" },
-            { level: 5, name: "Sao Hỏa", eng: "Mars", emoji: "🔴", color1: "#f87171", color2: "#b91c1c", distanceThreshold: 7800, temp: "-60°C" },
-            { level: 6, name: "Sao Mộc", eng: "Jupiter", emoji: "🟠", color1: "#fb923c", color2: "#c2410c", distanceThreshold: 11000, temp: "-110°C" },
-            { level: 7, name: "Sao Thổ", eng: "Saturn", emoji: "🪐", color1: "#fef08a", color2: "#a16207", distanceThreshold: 15000, temp: "-140°C" },
-            { level: 8, name: "Sao Thiên Vương", eng: "Uranus", emoji: "🌐", color1: "#7dd3fc", color2: "#0284c7", distanceThreshold: 19500, temp: "-195°C" },
-            { level: 9, name: "Sao Hải Vương", eng: "Neptune", emoji: "🌊", color1: "#60a5fa", color2: "#1e40af", distanceThreshold: 25000, temp: "-200°C" }
+            { level: 1, name: "Mặt Trời", eng: "Sun", emoji: "☀️", color1: "#fde047", color2: "#ea580c", distanceThreshold: 0, temp: "+5500°C", sample: "Lõi Plasma năng lượng cao", img: "https://images.unsplash.com/photo-1614728894747-a83421e2b9c9?w=600" },
+            { level: 2, name: "Sao Thủy", eng: "Mercury", emoji: "☿️", color1: "#cbd5e1", color2: "#475569", distanceThreshold: 1500, temp: "+430°C", sample: "Đất đá thiên thạch khô cằn", img: "https://images.unsplash.com/photo-1614728894747-a83421e2b9c9?w=600" },
+            { level: 3, name: "Sao Kim", eng: "Venus", emoji: "♀️", color1: "#fde047", color2: "#ca8a04", distanceThreshold: 3200, temp: "+465°C", sample: "Khoáng chất axit sulfuric", img: "https://images.unsplash.com/photo-1614728894747-a83421e2b9c9?w=600" },
+            { level: 4, name: "Trái Đất", eng: "Earth", emoji: "🌍", color1: "#38bdf8", color2: "#1d4ed8", distanceThreshold: 5200, temp: "+15°C", sample: "Mẫu đất màu mỡ & nước sạch", img: "https://images.unsplash.com/photo-1614730321146-b6fa6a46bcb4?w=600" },
+            { level: 5, name: "Sao Hỏa", eng: "Mars", emoji: "🔴", color1: "#f87171", color2: "#b91c1c", distanceThreshold: 7800, temp: "-60°C", sample: "Đất đỏ oxit sắt (Bụi đỏ)", img: "https://images.unsplash.com/photo-1614728894747-a83421e2b9c9?w=600" },
+            { level: 6, name: "Sao Mộc", eng: "Jupiter", emoji: "🟠", color1: "#fb923c", color2: "#c2410c", distanceThreshold: 11000, temp: "-110°C", sample: "Mẫu khí hydro nén đặc", img: "https://images.unsplash.com/photo-1614732414444-096e5f1122d5?w=600" },
+            { level: 7, name: "Sao Thổ", eng: "Saturn", emoji: "🪐", color1: "#fef08a", color2: "#a16207", distanceThreshold: 15000, temp: "-140°C", sample: "Bụi băng và đá vành đai", img: "https://images.unsplash.com/photo-1614732414444-096e5f1122d5?w=600" },
+            { level: 8, name: "Sao Thiên Vương", eng: "Uranus", emoji: "🌐", color1: "#7dd3fc", color2: "#0284c7", distanceThreshold: 19500, temp: "-195°C", sample: "Băng amoniac lạnh giá", img: "https://images.unsplash.com/photo-1614732414444-096e5f1122d5?w=600" },
+            { level: 9, name: "Sao Hải Vương", eng: "Neptune", emoji: "🌊", color1: "#60a5fa", color2: "#1e40af", distanceThreshold: 25000, temp: "-200°C", sample: "Mẫu tinh thể băng metan", img: "https://images.unsplash.com/photo-1614732414444-096e5f1122d5?w=600" }
         ];
 
-        let distanceMeters = 710;
-        let currentPlanetIdx = 0;
+        let distanceMeters = 6932;
+        let currentPlanetIdx = 3;
         let isRunning = true;
         let isLandingMode = false;
-        let meteorsDestroyed = 0;
+        let meteorsDestroyed = 2;
         let stars = [];
         let meteors = [];
         let lasers = [];
@@ -346,7 +375,6 @@
             });
         }
 
-        // Bắn tia laser khi click chuột vào canvas
         canvas.addEventListener('click', (e) => {
             if (!isRunning || isLandingMode) return;
             const rect = canvas.getBoundingClientRect();
@@ -375,6 +403,7 @@
             let p = missionPlanets[currentPlanetIdx];
             document.getElementById('modalTitle').innerText = `🌕 Level ${p.level}: Hạ Cánh ${p.name}!`;
             document.getElementById('actionStatus').innerText = "Bấm các nút chức năng phía dưới để khám phá!";
+            document.getElementById('photoDisplay').style.display = "none";
             document.getElementById('landingModal').style.display = "block";
             startAstronautAnimation();
         }
@@ -387,11 +416,17 @@
 
         function doAction(type) {
             let p = missionPlanets[currentPlanetIdx];
+            let photoDiv = document.getElementById('photoDisplay');
+            
             if (type === 'photo') {
-                document.getElementById('actionStatus').innerText = "📸 Đã chụp và lưu ảnh hành tinh thành công!";
+                photoDiv.style.backgroundImage = `url('${p.img}')`;
+                photoDiv.style.display = "block";
+                document.getElementById('actionStatus').innerText = `📸 Đã chụp ảnh bề mặt ${p.name}!`;
             } else if (type === 'rock') {
-                document.getElementById('actionStatus').innerText = "🧪 Đã thu thập mẫu đất đá thành công!";
+                photoDiv.style.display = "none";
+                document.getElementById('actionStatus').innerText = `🧪 Đã lấy mẫu: ${p.sample}!`;
             } else if (type === 'temp') {
+                photoDiv.style.display = "none";
                 document.getElementById('actionStatus').innerText = `🌡️ Nhiệt độ bề mặt: ${p.temp}`;
             }
         }
@@ -399,7 +434,7 @@
         function startAstronautAnimation() {
             const aCanvas = document.getElementById('astronautCanvas');
             aCanvas.width = aCanvas.clientWidth;
-            aCanvas.height = aCanvas.height;
+            aCanvas.height = aCanvas.clientHeight;
             const aCtx = aCanvas.getContext('2d');
             
             let astroX = 40;
@@ -442,7 +477,6 @@
 
             distanceMeters += 2;
 
-            // Sinh thiên thạch ngẫu nhiên
             if (Math.random() < 0.02) {
                 meteors.push({
                     x: canvas.width + 50,
@@ -452,23 +486,19 @@
                 });
             }
 
-            // Cập nhật vị trí thiên thạch
             meteors.forEach((m, index) => {
                 m.x -= m.speed;
-                // Va chạm với tàu (x=180, y=canvas.height/2)
                 let shipX = 180;
                 let shipY = canvas.height / 2;
                 let dist = Math.hypot(m.x - shipX, m.y - shipY);
                 if (dist < m.size + 15) {
-                    meteors.splice(index, 1); // Phá hủy thiên thạch khi chạm tàu
+                    meteors.splice(index, 1);
                 }
                 if (m.x < -50) meteors.splice(index, 1);
             });
 
-            // Cập nhật đạn laser
             lasers.forEach((l, lIdx) => {
                 l.x += l.speed;
-                // Kiểm tra va chạm laser với thiên thạch
                 meteors.forEach((m, mIdx) => {
                     let d = Math.hypot(l.x - m.x, l.y - m.y);
                     if (d < m.size) {
@@ -613,7 +643,6 @@
                 ctx.fillRect(s.x, s.y, s.size, s.size);
             });
 
-            // Vẽ thiên thạch
             meteors.forEach(m => {
                 ctx.fillStyle = "#64748b";
                 ctx.strokeStyle = "#94a3b8";
@@ -624,7 +653,6 @@
                 ctx.stroke();
             });
 
-            // Vẽ đạn laser
             lasers.forEach(l => {
                 ctx.strokeStyle = "#ef4444";
                 ctx.lineWidth = 4;
