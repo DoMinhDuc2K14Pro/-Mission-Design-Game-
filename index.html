@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NASA Mission Control - Planetary Journey</title>
+    <style>
+        :root {
+            --bg-dark: #030712;
+            --panel-bg: rgba(15, 23, 42, 0.92);
+            --nasa-blue: #0284c7;
+            --accent-green: #22c55e;
+            --accent-amber: #f59e0b;
+            --text-glow: #38bdf8;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Courier New', Courier, monospace;
+            user-select: none;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: #f8fafc;
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        header {
+            background: #020617;
+            border-bottom: 2px solid #1e293b;
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo-area h1 {
+            font-size: 1.1rem;
+            color: var(--text-glow);
+            letter-spacing: 2px;
+        }
+
+        .system-time {
+            font-size: 0.85rem;
+            color: var(--accent-amber);
+        }
+
+        .main-container {
+            flex: 1;
+            display: flex;
+            position: relative;
+            overflow: hidden;
+        }
+
+        canvas {
+            display: block;
+            flex: 1;
+            background: radial-gradient(circle at center, #090d16 0%, #020617 100%);
+        }
+
+        /* Bảng hiển thị thông tin hành tinh & hành trình */
+        .mission-sidebar {
+            width: 360px;
+            background: var(--panel-bg);
+            border-right: 2px solid #1e293b;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            z-index: 10;
+            overflow-y: auto;
+        }
+
+        .panel-box {
+            border: 1px solid #334155;
+            padding: 15px;
+            border-radius: 8px;
+            background: rgba(30, 41, 59, 0.4);
+        }
+
+        .panel-box h3 {
+            font-size: 0.9rem;
+            color: var(--accent-amber);
+            margin-bottom: 10px;
+            border-bottom: 1px dashed #334155;
+            padding-bottom: 5px;
+            letter-spacing: 1px;
+        }
+
+        .metric-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.9rem;
+            margin-bottom: 8px;
+        }
+
+        .metric-val {
+            color: var(--text-glow);
+            font-weight: bold;
+        }
+
+        /* Khung hiển thị hình ảnh hành tinh */
+        .planet-card {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            background: rgba(2, 6, 23, 0.7);
+            border: 1px solid #475569;
+            padding: 12px;
+            border-radius: 6px;
+        }
+
+        .planet-img-container {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: #020617;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid var(--text-glow);
+            font-size: 1.8rem;
+            box-shadow: 0 0 10px rgba(56, 189, 248, 0.4);
+        }
+
+        .planet-details h4 {
+            color: var(--accent-amber);
+            font-size: 0.95rem;
+            margin-bottom: 4px;
+        }
+
+        .planet-details p {
+            font-size: 0.75rem;
+            color: #94a3b8;
+            line-height: 1.3;
+        }
+
+        .btn-launch {
+            background: linear-gradient(135deg, #0284c7, #1d4ed8);
+            color: white;
+            border: 1px solid var(--text-glow);
+            padding: 10px;
+            font-size: 0.9rem;
+            font-weight: bold;
+            border-radius: 6px;
+            cursor: pointer;
+            width: 100%;
+            letter-spacing: 1px;
+            transition: 0.2s;
+        }
+
+        .btn-launch:hover {
+            background: #0369a1;
+            box-shadow: 0 0 12px rgba(56, 189, 248, 0.4);
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="logo-area">
+            <span style="font-size: 1.2rem;">🛰️</span>
+            <h1>NASA MISSION CONTROL - HÀNH TRÌNH KHÁM PHÁ</h1>
+        </div>
+        <div class="system-time" id="sysTime">SYS_TIME: 00:00:00</div>
+    </header>
+
+    <div class="main-container">
+        <!-- Bảng điều khiển & chỉ số hành trình -->
+        <div class="mission-sidebar">
+            
+            <div class="panel-box">
+                <h3>📊 THÔNG SỐ HÀNH TRÌNH</h3>
+                <div class="metric-row">
+                    <span>Quãng đường:</span>
+                    <span class="metric-val" id="distanceVal">0 mét</span>
+                </div>
+                <div class="metric-row">
+                    <span>Mục tiêu kế tiếp:</span>
+                    <span class="metric-val" id="nextTargetVal">Sao Thủy</span>
+                </div>
+            </div>
+
+            <!-- Khung hiển thị hình ảnh hành tinh đang đến -->
+            <div class="panel-box">
+                <h3>🪐 MỤC TIÊU HIỆN TẠI</h3>
+                <div class="planet-card">
+                    <div class="planet-img-container" id="planetEmoji">☿️</div>
+                    <div class="planet-details">
+                        <h4 id="planetName">Sao Thủy (Mercury)</h4>
+                        <p id="planetDesc">Hành tinh nhỏ nhất và gần Mặt Trời nhất.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="panel-box">
+                <h3>⚙️ ĐIỀU KHIỂN SỨ MỆNH</h3>
+                <button class="btn-launch" onclick="toggleMission()">TẠM DỪNG / TIẾP TỤC</button>
+            </div>
+
+        </div>
+
+        <!-- Màn hình radar không gian -->
+        <canvas id="missionCanvas"></canvas>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('missionCanvas');
+        const ctx = canvas.getContext('2d');
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth - 360;
+            canvas.height = window.innerHeight - 50;
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        setInterval(() => {
+            const now = new Date();
+            document.getElementById('sysTime').innerText = `SYS_TIME: ${now.toTimeString().split(' ')[0]}`;
+        }, 1000);
+
+        // Danh sách các hành tinh trong sứ mệnh
+        const missionPlanets = [
+            { name: "Sao Thủy", eng: "Mercury", emoji: "☿️", distanceThreshold: 0, desc: "Hành tinh nhỏ nhất, nhiệt độ khắc nghiệt." },
+            { name: "Sao Kim", eng: "Venus", emoji: "♀️", distanceThreshold: 1500, desc: "Hành tinh nóng nhất với khí quyển CO2 dày đặc." },
+            { name: "Trái Đất", eng: "Earth", emoji: "🌍", distanceThreshold: 3500, desc: "Ngôi nhà xanh của chúng ta, duy trì sự sống." },
+            { name: "Sao Hỏa", eng: "Mars", emoji: "🔴", distanceThreshold: 6000, desc: "Hành tinh Đỏ với ngọn núi lửa Olympus Mons." },
+            { name: "Sao Mộc", eng: "Jupiter", emoji: "🟠", distanceThreshold: 9500, desc: "Hành tinh khổng lồ lớn nhất Hệ Mặt Trời." },
+            { name: "Sao Thổ", eng: "Saturn", emoji: "🪐", distanceThreshold: 14000, desc: "Nổi tiếng với hệ thống vành đai băng rực rỡ." },
+            { name: "Sao Hải Vương", eng: "Neptune", emoji: "🌊", distanceThreshold: 20000, desc: "Hành tinh băng giá ở rìa ngoài Hệ Mặt Trời." }
+        ];
+
+        let distanceMeters = 0;
+        let currentPlanetIdx = 0;
+        let isRunning = true;
+        let stars = [];
+
+        for (let i = 0; i < 150; i++) {
+            stars.push({
+                x: Math.random() * canvas.width,
+                y: Math.random() * canvas.height,
+                size: Math.random() * 2,
+                speed: Math.random() * 2 + 0.5
+            });
+        }
+
+        function toggleMission() {
+            isRunning = !isRunning;
+        }
+
+        function updateMission() {
+            if (!isRunning) return;
+
+            distanceMeters += 2; // Tăng quãng đường theo thời gian thực
+
+            // Kiểm tra chuyển đổi hành tinh dựa trên số mét đã đi
+            let nextIdx = currentPlanetIdx;
+            for (let i = 0; i < missionPlanets.length; i++) {
+                if (distanceMeters >= missionPlanets[i].distanceThreshold) {
+                    nextIdx = i;
+                }
+            }
+
+            if (nextIdx !== currentPlanetIdx) {
+                currentPlanetIdx = nextIdx;
+                updatePlanetUI();
+            }
+
+            document.getElementById('distanceVal').innerText = `${distanceMeters} mét`;
+            let nextTarget = currentPlanetIdx + 1 < missionPlanets.length ? missionPlanets[currentPlanetIdx + 1].name : "Rìa Vũ Trụ";
+            document.getElementById('nextTargetVal').innerText = nextTarget;
+
+            // Cập nhật sao bay
+            stars.forEach(s => {
+                s.x -= s.speed;
+                if (s.x < 0) s.x = canvas.width;
+            });
+        }
+
+        function updatePlanetUI() {
+            let p = missionPlanets[currentPlanetIdx];
+            document.getElementById('planetEmoji').innerText = p.emoji;
+            document.getElementById('planetName').innerText = `${p.name} (${p.eng})`;
+            document.getElementById('planetDesc').innerText = p.desc;
+        }
+
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Vẽ bầu trời sao
+            ctx.fillStyle = "#ffffff";
+            stars.forEach(s => {
+                ctx.fillRect(s.x, s.y, s.size, s.size);
+            });
+
+            // Vẽ tàu vũ trụ phi hành gia ở trung tâm màn hình
+            let shipX = canvas.width / 3;
+            let shipY = canvas.height / 2;
+
+            ctx.fillStyle = "#38bdf8";
+            ctx.beginPath();
+            ctx.moveTo(shipX + 20, shipY);
+            ctx.lineTo(shipX - 15, shipY - 12);
+            ctx.lineTo(shipX - 10, shipY);
+            ctx.lineTo(shipX - 15, shipY + 12);
+            ctx.closePath();
+            ctx.fill();
+
+            // Vẽ ngọn lửa động cơ tàu
+            ctx.fillStyle = "#f59e0b";
+            ctx.beginPath();
+            ctx.moveTo(shipX - 10, shipY - 6);
+            ctx.lineTo(shipX - 25, shipY);
+            ctx.lineTo(shipX - 10, shipY + 6);
+            ctx.closePath();
+            ctx.fill();
+
+            updateMission();
+            requestAnimationFrame(draw);
+        }
+
+        updatePlanetUI();
+        draw();
+    </script>
+</body>
+</html>
