@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sứ Mệnh Kepler-452b (Năm 2800) - Chuẩn Tâm Ngắm & Thiên Thạch Chân Thực</title>
+    <title>Sứ Mệnh Kepler-452b (Năm 2800) - Phím Bắn Trái & Phải Riêng Biệt</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@600;700&family=Lexend:wght@400;600;700;800&display=swap" rel="stylesheet">
     <style>
@@ -129,7 +129,7 @@
                 <span class="text-2xl bot-float">🤖</span>
                 <div class="text-xs md:text-sm">
                     <span class="font-bold text-cyan-300">V.E.G.A.:</span>
-                    <span id="flight-bot-tip" class="text-slate-200">Đã căn chuẩn tâm ngắm chính xác 100%! Nhấn <b>SPACE</b> để bắn phá!</span>
+                    <span id="flight-bot-tip" class="text-slate-200">Phím <b>R</b> bắn Trái, phím <b>E</b> bắn Phải!</span>
                 </div>
             </div>
 
@@ -144,15 +144,20 @@
             </div>
         </div>
 
-        <!-- NÚT ĐIỀU KHIỂN CẢM ỨNG & BẮN LASER -->
+        <!-- NÚT ĐIỀU KHIỂN CẢM ỨNG & BẮN LASER TRÁI / PHẢI -->
         <div id="touch-controls" class="hidden absolute bottom-5 left-5 right-5 z-20 flex justify-between items-center pointer-events-none">
             <div class="flex gap-2">
-                <button id="btn-left" class="pointer-events-auto w-16 h-16 rounded-full bg-cyan-500/20 border-2 border-cyan-400/60 active:bg-cyan-500/50 backdrop-blur-md flex items-center justify-center text-2xl text-cyan-200 shadow-lg">◀</button>
-                <button id="btn-right" class="pointer-events-auto w-16 h-16 rounded-full bg-cyan-500/20 border-2 border-cyan-400/60 active:bg-cyan-500/50 backdrop-blur-md flex items-center justify-center text-2xl text-cyan-200 shadow-lg">▶</button>
+                <button id="btn-left" class="pointer-events-auto w-14 h-14 rounded-full bg-cyan-500/20 border-2 border-cyan-400/60 active:bg-cyan-500/50 backdrop-blur-md flex items-center justify-center text-xl text-cyan-200 shadow-lg">◀</button>
+                <button id="btn-right" class="pointer-events-auto w-14 h-14 rounded-full bg-cyan-500/20 border-2 border-cyan-400/60 active:bg-cyan-500/50 backdrop-blur-md flex items-center justify-center text-xl text-cyan-200 shadow-lg">▶</button>
             </div>
-            <button id="btn-shoot" class="pointer-events-auto px-6 py-4 rounded-full bg-red-500/30 border-2 border-red-400 active:bg-red-500/60 backdrop-blur-md flex items-center justify-center text-sm font-extrabold text-red-200 shadow-xl">
-                💥 BẮN LASER
-            </button>
+            <div class="flex gap-2">
+                <button id="btn-shoot-left" class="pointer-events-auto px-4 py-3 rounded-2xl bg-red-500/30 border-2 border-red-400 active:bg-red-500/60 backdrop-blur-md flex items-center justify-center text-xs font-extrabold text-red-200 shadow-xl">
+                    💥 BẮN TRÁI (R)
+                </button>
+                <button id="btn-shoot-right" class="pointer-events-auto px-4 py-3 rounded-2xl bg-red-500/30 border-2 border-red-400 active:bg-red-500/60 backdrop-blur-md flex items-center justify-center text-xs font-extrabold text-red-200 shadow-xl">
+                    💥 BẮN PHẢI (E)
+                </button>
+            </div>
         </div>
 
         <!-- MÀN HÌNH 1: MỞ ĐẦU -->
@@ -164,7 +169,7 @@
                 SỨ MỆNH KEPLER-452b
             </h2>
             <p class="text-slate-300 text-sm md:text-base leading-relaxed">
-                Chiến cơ <b class="text-cyan-300">Phoenix X-900</b> đã được nâng cấp hệ thống ngắm bắn chính xác và mô phỏng thiên thạch không gian chân thực.
+                Chiến cơ <b class="text-cyan-300">Phoenix X-900</b> đã được tích hợp phím bắn laser độc lập 2 bên: Phím <b class="text-red-400">R</b> bắn trái, phím <b class="text-red-400">E</b> bắn phải.
             </p>
 
             <div class="grid grid-cols-1 md:grid-cols-3 gap-3 text-left text-xs bg-slate-950/80 p-4 rounded-2xl border border-slate-800">
@@ -173,8 +178,8 @@
                     <p class="text-slate-400">Dùng phím <b>◀ ▶</b> hoặc <b>A / D</b> để lái mượt mà.</p>
                 </div>
                 <div class="space-y-1">
-                    <div class="font-bold text-red-400">🎯 Tâm Ngắm Chuẩn Xác</div>
-                    <p class="text-slate-400">Đạn laser bắn thẳng vào tâm ngắm. Nhấn <b>SPACE</b> để khai hỏa.</p>
+                    <div class="font-bold text-red-400">💥 Bắn Trái & Phải</div>
+                    <p class="text-slate-400">Nhấn phím <b>R</b> bắn trái, phím <b>E</b> bắn phải chuẩn xác.</p>
                 </div>
                 <div class="space-y-1">
                     <div class="font-bold text-emerald-400">🫁 Bình Oxygen 40s</div>
@@ -197,10 +202,10 @@
                 </div>
             </div>
             <p id="briefing-desc" class="text-slate-300 text-sm leading-relaxed">
-                Phía trước có mật độ thiên thạch cao. Sử dụng phím Space để bắn phá chúng!
+                Phía trước có mật độ thiên thạch cao. Sử dụng phím R (bắn trái) và E (bắn phải) để khai hỏa!
             </p>
             <div class="bg-slate-950/90 p-3.5 rounded-2xl border border-cyan-500/30 text-xs text-cyan-200 space-y-1">
-                <div>🎮 <b>Điều khiển:</b> Mũi tên Trái/Phải hoặc A/D để lái. Phím <b>SPACE</b> để bắn Laser chuẩn xác vào tâm ngắm.</div>
+                <div>🎮 <b>Điều khiển:</b> Mũi tên Trái/Phải để lái. Phím <b>R</b> bắn Trái, phím <b>E</b> bắn Phải.</div>
             </div>
             <button id="btn-launch-flight" class="w-full py-3.5 rounded-2xl bg-gradient-to-r from-emerald-500 to-cyan-500 hover:brightness-110 text-slate-950 font-extrabold text-base uppercase tracking-wider shadow-lg cursor-pointer">
                 BẮT ĐẦU BAY XUYÊN KHÔNG GIAN 🛸
@@ -322,7 +327,7 @@
                 name: "Sao Hỏa (Mars) - Hành Tinh Đỏ",
                 tag3D: "MARS • 1.52 AU",
                 briefingTitle: "Chặng 1: Vượt Vành Đai Tới Sao Hỏa",
-                briefingDesc: "Chúng ta đang rời Trái Đất tiến về Sao Hỏa. Các mảnh thiên thạch sắt đang lao tới với vận tốc cao. Hãy ngắm bắn chuẩn xác!",
+                briefingDesc: "Chúng ta đang rời Trái Đất tiến về Sao Hỏa. Các mảnh thiên thạch sắt đang lao tới với vận tốc cao. Hãy dùng phím R (bắn trái) và E (bắn phải) để tiêu diệt chúng!",
                 envInfo: "Khí quyển Sao Hỏa cực kỳ mỏng (chỉ bằng 0.6% Trái Đất) với 95% là khí CO₂. Nhiệt độ trung bình -63°C, bề mặt phủ đầy oxit sắt và có băng nước dưới lòng đất.",
                 flightDuration: 15,
                 asteroidRate: 0.045,
@@ -370,7 +375,7 @@
                 name: "Vệ Tinh Europa (Quỹ Đạo Sao Mộc)",
                 tag3D: "EUROPA • JUPITER MOON",
                 briefingTitle: "Chặng 2: Xuyên Vành Đai Tiểu Hành Tinh Tới Europa",
-                briefingDesc: "Cảnh báo! Vành đai tiểu hành tinh giữa Sao Hỏa và Sao Mộc rất dày đặc. Hãy bắn tan các tảng băng thiên thạch!",
+                briefingDesc: "Cảnh báo! Vành đai tiểu hành tinh giữa Sao Hỏa và Sao Mộc rất dày đặc. Hãy sử dụng phím R và E để bắn tan các tảng băng thiên thạch!",
                 envInfo: "Europa là vệ tinh của Sao Mộc, có lớp vỏ băng dày 15-25 km bao bọc một đại dương nước mặn khổng lồ bên dưới được làm nóng bởi lực thủy triều.",
                 flightDuration: 18,
                 asteroidRate: 0.06,
@@ -418,7 +423,7 @@
                 name: "Siêu Trái Đất Gliese 667Cc",
                 tag3D: "GLIESE 667Cc • 23.6 LY",
                 briefingTitle: "Chặng 3: Bước Nhảy Không Gian Tới Gliese 667Cc",
-                briefingDesc: "Chúng ta đang tiến vào hệ sao lùn đỏ Gliese 667. Mật độ thiên thạch lửa tăng cao, hãy tập trung tâm ngắm!",
+                briefingDesc: "Chúng ta đang tiến vào hệ sao lùn đỏ Gliese 667. Mật độ thiên thạch lửa tăng cao, hãy dùng phím R và E khai hỏa 2 bên!",
                 envInfo: "Gliese 667Cc là một 'Siêu Trái Đất' có khối lượng gấp 3.8 lần Trái Đất, bị khóa thủy triều: một mặt luôn ngày, một mặt luôn đêm.",
                 flightDuration: 20,
                 asteroidRate: 0.072,
@@ -466,7 +471,7 @@
                 name: "Kepler-452b • Trái Đất Thứ Hai",
                 tag3D: "KEPLER-452b • 1,400 LY",
                 briefingTitle: "Chặng Cuối: Cơn Bão Thiên Thạch Trước Cửa Ngõ Kepler-452b",
-                briefingDesc: "Đích đến Kepler-452b đã ở ngay trước mắt! Bắn tan các mảnh thiên thạch cuối cùng!",
+                briefingDesc: "Đích đến Kepler-452b đã ở ngay trước mắt! Khai hỏa liên tục phím R và E để dọn sạch vành đai thiên thạch cuối cùng!",
                 envInfo: "Kepler-452b quay quanh một ngôi sao giống hệt Mặt Trời với chu kỳ 385 ngày, nằm trong Vùng Sống Được (Goldilocks Zone), có đại dương và bầu khí quyển ổn định.",
                 flightDuration: 22,
                 asteroidRate: 0.085,
@@ -493,7 +498,7 @@
                         ],
                         correct: 0,
                         hint: "Gợi ý V.E.G.A.: Trái Đất mất 365 ngày cho 1 vòng quỹ đạo, Kepler-452b mất 385 ngày.",
-                        explain: "Chuẩn xác! Quỹ đạo rộng hơn Trái Đất một chút so với Trái Đất nên chu kỳ quay quanh sao mẹ dài hơn."
+                        explain: "Chuẩn xác! Quỹ đạo rộng hơn Trái Đất một chút nên chu kỳ quay quanh sao mẹ dài hơn."
                     },
                     {
                         q: "Để tránh lặp lại thảm họa môi trường như Trái Đất năm 2800, nguyên tắc sinh thái đầu tiên nhân loại phải áp dụng là gì?",
@@ -647,19 +652,24 @@
             });
         }
 
-        function fireLaser() {
+        function fireLaser(side) {
             if (gameMode !== "FLIGHT") return;
-            // Đạn bay xuất phát chính xác từ vị trí tâm ngắm (shipX)
-            lasers.push({ x: shipX, z: 0.05 });
-            playSound(920, "square", 0.08, 0.1);
+            // side: 'left' hoặc 'right'
+            const offset = side === 'left' ? -0.32 : 0.32;
+            lasers.push({ x: shipX + offset, z: 0.05, side: side });
+            playSound(side === 'left' ? 850 : 980, "square", 0.08, 0.1);
         }
 
         window.addEventListener("keydown", (e) => {
             if (e.key === "ArrowLeft" || e.key === "a" || e.key === "A") keys.left = true;
             if (e.key === "ArrowRight" || e.key === "d" || e.key === "D") keys.right = true;
-            if (e.code === "Space" || e.key === " ") {
+            if (e.key === "r" || e.key === "R") {
                 e.preventDefault();
-                fireLaser();
+                fireLaser('left');
+            }
+            if (e.key === "e" || e.key === "E") {
+                e.preventDefault();
+                fireLaser('right');
             }
         });
         window.addEventListener("keyup", (e) => {
@@ -669,7 +679,8 @@
 
         const btnLeft = document.getElementById("btn-left");
         const btnRight = document.getElementById("btn-right");
-        const btnShoot = document.getElementById("btn-shoot");
+        const btnShootLeft = document.getElementById("btn-shoot-left");
+        const btnShootRight = document.getElementById("btn-shoot-right");
 
         btnLeft.addEventListener("touchstart", (e) => { e.preventDefault(); keys.left = true; });
         btnLeft.addEventListener("touchend", () => { keys.left = false; });
@@ -681,8 +692,11 @@
         btnRight.addEventListener("mousedown", () => { keys.right = true; });
         btnRight.addEventListener("mouseup", () => { keys.right = false; });
 
-        btnShoot.addEventListener("click", () => { fireLaser(); });
-        btnShoot.addEventListener("touchstart", (e) => { e.preventDefault(); fireLaser(); });
+        btnShootLeft.addEventListener("click", () => { fireLaser('left'); });
+        btnShootLeft.addEventListener("touchstart", (e) => { e.preventDefault(); fireLaser('left'); });
+
+        btnShootRight.addEventListener("click", () => { fireLaser('right'); });
+        btnShootRight.addEventListener("touchstart", (e) => { e.preventDefault(); fireLaser('right'); });
 
         let lastFrameTime = performance.now();
         function gameLoop(now) {
@@ -745,7 +759,7 @@
                     sCtx.stroke();
                 }
 
-                // Cập nhật tia Laser chuẩn xác theo vị trí x của tâm ngắm
+                // Cập nhật tia Laser từ phía Trái / Phải
                 for (let l = lasers.length - 1; l >= 0; l--) {
                     let laser = lasers[l];
                     laser.z += dt * 1.8;
@@ -756,8 +770,7 @@
 
                     for (let a = asteroids.length - 1; a >= 0; a--) {
                         let ast = asteroids[a];
-                        // Bắt trúng thiên thạch chuẩn theo làn đường và khoảng cách z
-                        if (Math.abs(laser.z - ast.z) < 0.15 && Math.abs(laser.x - ast.lane) < 0.3) {
+                        if (Math.abs(laser.z - ast.z) < 0.15 && Math.abs(laser.x - ast.lane) < 0.32) {
                             score += 50;
                             updateHUD();
                             playSound(300, "sawtooth", 0.15, 0.15);
@@ -769,14 +782,14 @@
 
                     if (lasers[l]) {
                         const lScale = 1 - laser.z;
-                        // Tọa độ tia laser khớp hoàn toàn với vị trí tâm ngắm phía trên
                         const lx = cx + laser.x * (w * 0.48) * lScale;
                         const ly = cy + (h * 0.54) * Math.pow(lScale, 1.35);
                         
-                        sCtx.strokeStyle = "#ef4444";
+                        const startOffsetX = laser.side === 'left' ? -140 : 140;
+                        sCtx.strokeStyle = laser.side === 'left' ? "#38bdf8" : "#ef4444";
                         sCtx.lineWidth = 5;
                         sCtx.beginPath();
-                        sCtx.moveTo(cx + laser.x * (w * 0.48), h);
+                        sCtx.moveTo(cx + startOffsetX, h);
                         sCtx.lineTo(lx, ly);
                         sCtx.stroke();
                     }
@@ -826,23 +839,19 @@
                     }
 
                     const scale = 1 - ast.z;
-                    // Thiên thạch di chuyển đồng bộ theo quán tính lái của tàu
                     const ax = cx + (ast.lane - shipX * 0.65) * (w * 0.48) * scale;
                     const ay = cy + (h * 0.54) * Math.pow(scale, 1.35);
                     const rad = 12 + 65 * Math.pow(scale, 1.5);
 
-                    // THIẾT KẾ THIÊN THẠCH CHÂN THỰC (ĐỒ HỌA 3D NỔI KHỐI & VÂN ĐÁ)
                     sCtx.save();
                     sCtx.translate(ax, ay);
                     sCtx.rotate(ast.rot);
 
-                    // Bóng đổ khối thiên thạch
                     sCtx.fillStyle = "rgba(0, 0, 0, 0.45)";
                     sCtx.beginPath();
                     sCtx.arc(rad * 0.2, rad * 0.2, rad * 0.95, 0, Math.PI * 2);
                     sCtx.fill();
 
-                    // Thân thiên thạch gradient lập thể
                     const astGrad = sCtx.createRadialGradient(-rad * 0.35, -rad * 0.35, rad * 0.1, 0, 0, rad);
                     if (ast.type === "ice") {
                         astGrad.addColorStop(0, "#e0f2fe");
@@ -861,7 +870,6 @@
                     const vertices = 8;
                     for (let v = 0; v < vertices; v++) {
                         const vAngle = (v / vertices) * Math.PI * 2;
-                        // Tạo hình khối đa giác lồi lõm chân thực
                         const offsetRad = rad * (1 + Math.sin(v * 3 + ast.rot) * 0.18);
                         const vx = Math.cos(vAngle) * offsetRad;
                         const vy = Math.sin(vAngle) * offsetRad;
@@ -874,7 +882,6 @@
                     sCtx.lineWidth = 1.5;
                     sCtx.stroke();
 
-                    // Thêm các hố va chạm (craters) giả lập bề mặt đá thực tế
                     sCtx.fillStyle = "rgba(0, 0, 0, 0.35)";
                     sCtx.beginPath();
                     sCtx.arc(-rad * 0.25, -rad * 0.2, rad * 0.22, 0, Math.PI * 2);
@@ -884,7 +891,7 @@
                     sCtx.restore();
                 }
 
-                // TÂM NGẮM CỐ ĐỊNH CHUẨN XÁC Ở CHÍNH GIỮA (KHỚP HOÀN TOÀN HƯỚNG ĐẠN)
+                // TÂM NGẮM CHÍNH GIỮA CỐ ĐỊNH
                 const crosshairX = cx;
                 const crosshairY = cy + h * 0.05;
                 
@@ -996,7 +1003,7 @@
             document.getElementById("touch-controls").classList.remove("hidden");
 
             document.getElementById("flight-target-label").innerText = `Đang tới: ${stage.name.split(" - ")[0]}`;
-            document.getElementById("flight-bot-tip").innerText = "Tâm ngắm đã chuẩn 100%! Nhấn SPACE để bắn tiêu diệt thiên thạch!";
+            document.getElementById("flight-bot-tip").innerText = "Phím R bắn Trái, phím E bắn Phải chuẩn xác!";
             document.getElementById("stage-subtitle").innerText = stage.briefingTitle;
             playSound(440, "sine", 0.2);
         }
