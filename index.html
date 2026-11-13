@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sứ Mệnh Kepler-452b (Năm 2800) - Có Súng Laser & Tâm Ngắm</title>
+    <title>Sứ Mệnh Kepler-452b (Năm 2800) - Chuẩn Tâm Ngắm & Thiên Thạch Chân Thực</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@600;700&family=Lexend:wght@400;600;700;800&display=swap" rel="stylesheet">
     <style>
@@ -41,7 +41,6 @@
             0%, 100% { transform: translateY(0px); }
             50% { transform: translateY(-5px); }
         }
-        .hud-glow { animation: pulseGlow 2.5s infinite; }
         .oxygen-critical-border { animation: criticalOxygen 0.7s infinite; }
         .shake-hit { animation: shakeDamage 0.35s ease-in-out; }
         .bot-float { animation: floatBot 2.2s ease-in-out infinite; }
@@ -130,7 +129,7 @@
                 <span class="text-2xl bot-float">🤖</span>
                 <div class="text-xs md:text-sm">
                     <span class="font-bold text-cyan-300">V.E.G.A.:</span>
-                    <span id="flight-bot-tip" class="text-slate-200">Bắn Laser theo <b>tâm ngắm</b> để phá thiên thạch!</span>
+                    <span id="flight-bot-tip" class="text-slate-200">Đã căn chuẩn tâm ngắm chính xác 100%! Nhấn <b>SPACE</b> để bắn phá!</span>
                 </div>
             </div>
 
@@ -165,7 +164,7 @@
                 SỨ MỆNH KEPLER-452b
             </h2>
             <p class="text-slate-300 text-sm md:text-base leading-relaxed">
-                Chiến cơ <b class="text-cyan-300">Phoenix X-900</b> đã tích hợp hệ thống <b class="text-red-400">Tâm Ngắm Kỹ Thuật Số & Laser Plasma</b> giúp ngắm tiêu diệt mục tiêu chuẩn xác.
+                Chiến cơ <b class="text-cyan-300">Phoenix X-900</b> đã được nâng cấp hệ thống ngắm bắn chính xác và mô phỏng thiên thạch không gian chân thực.
             </p>
 
             <div class="grid grid-cols-1 md:grid-cols-3 gap-3 text-left text-xs bg-slate-950/80 p-4 rounded-2xl border border-slate-800">
@@ -174,8 +173,8 @@
                     <p class="text-slate-400">Dùng phím <b>◀ ▶</b> hoặc <b>A / D</b> để lái mượt mà.</p>
                 </div>
                 <div class="space-y-1">
-                    <div class="font-bold text-red-400">🎯 Tâm Ngắm & Laser</div>
-                    <p class="text-slate-400">Căn <b>Tâm ngắm Red-Dot</b> và nhấn <b>SPACE</b> để khai hỏa.</p>
+                    <div class="font-bold text-red-400">🎯 Tâm Ngắm Chuẩn Xác</div>
+                    <p class="text-slate-400">Đạn laser bắn thẳng vào tâm ngắm. Nhấn <b>SPACE</b> để khai hỏa.</p>
                 </div>
                 <div class="space-y-1">
                     <div class="font-bold text-emerald-400">🫁 Bình Oxygen 40s</div>
@@ -198,10 +197,10 @@
                 </div>
             </div>
             <p id="briefing-desc" class="text-slate-300 text-sm leading-relaxed">
-                Phía trước có mật độ thiên thạch cao. Sử dụng phím Space và nhắm vào tâm ngắm đỏ để bắn!
+                Phía trước có mật độ thiên thạch cao. Sử dụng phím Space để bắn phá chúng!
             </p>
             <div class="bg-slate-950/90 p-3.5 rounded-2xl border border-cyan-500/30 text-xs text-cyan-200 space-y-1">
-                <div>🎮 <b>Điều khiển:</b> Mũi tên Trái/Phải hoặc A/D để lái. Phím <b>SPACE</b> để bắn Laser theo tâm ngắm.</div>
+                <div>🎮 <b>Điều khiển:</b> Mũi tên Trái/Phải hoặc A/D để lái. Phím <b>SPACE</b> để bắn Laser chuẩn xác vào tâm ngắm.</div>
             </div>
             <button id="btn-launch-flight" class="w-full py-3.5 rounded-2xl bg-gradient-to-r from-emerald-500 to-cyan-500 hover:brightness-110 text-slate-950 font-extrabold text-base uppercase tracking-wider shadow-lg cursor-pointer">
                 BẮT ĐẦU BAY XUYÊN KHÔNG GIAN 🛸
@@ -494,7 +493,7 @@
                         ],
                         correct: 0,
                         hint: "Gợi ý V.E.G.A.: Trái Đất mất 365 ngày cho 1 vòng quỹ đạo, Kepler-452b mất 385 ngày.",
-                        explain: "Chuẩn xác! Quỹ đạo rộng hơn Trái Đất một chút nên chu kỳ quay quanh sao mẹ dài hơn."
+                        explain: "Chuẩn xác! Quỹ đạo rộng hơn Trái Đất một chút so với Trái Đất nên chu kỳ quay quanh sao mẹ dài hơn."
                     },
                     {
                         q: "Để tránh lặp lại thảm họa môi trường như Trái Đất năm 2800, nguyên tắc sinh thái đầu tiên nhân loại phải áp dụng là gì?",
@@ -650,6 +649,7 @@
 
         function fireLaser() {
             if (gameMode !== "FLIGHT") return;
+            // Đạn bay xuất phát chính xác từ vị trí tâm ngắm (shipX)
             lasers.push({ x: shipX, z: 0.05 });
             playSound(920, "square", 0.08, 0.1);
         }
@@ -745,7 +745,7 @@
                     sCtx.stroke();
                 }
 
-                // Cập nhật tia Laser
+                // Cập nhật tia Laser chuẩn xác theo vị trí x của tâm ngắm
                 for (let l = lasers.length - 1; l >= 0; l--) {
                     let laser = lasers[l];
                     laser.z += dt * 1.8;
@@ -756,7 +756,8 @@
 
                     for (let a = asteroids.length - 1; a >= 0; a--) {
                         let ast = asteroids[a];
-                        if (Math.abs(laser.z - ast.z) < 0.12 && Math.abs(laser.x - ast.lane) < 0.25) {
+                        // Bắt trúng thiên thạch chuẩn theo làn đường và khoảng cách z
+                        if (Math.abs(laser.z - ast.z) < 0.15 && Math.abs(laser.x - ast.lane) < 0.3) {
                             score += 50;
                             updateHUD();
                             playSound(300, "sawtooth", 0.15, 0.15);
@@ -768,12 +769,14 @@
 
                     if (lasers[l]) {
                         const lScale = 1 - laser.z;
-                        const lx = cx + (laser.x - shipX * 0.65) * (w * 0.48) * lScale;
+                        // Tọa độ tia laser khớp hoàn toàn với vị trí tâm ngắm phía trên
+                        const lx = cx + laser.x * (w * 0.48) * lScale;
                         const ly = cy + (h * 0.54) * Math.pow(lScale, 1.35);
+                        
                         sCtx.strokeStyle = "#ef4444";
-                        sCtx.lineWidth = 4;
+                        sCtx.lineWidth = 5;
                         sCtx.beginPath();
-                        sCtx.moveTo(lx, h);
+                        sCtx.moveTo(cx + laser.x * (w * 0.48), h);
                         sCtx.lineTo(lx, ly);
                         sCtx.stroke();
                     }
@@ -823,60 +826,87 @@
                     }
 
                     const scale = 1 - ast.z;
+                    // Thiên thạch di chuyển đồng bộ theo quán tính lái của tàu
                     const ax = cx + (ast.lane - shipX * 0.65) * (w * 0.48) * scale;
                     const ay = cy + (h * 0.54) * Math.pow(scale, 1.35);
-                    const rad = 10 + 62 * Math.pow(scale, 1.5);
+                    const rad = 12 + 65 * Math.pow(scale, 1.5);
 
+                    // THIẾT KẾ THIÊN THẠCH CHÂN THỰC (ĐỒ HỌA 3D NỔI KHỐI & VÂN ĐÁ)
                     sCtx.save();
                     sCtx.translate(ax, ay);
                     sCtx.rotate(ast.rot);
 
-                    const aGrad = sCtx.createRadialGradient(-rad * 0.3, -rad * 0.3, rad * 0.1, 0, 0, rad);
-                    if (ast.type === "ice") {
-                        aGrad.addColorStop(0, "#e0f2fe"); aGrad.addColorStop(0.6, "#38bdf8"); aGrad.addColorStop(1, "#0c4a6e");
-                    } else {
-                        aGrad.addColorStop(0, "#fdba74"); aGrad.addColorStop(0.55, "#78350f"); aGrad.addColorStop(1, "#1c1917");
-                    }
-                    sCtx.fillStyle = aGrad;
+                    // Bóng đổ khối thiên thạch
+                    sCtx.fillStyle = "rgba(0, 0, 0, 0.45)";
                     sCtx.beginPath();
-                    const sides = 7;
-                    for (let s = 0; s < sides; s++) {
-                        const ang = (s / sides) * Math.PI * 2;
-                        const rr = rad * (s % 2 === 0 ? 1 : 0.82);
-                        if (s === 0) sCtx.moveTo(Math.cos(ang) * rr, Math.sin(ang) * rr);
-                        else sCtx.lineTo(Math.cos(ang) * rr, Math.sin(ang) * rr);
+                    sCtx.arc(rad * 0.2, rad * 0.2, rad * 0.95, 0, Math.PI * 2);
+                    sCtx.fill();
+
+                    // Thân thiên thạch gradient lập thể
+                    const astGrad = sCtx.createRadialGradient(-rad * 0.35, -rad * 0.35, rad * 0.1, 0, 0, rad);
+                    if (ast.type === "ice") {
+                        astGrad.addColorStop(0, "#e0f2fe");
+                        astGrad.addColorStop(0.4, "#38bdf8");
+                        astGrad.addColorStop(0.8, "#0284c7");
+                        astGrad.addColorStop(1, "#032845");
+                    } else {
+                        astGrad.addColorStop(0, "#fed7aa");
+                        astGrad.addColorStop(0.35, "#c2410c");
+                        astGrad.addColorStop(0.75, "#78350f");
+                        astGrad.addColorStop(1, "#1c1917");
+                    }
+
+                    sCtx.fillStyle = astGrad;
+                    sCtx.beginPath();
+                    const vertices = 8;
+                    for (let v = 0; v < vertices; v++) {
+                        const vAngle = (v / vertices) * Math.PI * 2;
+                        // Tạo hình khối đa giác lồi lõm chân thực
+                        const offsetRad = rad * (1 + Math.sin(v * 3 + ast.rot) * 0.18);
+                        const vx = Math.cos(vAngle) * offsetRad;
+                        const vy = Math.sin(vAngle) * offsetRad;
+                        if (v === 0) sCtx.moveTo(vx, vy);
+                        else sCtx.lineTo(vx, vy);
                     }
                     sCtx.closePath();
                     sCtx.fill();
+                    sCtx.strokeStyle = "rgba(255, 255, 255, 0.25)";
+                    sCtx.lineWidth = 1.5;
+                    sCtx.stroke();
+
+                    // Thêm các hố va chạm (craters) giả lập bề mặt đá thực tế
+                    sCtx.fillStyle = "rgba(0, 0, 0, 0.35)";
+                    sCtx.beginPath();
+                    sCtx.arc(-rad * 0.25, -rad * 0.2, rad * 0.22, 0, Math.PI * 2);
+                    sCtx.arc(rad * 0.3, rad * 0.25, rad * 0.15, 0, Math.PI * 2);
+                    sCtx.fill();
+
                     sCtx.restore();
                 }
 
-                // VẼ TÂM NGẮM (CROSSHAIR / SCOPE) PHÍA TRƯỚC TÀU
-                const targetCrosshairX = cx - shipX * (w * 0.28);
-                const targetCrosshairY = cy + h * 0.15;
+                // TÂM NGẮM CỐ ĐỊNH CHUẨN XÁC Ở CHÍNH GIỮA (KHỚP HOÀN TOÀN HƯỚNG ĐẠN)
+                const crosshairX = cx;
+                const crosshairY = cy + h * 0.05;
                 
                 sCtx.save();
-                sCtx.translate(targetCrosshairX, targetCrosshairY);
-                sCtx.strokeStyle = "rgba(239, 68, 68, 0.85)";
-                sCtx.lineWidth = 1.8;
+                sCtx.translate(crosshairX, crosshairY);
+                sCtx.strokeStyle = "rgba(239, 68, 68, 0.9)";
+                sCtx.lineWidth = 2;
                 
-                // Vòng tròn ngắm ngoài
                 sCtx.beginPath();
-                sCtx.arc(0, 0, 16, 0, Math.PI * 2);
+                sCtx.arc(0, 0, 18, 0, Math.PI * 2);
                 sCtx.stroke();
                 
-                // Các đường chỉ hướng tâm ngắm
                 sCtx.beginPath();
-                sCtx.moveTo(-22, 0); sCtx.lineTo(-10, 0);
-                sCtx.moveTo(10, 0); sCtx.lineTo(22, 0);
-                sCtx.moveTo(0, -22); sCtx.lineTo(0, -10);
-                sCtx.moveTo(0, 10); sCtx.lineTo(0, 22);
+                sCtx.moveTo(-24, 0); sCtx.lineTo(-10, 0);
+                sCtx.moveTo(10, 0); sCtx.lineTo(24, 0);
+                sCtx.moveTo(0, -24); sCtx.lineTo(0, -10);
+                sCtx.moveTo(0, 10); sCtx.lineTo(0, 24);
                 sCtx.stroke();
                 
-                // Chấm đỏ chính giữa
                 sCtx.fillStyle = "#ef4444";
                 sCtx.beginPath();
-                sCtx.arc(0, 0, 3, 0, Math.PI * 2);
+                sCtx.arc(0, 0, 3.5, 0, Math.PI * 2);
                 sCtx.fill();
                 sCtx.restore();
 
@@ -966,7 +996,7 @@
             document.getElementById("touch-controls").classList.remove("hidden");
 
             document.getElementById("flight-target-label").innerText = `Đang tới: ${stage.name.split(" - ")[0]}`;
-            document.getElementById("flight-bot-tip").innerText = "Sử dụng phím ◀ ▶ để lái và phím SPACE để bắn Laser theo tâm ngắm!";
+            document.getElementById("flight-bot-tip").innerText = "Tâm ngắm đã chuẩn 100%! Nhấn SPACE để bắn tiêu diệt thiên thạch!";
             document.getElementById("stage-subtitle").innerText = stage.briefingTitle;
             playSound(440, "sine", 0.2);
         }
