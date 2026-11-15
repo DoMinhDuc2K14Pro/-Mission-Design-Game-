@@ -3,1266 +3,1540 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sứ Mệnh Kepler-452b (Năm 2800) - Phím Bắn Trái & Phải Riêng Biệt</title>
+    <title>Sứ Mệnh Vũ Trụ - SFS Blueprint Builder & Knowledge Hub</title>
+    <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@600;700&family=Lexend:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <!-- Google Fonts: Orbitron & Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;800;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        space: { 950: '#03050c', 900: '#060814', 800: '#0b0e26', 700: '#141a3d', 600: '#1e295d' },
+                        neon: { cyan: '#00f3ff', purple: '#b026ff', magenta: '#ff007f', green: '#00ff88', amber: '#ffb700' }
+                    },
+                    fontFamily: { orbitron: ['Orbitron', 'sans-serif'], sans: ['Inter', 'sans-serif'] }
+                }
+            }
+        }
+    </script>
     <style>
-        * {
-            letter-spacing: 0.015em;
-            word-spacing: 0.08em;
-            box-sizing: border-box;
-        }
-        body {
-            font-family: 'Lexend', system-ui, sans-serif;
-            background-color: #02040a;
-            color: #f8fafc;
-            overflow: hidden;
-            user-select: none;
-        }
-        .font-hud {
-            font-family: 'Chakra Petch', monospace;
-        }
-        @keyframes pulseGlow {
-            0%, 100% { box-shadow: 0 0 15px rgba(56, 189, 248, 0.35); }
-            50% { box-shadow: 0 0 28px rgba(56, 189, 248, 0.75); }
-        }
-        @keyframes criticalOxygen {
-            0%, 100% { box-shadow: inset 0 0 30px rgba(239, 68, 68, 0.2); border-color: rgba(239, 68, 68, 0.5); }
-            50% { box-shadow: inset 0 0 70px rgba(239, 68, 68, 0.75); border-color: rgba(239, 68, 68, 1); }
-        }
-        @keyframes shakeDamage {
-            0%, 100% { transform: translate(0, 0); }
-            20% { transform: translate(-8px, 5px); }
-            40% { transform: translate(8px, -5px); }
-            60% { transform: translate(-6px, -4px); }
-            80% { transform: translate(6px, 4px); }
-        }
-        @keyframes floatBot {
-            0%, 100% { transform: translateY(0px); }
-            50% { transform: translateY(-5px); }
-        }
-        .oxygen-critical-border { animation: criticalOxygen 0.7s infinite; }
-        .shake-hit { animation: shakeDamage 0.35s ease-in-out; }
-        .bot-float { animation: floatBot 2.2s ease-in-out infinite; }
-        
-        .option-btn {
-            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        .option-btn:hover:not(:disabled) {
-            transform: translateX(6px);
-            border-color: #38bdf8;
-            background-color: rgba(14, 165, 233, 0.18);
-        }
-        .option-eliminated {
-            opacity: 0.28 !important;
-            text-decoration: line-through;
-            border-color: #334155 !important;
-            background-color: rgba(15, 23, 42, 0.4) !important;
-            pointer-events: none;
-        }
+        body { background-color: #03050c; color: #e2e8f0; font-family: 'Inter', sans-serif; overflow-x: hidden; }
+        .neon-border { box-shadow: 0 0 20px rgba(0, 243, 255, 0.5), inset 0 0 15px rgba(0, 243, 255, 0.2); border: 2px solid rgba(0, 243, 255, 0.9); }
+        .neon-border-purple { box-shadow: 0 0 15px rgba(176, 38, 255, 0.25), inset 0 0 15px rgba(176, 38, 255, 0.1); border: 1px solid rgba(176, 38, 255, 0.5); }
+        .glass-panel { background: rgba(11, 14, 38, 0.85); backdrop-filter: blur(16px); border: 1px solid rgba(0, 243, 255, 0.15); }
+        .scanlines { background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.35) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.03)); background-size: 100% 3px, 6px 100%; pointer-events: none; }
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: rgba(6, 8, 20, 0.8); }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #00f3ff; border-radius: 3px; }
+        .blueprint-grid { background-image: linear-gradient(to right, rgba(0, 243, 255, 0.07) 1px, transparent 1px), linear-gradient(to bottom, rgba(0, 243, 255, 0.07) 1px, transparent 1px); background-size: 30px 30px; }
     </style>
 </head>
-<body class="h-screen w-screen flex flex-col justify-between p-2.5 md:p-4">
+<body class="h-screen flex flex-col justify-between select-none overflow-hidden">
 
-    <!-- THANH TRẠNG THÁI TỔNG (HUD) -->
-    <header class="z-20 flex flex-wrap items-center justify-between gap-2 bg-slate-900/90 border border-cyan-500/40 rounded-2xl px-4 py-2.5 backdrop-blur-md shadow-2xl">
-        <div class="flex items-center gap-3">
-            <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-cyan-500 to-blue-700 flex items-center justify-center text-xl shadow-lg border border-cyan-300/40">
-                🚀
+    <!-- Header Navigation Bar -->
+    <header class="h-16 glass-panel border-b border-cyan-500/20 flex items-center justify-between px-4 md:px-6 z-20 gap-2">
+        <div class="flex items-center space-x-3">
+            <div class="w-9 h-9 md:w-10 md:h-10 rounded-lg bg-gradient-to-br from-cyan-500 via-blue-600 to-purple-600 flex items-center justify-center text-white font-orbitron font-bold text-lg md:text-xl shadow-lg shadow-cyan-500/30 shrink-0">
+                <i class="fa-solid fa-shuttle-space"></i>
             </div>
             <div>
-                <h1 class="font-hud font-bold text-base md:text-lg text-cyan-300 tracking-wider uppercase">
-                    PHOENIX X-900 • NĂM 2800
-                </h1>
-                <p id="stage-subtitle" class="text-xs text-slate-400">Hành trình tìm kiếm sự sống mới tại Kepler-452b</p>
+                <h1 class="font-orbitron font-bold text-sm md:text-lg text-white tracking-wider flex items-center gap-2">SFS BLUEPRINT BUILDER</h1>
+                <p class="text-[10px] text-cyan-400 font-mono hidden xl:block">Hệ Thống Lắp Ráp SFS & Mở Khóa Kho Linh Kiện</p>
             </div>
         </div>
 
-        <div class="flex items-center gap-2.5 md:gap-4 flex-wrap">
-            <!-- Oxygen -->
-            <div id="hud-oxygen-box" class="bg-slate-950/90 border border-emerald-500/40 px-3 py-1.5 rounded-xl flex items-center gap-2 min-w-[145px]">
-                <span class="text-base">🫁</span>
-                <div class="flex-1">
-                    <div class="flex justify-between text-[10px] font-bold">
-                        <span class="text-emerald-300">OXYGEN CƠ THỂ</span>
-                        <span id="hud-oxygen-text" class="font-hud text-emerald-400">100%</span>
-                    </div>
-                    <div class="w-full h-2 bg-slate-800 rounded-full overflow-hidden mt-0.5">
-                        <div id="hud-oxygen-bar" class="h-full bg-gradient-to-r from-emerald-400 to-cyan-400 transition-all duration-300" style="width: 100%"></div>
-                    </div>
-                </div>
-            </div>
+        <!-- Mode Switcher Pills -->
+        <div class="flex items-center bg-space-950/90 p-1 rounded-xl border border-slate-700/80 font-orbitron text-[11px] md:text-xs">
+            <button onclick="switchGameMode('mission')" id="mode-btn-mission" class="px-3 py-1.5 rounded-lg bg-cyan-500/20 text-cyan-300 border border-cyan-500/50 font-bold transition flex items-center gap-1.5">
+                <i class="fa-solid fa-rocket"></i>
+                <span class="hidden sm:inline">Lắp Ráp & Phóng</span>
+                <span class="sm:hidden">Sứ Mệnh</span>
+            </button>
+            <button onclick="switchGameMode('quiz')" id="mode-btn-quiz" class="px-3 py-1.5 rounded-lg text-slate-400 hover:text-purple-300 transition flex items-center gap-1.5">
+                <i class="fa-solid fa-brain"></i>
+                <span class="hidden sm:inline">Trạm Tri Thức & Săn Điểm KH</span>
+                <span class="sm:hidden">Tri Thức</span>
+            </button>
+        </div>
 
-            <!-- Giáp tàu -->
-            <div class="bg-slate-950/90 border border-sky-500/40 px-3 py-1.5 rounded-xl flex items-center gap-2 min-w-[140px]">
-                <span class="text-base">🛡️</span>
-                <div class="flex-1">
-                    <div class="flex justify-between text-[10px] font-bold">
-                        <span class="text-sky-300">GIÁP TÀU</span>
-                        <span id="hud-shield-text" class="font-hud text-sky-400">20/20</span>
-                    </div>
-                    <div class="w-full h-2 bg-slate-800 rounded-full overflow-hidden mt-0.5">
-                        <div id="hud-shield-bar" class="h-full bg-gradient-to-r from-sky-400 to-indigo-500 transition-all duration-300" style="width: 100%"></div>
-                    </div>
-                </div>
+        <!-- Dynamic Status Indicators -->
+        <div class="flex items-center space-x-2 md:space-x-3 font-mono text-xs">
+            <div class="flex items-center space-x-1.5 bg-space-900/90 px-2.5 py-1.5 rounded-lg border border-amber-500/30">
+                <i class="fa-solid fa-wallet text-amber-400"></i>
+                <span class="text-slate-400 hidden md:inline">Ngân Sách:</span>
+                <span id="header-budget" class="text-amber-400 font-bold">$600M</span>
             </div>
-
-            <!-- Điểm STEM -->
-            <div class="bg-slate-950/90 border border-amber-500/40 px-3 py-1.5 rounded-xl text-center">
-                <div class="text-[10px] text-amber-300 font-bold">ĐIỂM STEM</div>
-                <div id="hud-score" class="font-hud font-bold text-sm md:text-base text-amber-400">0</div>
+            <div class="flex items-center space-x-1.5 bg-space-900/90 px-2.5 py-1.5 rounded-lg border border-purple-500/30" title="Dùng để mở khóa linh kiện nâng cao">
+                <i class="fa-solid fa-atom text-purple-400"></i>
+                <span class="text-slate-400 hidden md:inline">Điểm KH:</span>
+                <span id="header-science" class="text-purple-400 font-bold">0</span>
+            </div>
+            <div class="hidden lg:flex items-center space-x-1.5 bg-space-900/90 px-2.5 py-1.5 rounded-lg border border-slate-700">
+                <i class="fa-solid fa-weight-hanging text-cyan-400"></i>
+                <span id="header-weight" class="text-cyan-400 font-bold">0 / 120T</span>
             </div>
         </div>
     </header>
 
-    <!-- KHU VỰC TRUNG TÂM -->
-    <main id="main-viewport" class="relative flex-1 my-2.5 rounded-3xl border border-slate-800 bg-slate-950 overflow-hidden shadow-2xl flex items-center justify-center">
+    <!-- Main Workspace -->
+    <main class="flex-1 flex flex-col lg:flex-row relative overflow-hidden">
         
-        <!-- CANVAS 3D LÁI CHIẾN CƠ -->
-        <canvas id="space-canvas" class="absolute inset-0 w-full h-full block"></canvas>
-
-        <div id="oxygen-vignette" class="pointer-events-none absolute inset-0 border-4 border-transparent rounded-3xl transition-all duration-300 z-20"></div>
-
-        <!-- TIẾN ĐỘ BAY & THÔNG BÁO V.E.G.A. -->
-        <div id="flight-hud-overlay" class="hidden absolute top-3 left-3 right-3 z-10 flex flex-col md:flex-row justify-between items-start md:items-center gap-2 pointer-events-none">
-            <div class="bg-slate-900/85 border border-cyan-500/40 rounded-2xl px-4 py-2 backdrop-blur-md flex items-center gap-3">
-                <span class="text-2xl bot-float">🤖</span>
-                <div class="text-xs md:text-sm">
-                    <span class="font-bold text-cyan-300">V.E.G.A.:</span>
-                    <span id="flight-bot-tip" class="text-slate-200">Phím <b>R</b> bắn Trái, phím <b>E</b> bắn Phải!</span>
-                </div>
-            </div>
-
-            <div class="bg-slate-900/85 border border-indigo-500/40 rounded-2xl px-4 py-2 backdrop-blur-md w-full md:w-72">
-                <div class="flex justify-between text-xs font-bold mb-1">
-                    <span id="flight-target-label" class="text-indigo-300">Đang tới: Sao Hỏa</span>
-                    <span id="flight-percent" class="font-hud text-cyan-400">0%</span>
-                </div>
-                <div class="w-full h-2.5 bg-slate-800 rounded-full overflow-hidden">
-                    <div id="flight-progress-bar" class="h-full bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-500 transition-all duration-100" style="width: 0%"></div>
-                </div>
-            </div>
-        </div>
-
-        <!-- NÚT ĐIỀU KHIỂN CẢM ỨNG & BẮN LASER TRÁI / PHẢI -->
-        <div id="touch-controls" class="hidden absolute bottom-5 left-5 right-5 z-20 flex justify-between items-center pointer-events-none">
-            <div class="flex gap-2">
-                <button id="btn-left" class="pointer-events-auto w-14 h-14 rounded-full bg-cyan-500/20 border-2 border-cyan-400/60 active:bg-cyan-500/50 backdrop-blur-md flex items-center justify-center text-xl text-cyan-200 shadow-lg">◀</button>
-                <button id="btn-right" class="pointer-events-auto w-14 h-14 rounded-full bg-cyan-500/20 border-2 border-cyan-400/60 active:bg-cyan-500/50 backdrop-blur-md flex items-center justify-center text-xl text-cyan-200 shadow-lg">▶</button>
-            </div>
-            <div class="flex gap-2">
-                <button id="btn-shoot-left" class="pointer-events-auto px-4 py-3 rounded-2xl bg-red-500/30 border-2 border-red-400 active:bg-red-500/60 backdrop-blur-md flex items-center justify-center text-xs font-extrabold text-red-200 shadow-xl">
-                    💥 BẮN TRÁI (R)
+        <!-- Left Control Sidebar (Blueprint Style Sidebar) -->
+        <section id="design-panel" class="w-full lg:w-[460px] glass-panel border-r border-slate-800 flex flex-col h-full z-10 transition-all duration-300">
+            <div class="flex border-b border-slate-800 bg-space-900/90 font-orbitron text-xs">
+                <button onclick="switchTab('dest')" id="tab-dest" class="flex-1 py-3 text-center border-b-2 border-cyan-400 text-cyan-400 font-bold hover:bg-space-800 transition">
+                    <i class="fa-solid fa-compass block mb-1 text-sm"></i> 1. Mục Tiêu
                 </button>
-                <button id="btn-shoot-right" class="pointer-events-auto px-4 py-3 rounded-2xl bg-red-500/30 border-2 border-red-400 active:bg-red-500/60 backdrop-blur-md flex items-center justify-center text-xs font-extrabold text-red-200 shadow-xl">
-                    💥 BẮN PHẢI (E)
+                <button onclick="switchTab('rocket')" id="tab-rocket" class="flex-1 py-3 text-center border-b-2 border-transparent text-slate-400 hover:text-slate-200 hover:bg-space-800 transition">
+                    <i class="fa-solid fa-screwdriver-wrench block mb-1 text-sm"></i> 2. Kho Linh Kiện
+                </button>
+                <button onclick="switchTab('summary')" id="tab-summary" class="flex-1 py-3 text-center border-b-2 border-transparent text-slate-400 hover:text-slate-200 hover:bg-space-800 transition">
+                    <i class="fa-solid fa-sliders block mb-1 text-sm"></i> 3. Đánh Giá
                 </button>
             </div>
-        </div>
 
-        <!-- MÀN HÌNH 1: MỞ ĐẦU -->
-        <div id="intro-screen" class="z-30 max-w-2xl w-full mx-4 bg-slate-900/95 border-2 border-cyan-500/50 rounded-3xl p-6 md:p-8 backdrop-blur-xl shadow-2xl text-center space-y-5">
-            <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-red-500/20 border border-red-500/40 text-red-300 text-xs font-bold uppercase tracking-widest">
-                ⚠️ BÁO ĐỘNG KHẨN CẤP • TRÁI ĐẤT NĂM 2800
-            </div>
-            <h2 class="text-2xl md:text-4xl font-extrabold bg-gradient-to-r from-cyan-300 via-sky-300 to-emerald-300 bg-clip-text text-transparent">
-                SỨ MỆNH KEPLER-452b
-            </h2>
-            <p class="text-slate-300 text-sm md:text-base leading-relaxed">
-                Chiến cơ <b class="text-cyan-300">Phoenix X-900</b> đã được tích hợp phím bắn laser độc lập 2 bên: Phím <b class="text-red-400">R</b> bắn trái, phím <b class="text-red-400">E</b> bắn phải.
-            </p>
-
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-3 text-left text-xs bg-slate-950/80 p-4 rounded-2xl border border-slate-800">
-                <div class="space-y-1">
-                    <div class="font-bold text-sky-400">🛡️ Giáp Tàu 20/20</div>
-                    <p class="text-slate-400">Dùng phím <b>◀ ▶</b> hoặc <b>A / D</b> để lái mượt mà.</p>
+            <div class="flex-1 overflow-y-auto p-4 custom-scrollbar space-y-4">
+                <!-- BƯỚC 1 -->
+                <div id="content-dest" class="space-y-3">
+                    <h2 class="text-xs font-orbitron tracking-widest text-cyan-400 uppercase flex items-center justify-between">
+                        <span>BƯỚC 1: CHỌN ĐIỂM ĐẾN KHÁM PHÁ</span>
+                        <span class="text-[10px] text-slate-400 font-mono">1 Mục tiêu</span>
+                    </h2>
+                    <div class="grid grid-cols-1 gap-2.5" id="destination-list"></div>
                 </div>
-                <div class="space-y-1">
-                    <div class="font-bold text-red-400">💥 Bắn Trái & Phải</div>
-                    <p class="text-slate-400">Nhấn phím <b>R</b> bắn trái, phím <b>E</b> bắn phải chuẩn xác.</p>
+
+                <!-- BƯỚC 2: KHO LINH KIỆN & CƠ CHẾ MỞ KHÓA BẰNG ĐIỂM KH -->
+                <div id="content-rocket" class="space-y-4 hidden">
+                    <div class="bg-purple-950/30 border border-purple-500/40 p-3 rounded-xl flex items-center justify-between gap-3">
+                        <div class="text-xs">
+                            <span class="font-orbitron font-bold text-purple-300 block"><i class="fa-solid fa-lock-open mr-1"></i> KHO LINH KIỆN SFS</span>
+                            <span class="text-slate-300 text-[11px]">Dùng <strong>Điểm Khoa Học</strong> để mở khóa bộ phận mới!</span>
+                        </div>
+                        <button onclick="switchGameMode('quiz')" class="px-3 py-1.5 rounded-lg bg-purple-600 hover:bg-purple-500 text-white font-orbitron text-[11px] shrink-0 transition shadow-md">
+                            Kiếm Điểm KH
+                        </button>
+                    </div>
+                    <div id="component-categories" class="space-y-3"></div>
                 </div>
-                <div class="space-y-1">
-                    <div class="font-bold text-emerald-400">🫁 Bình Oxygen 40s</div>
-                    <p class="text-slate-400">Trả lời các câu hỏi STEM để tiếp tục hành trình.</p>
+
+                <!-- BƯỚC 3 -->
+                <div id="content-summary" class="space-y-4 hidden">
+                    <h2 class="text-xs font-orbitron tracking-widest text-cyan-400 uppercase">BƯỚC 3: ĐÁNH GIÁ TẢI TRỌNG & TỐI ƯU</h2>
+                    
+                    <div class="bg-space-900/90 p-4 rounded-xl border border-slate-700/80 space-y-3 font-mono">
+                        <div class="flex justify-between items-center">
+                            <span class="text-xs text-slate-400">Tên Tàu Vũ Trụ:</span>
+                            <input type="text" id="ship-name-input" value="Astraea-X" class="bg-space-950 border border-cyan-500/40 text-cyan-300 font-orbitron px-3 py-1 rounded text-sm text-right focus:border-cyan-400 focus:outline-none w-48">
+                        </div>
+                        <hr class="border-slate-800">
+                        <div class="flex justify-between items-center text-xs">
+                            <span class="text-slate-400">Chi Phí / Ngân Sách ($600M):</span>
+                            <span id="summary-cost" class="font-bold text-amber-400">$0M</span>
+                        </div>
+                        <div class="w-full bg-space-950 h-2 rounded-full overflow-hidden">
+                            <div id="budget-bar" class="h-full bg-emerald-400 transition-all duration-300" style="width: 0%"></div>
+                        </div>
+
+                        <div class="flex justify-between items-center text-xs mt-2">
+                            <span class="text-slate-400">Trọng Lượng (Tối Đa 120T):</span>
+                            <span id="summary-weight" class="font-bold text-cyan-400">0 Tấn</span>
+                        </div>
+                        <div class="w-full bg-space-950 h-2 rounded-full overflow-hidden">
+                            <div id="weight-bar" class="h-full bg-cyan-400 transition-all duration-300" style="width: 0%"></div>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-2.5 text-xs font-mono">
+                        <div class="bg-space-800/60 p-3 rounded-xl border border-slate-800">
+                            <div class="text-slate-400"><i class="fa-solid fa-gauge-high text-cyan-400 mr-1"></i> Delta-V</div>
+                            <div id="stat-deltav" class="text-base font-bold text-cyan-300 mt-1">0 km/s</div>
+                        </div>
+                        <div class="bg-space-800/60 p-3 rounded-xl border border-slate-800">
+                            <div class="text-slate-400"><i class="fa-solid fa-gas-pump text-amber-400 mr-1"></i> Nhiên Liệu</div>
+                            <div id="stat-fuel" class="text-base font-bold text-amber-400 mt-1">0%</div>
+                        </div>
+                        <div class="bg-space-800/60 p-3 rounded-xl border border-slate-800">
+                            <div class="text-slate-400"><i class="fa-solid fa-shield-halved text-emerald-400 mr-1"></i> Giáp Bảo Vệ</div>
+                            <div id="stat-shield" class="text-base font-bold text-emerald-400 mt-1">0 Pt</div>
+                        </div>
+                        <div class="bg-space-800/60 p-3 rounded-xl border border-slate-800">
+                            <div class="text-slate-400"><i class="fa-solid fa-microscope text-purple-400 mr-1"></i> Điểm KH</div>
+                            <div id="stat-science" class="text-base font-bold text-purple-400 mt-1">0 Điểm</div>
+                        </div>
+                    </div>
+
+                    <div class="bg-space-900/80 p-3.5 rounded-xl border border-slate-800 space-y-2 text-xs font-mono">
+                        <div class="text-slate-300 font-orbitron mb-1">YÊU CẦU SỨ MỆNH:</div>
+                        <div id="req-checklist" class="space-y-1.5"></div>
+                    </div>
                 </div>
             </div>
 
-            <button id="btn-start-mission" class="w-full py-4 rounded-2xl bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 font-extrabold text-lg uppercase tracking-wider shadow-xl transition-all cursor-pointer">
-                KHỞI ĐỘNG CHIẾN CƠ PHOENIX X-900 🚀
-            </button>
-        </div>
+            <div class="p-4 border-t border-slate-800 bg-space-950/90">
+                <button id="launch-btn" onclick="startMissionLaunch()" class="w-full py-3.5 rounded-xl font-orbitron font-bold text-xs md:text-sm tracking-wider uppercase bg-gradient-to-r from-cyan-500 via-blue-600 to-purple-600 hover:from-cyan-400 hover:to-purple-500 text-white shadow-lg shadow-cyan-500/25 transition-all disabled:opacity-40 disabled:cursor-not-allowed">
+                    <i class="fa-solid fa-rocket mr-2"></i> Kích Hoạt Phóng Tên Lửa
+                </button>
+            </div>
+        </section>
 
-        <!-- MÀN HÌNH 2: HƯỚNG DẪN CHẶNG BAY -->
-        <div id="briefing-screen" class="hidden z-30 max-w-xl w-full mx-4 bg-slate-900/95 border-2 border-indigo-500/60 rounded-3xl p-6 backdrop-blur-xl shadow-2xl space-y-4">
-            <div class="flex items-center gap-3 border-b border-slate-800 pb-3">
-                <span class="text-4xl bot-float">🤖</span>
-                <div>
-                    <div class="text-xs font-bold text-cyan-400 uppercase">HƯỚNG DẪN ĐIỀU HƯỚNG TỪ V.E.G.A.</div>
-                    <h3 id="briefing-title" class="text-xl font-extrabold text-white">Chặng 1: Vượt Vành Đai Tới Sao Hỏa</h3>
+        <!-- Main Canvas & Blueprint Grid Display -->
+        <section class="flex-1 relative bg-space-950 blueprint-grid flex flex-col items-center justify-center overflow-hidden">
+            <div class="absolute inset-0 scanlines z-10 pointer-events-none"></div>
+            <canvas id="spaceCanvas" class="w-full h-full block cursor-crosshair"></canvas>
+
+            <!-- Flight Telemetry HUD -->
+            <div id="flight-hud" class="absolute top-4 left-4 right-4 flex justify-between items-start pointer-events-none z-20 transition-all duration-500 opacity-0 transform -translate-y-4">
+                <div class="glass-panel p-4 rounded-xl font-mono text-xs space-y-2 pointer-events-auto min-w-[240px]">
+                    <div class="text-cyan-400 font-orbitron font-bold border-b border-cyan-900/60 pb-1.5 flex items-center justify-between">
+                        <span>ĐIỀU KHIỂN SỨ MỆNH</span>
+                        <span id="hud-status" class="text-[10px] bg-emerald-900/80 text-emerald-300 px-2 py-0.5 rounded">ỔN ĐỊNH</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-slate-400">Tiến Độ Quỹ Đạo:</span>
+                        <span id="hud-progress" class="text-cyan-300 font-bold">0%</span>
+                    </div>
+                    <div class="w-full bg-space-950 h-2 rounded-full overflow-hidden">
+                        <div id="hud-progress-bar" class="h-full bg-cyan-400 transition-all duration-200" style="width:0%"></div>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-slate-400">Nhiên Liệu:</span>
+                        <span id="hud-fuel" class="text-amber-400 font-bold">100%</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-slate-400">Vỏ Tàu:</span>
+                        <span id="hud-hull" class="text-emerald-400 font-bold">100%</span>
+                    </div>
+                </div>
+
+                <div class="flex space-x-2 pointer-events-auto">
+                    <button onclick="togglePauseSimulation()" id="pause-btn" class="glass-panel px-3 py-2 rounded-lg text-xs font-orbitron text-cyan-300 border border-cyan-500/30 hover:bg-cyan-950">
+                        <i class="fa-solid fa-pause"></i> Tạm Dừng
+                    </button>
+                    <button onclick="requestAbortMission()" class="glass-panel px-3 py-2 rounded-lg text-xs font-orbitron text-red-400 border border-red-500/30 hover:bg-red-950">
+                        <i class="fa-solid fa-xmark"></i> Hủy
+                    </button>
                 </div>
             </div>
-            <p id="briefing-desc" class="text-slate-300 text-sm leading-relaxed">
-                Phía trước có mật độ thiên thạch cao. Sử dụng phím R (bắn trái) và E (bắn phải) để khai hỏa!
-            </p>
-            <div class="bg-slate-950/90 p-3.5 rounded-2xl border border-cyan-500/30 text-xs text-cyan-200 space-y-1">
-                <div>🎮 <b>Điều khiển:</b> Mũi tên Trái/Phải để lái. Phím <b>R</b> bắn Trái, phím <b>E</b> bắn Phải.</div>
-            </div>
-            <button id="btn-launch-flight" class="w-full py-3.5 rounded-2xl bg-gradient-to-r from-emerald-500 to-cyan-500 hover:brightness-110 text-slate-950 font-extrabold text-base uppercase tracking-wider shadow-lg cursor-pointer">
-                BẮT ĐẦU BAY XUYÊN KHÔNG GIAN 🛸
-            </button>
-        </div>
 
-        <!-- MÀN HÌNH 3: CÂU HỎI STEM + OXYGEN + 3D -->
-        <div id="quiz-screen" class="hidden z-30 w-full h-full p-3 md:p-5 flex flex-col justify-between bg-slate-950/88 backdrop-blur-md overflow-y-auto">
-            
-            <div class="flex flex-col md:flex-row justify-between items-stretch gap-3">
-                <div class="flex-1 bg-slate-900/95 border border-cyan-500/40 rounded-2xl p-3.5 md:p-4 flex flex-col justify-between gap-2">
-                    <div class="flex flex-wrap items-center justify-between gap-2">
+            <!-- In-Flight Checkpoint Modal -->
+            <div id="flight-quiz-modal" class="absolute inset-0 bg-space-950/85 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
+                <div class="glass-panel border border-cyan-500/50 p-6 rounded-2xl max-w-lg w-full space-y-4 shadow-2xl">
+                    <div class="flex items-center justify-between text-xs font-mono text-cyan-400">
+                        <span id="fq-checkpoint-title"><i class="fa-solid fa-satellite mr-1"></i> TRẠM KIỂM TRA QUỸ ĐẠO</span>
+                        <span id="fq-timer" class="font-orbitron font-bold">15s</span>
+                    </div>
+                    <div class="bg-space-900/90 p-4 rounded-xl border border-slate-800">
+                        <h3 id="fq-question-text" class="text-sm md:text-base font-semibold text-white">Đang tải câu hỏi...</h3>
+                    </div>
+                    <div id="fq-options-grid" class="grid grid-cols-1 gap-2"></div>
+                    <div id="fq-feedback" class="hidden text-xs font-mono p-3 rounded-xl border"></div>
+
+                    <!-- Khung hỏi khi trả lời sai -->
+                    <div id="fq-hint-prompt" class="hidden bg-cyan-950/80 border border-cyan-400/60 p-3 rounded-xl flex items-center justify-between gap-3 text-xs">
                         <div>
-                            <span id="planet-badge" class="text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-cyan-500/20 text-cyan-300 border border-cyan-500/40">
-                                TRẠM QUAN TRẮC 1/4
-                            </span>
-                            <h2 id="planet-name" class="text-lg md:text-2xl font-extrabold text-white mt-1">
-                                Hành Tinh Đỏ: Sao Hỏa (Mars)
-                            </h2>
+                            <div class="font-bold text-cyan-300"><i class="fa-solid fa-circle-question mr-1"></i> Bạn có muốn vào phần tìm hiểu không?</div>
+                            <div class="text-[11px] text-slate-300">Xem ngay lý thuyết chi tiết & link Wikipedia cho câu hỏi này!</div>
                         </div>
-
-                        <div class="flex items-center gap-2 bg-slate-950 border border-slate-700 px-3 py-2 rounded-xl">
-                            <div class="text-right">
-                                <div id="timer-phase-label" class="text-[10px] font-bold text-emerald-400 uppercase">GIAI ĐOẠN TỰ PHÂN TÍCH</div>
-                                <div class="text-[11px] text-slate-400">Hỗ trợ mở sau 25s</div>
-                            </div>
-                            <div id="quiz-timer-num" class="font-hud text-2xl md:text-3xl font-bold text-cyan-400 min-w-[54px] text-center">
-                                40s
-                            </div>
-                        </div>
-                    </div>
-
-                    <p id="planet-env-info" class="text-xs md:text-sm text-slate-300 bg-slate-950/80 p-2.5 rounded-xl border border-slate-800 leading-relaxed">
-                        Dữ liệu khí quyển đang tải...
-                    </p>
-
-                    <div class="space-y-1">
-                        <div class="flex justify-between text-xs font-bold">
-                            <span id="oxygen-status-label" class="text-emerald-300">🫁 Dưỡng khí phi hành gia: 100% (An toàn)</span>
-                            <span id="question-counter" class="text-amber-300">Câu hỏi 1 / 3</span>
-                        </div>
-                        <div class="w-full h-2.5 bg-slate-800 rounded-full overflow-hidden">
-                            <div id="quiz-oxygen-bar" class="h-full bg-gradient-to-r from-emerald-400 via-teal-400 to-cyan-400 transition-all duration-300" style="width: 100%"></div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="w-full md:w-48 h-40 md:h-auto shrink-0 bg-slate-950 border-2 border-cyan-500/50 rounded-2xl relative overflow-hidden flex flex-col items-center justify-center shadow-xl">
-                    <canvas id="planet-3d-canvas" width="220" height="220" class="w-full h-full object-contain"></canvas>
-                    <div class="absolute bottom-1.5 left-2 right-2 bg-slate-900/85 border border-slate-700/80 rounded-lg px-2 py-0.5 text-[10px] text-center font-hud text-cyan-300 truncate">
-                        <span id="planet-3d-tag">SCAN 3D: MARS</span>
+                        <button id="fq-goto-lib-btn" onclick="" class="px-3 py-1.5 rounded-lg bg-cyan-600 hover:bg-cyan-500 text-white font-orbitron font-bold text-[11px] shrink-0 transition shadow-md">
+                            Vào Phần Tìm Hiểu <i class="fa-solid fa-arrow-right ml-1"></i>
+                        </button>
                     </div>
                 </div>
             </div>
 
-            <div class="my-2 bg-slate-900/95 border border-indigo-500/40 rounded-2xl p-3.5 md:p-4 space-y-3">
-                <h3 id="question-text" class="text-base md:text-lg font-bold text-amber-200 leading-snug">
-                    Câu hỏi đang tải...
-                </h3>
-                <div id="options-grid" class="grid grid-cols-1 md:grid-cols-2 gap-2.5"></div>
+            <!-- Confirm Modal -->
+            <div id="confirm-modal" class="absolute inset-0 bg-space-950/85 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
+                <div class="glass-panel border border-red-500/50 p-6 rounded-2xl max-w-md w-full text-center space-y-4 shadow-2xl">
+                    <div class="w-14 h-14 rounded-full bg-red-500/20 text-red-400 border border-red-500/40 flex items-center justify-center mx-auto text-2xl">
+                        <i class="fa-solid fa-triangle-exclamation"></i>
+                    </div>
+                    <h3 class="font-orbitron font-bold text-base text-white">XÁC NHẬN HỦY SỨ MỆNH?</h3>
+                    <p class="text-xs text-slate-300">Tàu vũ trụ sẽ quay trở về xưởng lắp ráp bản vẽ.</p>
+                    <div class="flex gap-3 pt-2">
+                        <button onclick="closeConfirmModal()" class="flex-1 py-2.5 rounded-xl bg-space-800 hover:bg-space-700 text-slate-300 font-orbitron text-xs border border-slate-700">Tiếp Tục Bay</button>
+                        <button onclick="confirmAbortMission()" class="flex-1 py-2.5 rounded-xl bg-red-600 hover:bg-red-500 text-white font-orbitron text-xs font-bold">Hủy Sứ Mệnh</button>
+                    </div>
+                </div>
             </div>
 
-            <div id="vega-assistant-box" class="bg-slate-900/95 border border-cyan-500/40 rounded-2xl p-3 flex items-center justify-between gap-3">
-                <div class="flex items-center gap-3">
-                    <div class="text-3xl bot-float shrink-0">🤖</div>
+            <!-- Debrief Modal -->
+            <div id="debrief-modal" class="absolute inset-0 bg-space-950/90 backdrop-blur-xl z-40 flex items-center justify-center p-4 hidden">
+                <div class="glass-panel border border-cyan-500/40 p-6 md:p-8 rounded-2xl max-w-2xl w-full shadow-2xl space-y-6 text-center">
+                    <div id="debrief-header-icon" class="w-20 h-20 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 flex items-center justify-center mx-auto text-4xl">
+                        <i class="fa-solid fa-award"></i>
+                    </div>
                     <div>
-                        <div class="flex items-center gap-2">
-                            <span class="font-bold text-xs md:text-sm text-cyan-300">ROBOT ĐỒNG HÀNH V.E.G.A.</span>
-                            <span id="assist-badge" class="text-[10px] px-2 py-0.5 rounded-full bg-slate-800 text-slate-400 border border-slate-700">
-                                Đang theo dõi nhịp thở...
-                            </span>
+                        <h2 id="debrief-title" class="font-orbitron font-black text-2xl text-white tracking-widest">SỨ MỆNH THÀNH CÔNG!</h2>
+                        <p id="debrief-subtitle" class="text-xs text-cyan-400 font-mono mt-1">DỮ LIỆU ĐÃ TRUYỀN VỀ TRUNG TÂM</p>
+                    </div>
+
+                    <div class="grid grid-cols-3 gap-3 bg-space-900/90 p-4 rounded-xl border border-slate-800 font-mono text-xs">
+                        <div>
+                            <span class="text-slate-400 block mb-1">Điểm Khoa Học</span>
+                            <span id="debrief-science" class="text-lg font-bold text-purple-400">+1200</span>
                         </div>
-                        <p id="vega-message" class="text-xs md:text-sm text-slate-200 mt-0.5 leading-relaxed">
-                            Hãy đọc kỹ dữ liệu môi trường. Sau 25 giây, tôi sẽ kích hoạt chế độ hỗ trợ loại bỏ 2 đáp án sai!
-                        </p>
+                        <div class="border-x border-slate-800">
+                            <span class="text-slate-400 block mb-1">Mẫu Vật</span>
+                            <span id="debrief-samples" class="text-lg font-bold text-amber-400">3 Mẫu</span>
+                        </div>
+                        <div>
+                            <span class="text-slate-400 block mb-1">Danh Hiệu</span>
+                            <span id="debrief-badge" class="text-sm font-bold text-emerald-400">Chuyên Gia</span>
+                        </div>
+                    </div>
+
+                    <div class="text-left bg-space-950/90 p-4 rounded-xl border border-slate-800 max-h-40 overflow-y-auto custom-scrollbar space-y-1.5 text-xs font-mono" id="debrief-logs"></div>
+
+                    <div class="flex space-x-3 pt-2">
+                        <button onclick="resetToDesign()" class="flex-1 py-3 rounded-xl font-orbitron font-bold text-xs uppercase bg-gradient-to-r from-cyan-600 to-blue-600 text-white hover:from-cyan-500 hover:to-blue-500 transition shadow-lg shadow-cyan-500/20">
+                            <i class="fa-solid fa-rotate-right mr-1.5"></i> Tiếp Tục Lắp Ráp Mới
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="space-hint" class="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-space-900/80 border border-slate-700/60 text-slate-300 px-4 py-2 rounded-full text-xs font-mono pointer-events-none">
+                <i class="fa-solid fa-hand-pointer text-cyan-400 mr-1.5"></i> Kéo chuột để di chuyển bản vẽ • Lăn chuột để thu phóng
+            </div>
+        </section>
+
+        <!-- KNOWLEDGE HUB, QUIZ & LEARNING LIBRARY PANEL -->
+        <section id="quiz-panel" class="absolute inset-0 bg-space-950/95 backdrop-blur-xl z-20 hidden flex-col items-center justify-start md:justify-center p-4 md:p-6 overflow-y-auto custom-scrollbar">
+            <div class="max-w-4xl w-full space-y-4 my-auto">
+                
+                <!-- Top Header & Stats -->
+                <div class="glass-panel neon-border-purple rounded-2xl p-4 md:p-5 flex flex-wrap items-center justify-between gap-4">
+                    <div class="flex items-center gap-3">
+                        <div class="w-11 h-11 rounded-xl bg-purple-500/20 border border-purple-400/50 flex items-center justify-center text-purple-300 text-xl">
+                            <i class="fa-solid fa-book-open-reader"></i>
+                        </div>
+                        <div>
+                            <h2 class="font-orbitron font-bold text-base md:text-lg text-white tracking-wide">TRẠM TRI THỨC & NHẬN THƯỞNG COMBO</h2>
+                            <p class="text-xs text-purple-300 font-mono">Trả lời đúng liên tục để nhận thưởng điểm KH & Ngân sách tăng theo chuỗi combo!</p>
+                        </div>
+                    </div>
+
+                    <!-- Metrics -->
+                    <div class="flex items-center gap-2.5 font-mono text-xs">
+                        <div class="bg-space-900/90 px-3 py-1.5 rounded-lg border border-amber-500/40 text-center">
+                            <span class="text-[10px] text-slate-400 block">COMBO STREAK</span>
+                            <span id="quiz-streak" class="text-amber-400 font-bold text-sm">0x</span>
+                        </div>
+                        <div class="bg-space-900/90 px-3 py-1.5 rounded-lg border border-purple-500/40 text-center">
+                            <span class="text-[10px] text-slate-400 block">ĐIỂM KH</span>
+                            <span id="quiz-sci-display" class="text-purple-400 font-bold text-sm">0</span>
+                        </div>
                     </div>
                 </div>
 
-                <button id="btn-next-question" class="hidden shrink-0 px-5 py-2.5 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 text-slate-950 font-extrabold text-sm cursor-pointer shadow-lg">
-                    TIẾP TỤC ➔
-                </button>
-            </div>
-        </div>
+                <!-- Sub-tabs: Trắc Nghiệm vs Phần Tìm Hiểu -->
+                <div class="flex gap-2 font-orbitron text-xs">
+                    <button onclick="switchQuizSubTab('quiz')" id="subtab-quiz-btn" class="flex-1 py-2.5 rounded-xl bg-purple-600/30 border border-purple-400/50 text-purple-200 font-bold transition flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-brain"></i> Trắc Nghiệm Nhận Thưởng
+                    </button>
+                    <button onclick="switchQuizSubTab('library')" id="subtab-lib-btn" class="flex-1 py-2.5 rounded-xl bg-space-900/90 border border-slate-700 text-slate-300 hover:text-cyan-300 transition flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-book-bookmark"></i> Phần Tìm Hiểu (60 Sự Thật NASA)
+                    </button>
+                </div>
 
-        <!-- MÀN HÌNH 4: KẾT THÚC -->
-        <div id="end-screen" class="hidden z-30 max-w-xl w-full mx-4 bg-slate-900/95 border-2 border-emerald-500/60 rounded-3xl p-6 md:p-8 backdrop-blur-xl shadow-2xl text-center space-y-5">
-            <div id="end-icon" class="text-6xl">🌍</div>
-            <h2 id="end-title" class="text-2xl md:text-3xl font-extrabold text-emerald-300">
-                HẠ CÁNH THÀNH CÔNG TẠI KEPLER-452b!
-            </h2>
-            <p id="end-desc" class="text-slate-300 text-sm md:text-base leading-relaxed">
-                Chúc mừng phi hành gia! Bạn đã vượt qua vành đai thiên thạch và xây dựng ngôi nhà mới cho nhân loại.
-            </p>
-            <div class="grid grid-cols-3 gap-3 bg-slate-950 p-4 rounded-2xl border border-slate-800 font-hud">
-                <div>
-                    <div class="text-[10px] text-slate-400">ĐIỂM STEM</div>
-                    <div id="final-score" class="text-xl font-bold text-amber-400">0</div>
-                </div>
-                <div>
-                    <div class="text-[10px] text-slate-400">GIÁP CÒN LẠI</div>
-                    <div id="final-shield" class="text-xl font-bold text-sky-400">20/20</div>
-                </div>
-                <div>
-                    <div class="text-[10px] text-slate-400">OXYGEN</div>
-                    <div id="final-oxygen" class="text-xl font-bold text-emerald-400">100%</div>
-                </div>
-            </div>
-            <button onclick="location.reload()" class="w-full py-4 rounded-2xl bg-gradient-to-r from-emerald-500 to-cyan-500 text-slate-950 font-extrabold text-base uppercase tracking-wider cursor-pointer shadow-xl">
-                CHƠI LẠI HÀNH TRÌNH MỚI 🔄
-            </button>
-        </div>
+                <!-- SUB-TAB 1: QUIZ LOBBY & ARENA -->
+                <div id="subtab-quiz-content" class="space-y-4">
+                    <div id="quiz-lobby" class="glass-panel rounded-2xl p-6 md:p-8 text-center space-y-6 border border-slate-800">
+                        <h3 class="font-orbitron text-lg font-bold text-cyan-300">CHỌN CẤP ĐỘ THỬ THÁCH</h3>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 text-left">
+                            <button onclick="selectQuizDifficulty('rookie')" id="diff-btn-rookie" class="p-4 rounded-xl border border-cyan-400 bg-cyan-950/40 neon-border transition-all space-y-2">
+                                <div class="font-orbitron text-xs font-bold text-cyan-300">1. TÂN BINH (22s)</div>
+                                <p class="text-xs text-slate-300">Hệ Mặt Trời cơ bản.</p>
+                                <div class="text-[11px] font-mono text-purple-400">Thưởng: +150 KH & +$30M</div>
+                            </button>
+                            <button onclick="selectQuizDifficulty('apprentice')" id="diff-btn-apprentice" class="p-4 rounded-xl border border-slate-800 bg-space-900/80 hover:border-cyan-400/60 transition-all space-y-2">
+                                <div class="font-orbitron text-xs font-bold text-cyan-200">2. TẬP SỰ (19s)</div>
+                                <p class="text-xs text-slate-300">Vệ tinh tự nhiên & hành tinh.</p>
+                                <div class="text-[11px] font-mono text-purple-400">Thưởng: +300 KH & +$55M</div>
+                            </button>
+                            <button onclick="selectQuizDifficulty('intermediate')" id="diff-btn-intermediate" class="p-4 rounded-xl border border-slate-800 bg-space-900/80 hover:border-purple-400/60 transition-all space-y-2">
+                                <div class="font-orbitron text-xs font-bold text-purple-300">3. TRUNG CẤP (16s)</div>
+                                <p class="text-xs text-slate-300">Lịch sử thám hiểm không gian.</p>
+                                <div class="text-[11px] font-mono text-purple-400">Thưởng: +550 KH & +$90M</div>
+                            </button>
+                            <button onclick="selectQuizDifficulty('advanced')" id="diff-btn-advanced" class="p-4 rounded-xl border border-slate-800 bg-space-900/80 hover:border-amber-400/60 transition-all space-y-2">
+                                <div class="font-orbitron text-xs font-bold text-amber-300">4. CAO CẤP (13s)</div>
+                                <p class="text-xs text-slate-300">Cơ học quỹ đạo & Delta-V.</p>
+                                <div class="text-[11px] font-mono text-purple-400">Thưởng: +850 KH & +$140M</div>
+                            </button>
+                            <button onclick="selectQuizDifficulty('commander')" id="diff-btn-commander" class="p-4 rounded-xl border border-slate-800 bg-space-900/80 hover:border-red-400/60 transition-all space-y-2 sm:col-span-2 lg:col-span-1">
+                                <div class="font-orbitron text-xs font-bold text-red-400">5. CHỈ HUY (10s)</div>
+                                <p class="text-xs text-slate-300">Vật lý thiên văn cực hạn & Hố đen.</p>
+                                <div class="text-[11px] font-mono text-purple-400">Thưởng: +1200 KH & +$200M</div>
+                            </button>
+                        </div>
+                        <button onclick="startQuizSession()" class="px-8 py-3.5 rounded-xl font-orbitron font-bold text-xs uppercase bg-gradient-to-r from-purple-600 to-cyan-500 text-white shadow-lg transition">
+                            Bắt Đầu Trắc Nghiệm Ngay
+                        </button>
+                    </div>
 
+                    <!-- Active Question Arena -->
+                    <div id="quiz-arena" class="glass-panel rounded-2xl p-5 space-y-5 border border-cyan-500/30 hidden">
+                        <div class="flex items-center justify-between text-xs font-mono">
+                            <span id="quiz-category-tag" class="px-2.5 py-1 rounded bg-purple-950/80 text-purple-300 border border-purple-500/40">HỆ MẶT TRỜI</span>
+                            <span id="quiz-timer-text" class="text-cyan-300 font-orbitron font-bold">22s</span>
+                        </div>
+                        <div class="w-full h-2 bg-space-950 rounded-full overflow-hidden border border-slate-800">
+                            <div id="quiz-timer-bar" class="h-full bg-cyan-400 transition-all duration-100" style="width: 100%"></div>
+                        </div>
+                        <div class="bg-space-900/90 p-4 rounded-xl border border-slate-800">
+                            <div class="text-[11px] font-mono text-slate-400 mb-1" id="quiz-q-number">CÂU HỎI #1</div>
+                            <h3 id="quiz-question-text" class="text-base font-semibold text-white">Đang tải...</h3>
+                        </div>
+                        <div id="quiz-options-grid" class="grid grid-cols-1 md:grid-cols-2 gap-3"></div>
+
+                        <div id="quiz-feedback-box" class="hidden rounded-xl p-4 border space-y-3">
+                            <div id="quiz-feedback-title" class="font-orbitron font-bold text-xs"></div>
+                            <p id="quiz-explanation-text" class="text-xs text-slate-300"></p>
+                            
+                            <!-- Prompt hỏi người chơi khi trả lời sai -->
+                            <div id="quiz-hint-prompt" class="hidden bg-cyan-950/80 border border-cyan-400/60 p-3 rounded-xl flex items-center justify-between gap-3 text-xs">
+                                <div>
+                                    <div class="font-bold text-cyan-300"><i class="fa-solid fa-circle-question mr-1"></i> Bạn có muốn vào phần tìm hiểu không?</div>
+                                    <div class="text-[11px] text-slate-300">Xem ngay lý thuyết chi tiết & link Wikipedia cho câu hỏi này!</div>
+                                </div>
+                                <button id="goto-lib-btn" onclick="" class="px-3 py-1.5 rounded-lg bg-cyan-600 hover:bg-cyan-500 text-white font-orbitron font-bold text-[11px] shrink-0 transition shadow-md">
+                                    Vào Phần Tìm Hiểu <i class="fa-solid fa-arrow-right ml-1"></i>
+                                </button>
+                            </div>
+
+                            <div class="flex justify-between items-center pt-2 border-t border-slate-800">
+                                <button onclick="returnToQuizLobby()" class="text-xs text-cyan-400 font-orbitron">Đổi Cấp Độ</button>
+                                <button onclick="nextQuizQuestion()" class="px-4 py-2 rounded-lg bg-purple-600 text-white font-orbitron text-xs">Câu Tiếp Theo</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SUB-TAB 2: PHẦN TÌM HIỂU (60 SỰ THẬT KÈM WIKI LINK) -->
+                <div id="subtab-lib-content" class="glass-panel rounded-2xl p-5 space-y-4 hidden custom-scrollbar max-h-[500px] overflow-y-auto text-xs">
+                    <div class="border-b border-slate-800 pb-3">
+                        <h3 class="font-orbitron font-bold text-sm text-cyan-300 flex items-center gap-2">
+                            <i class="fa-solid fa-shield-halved"></i> 60 SỰ THẬT VŨ TRỤ ĐÃ ĐƯỢC NASA KIỂM CHỨNG & WIKIPEDIA
+                        </h3>
+                        <p class="text-xs text-slate-400 mt-1">Danh sách hiển thị chi tiết từng thẻ kèm liên kết Wikipedia tra cứu.</p>
+                    </div>
+
+                    <div id="library-facts-container" class="grid grid-cols-1 md:grid-cols-2 gap-3"></div>
+                </div>
+
+            </div>
+        </section>
     </main>
 
+    <!-- Game Logic Scripts -->
     <script>
-        const PLANETS_DATA = [
+        const INITIAL_BUDGET = 600;
+        const MAX_WEIGHT_LIMIT = 120;
+
+        const DESTINATIONS = [
             {
-                id: "mars",
-                name: "Sao Hỏa (Mars) - Hành Tinh Đỏ",
-                tag3D: "MARS • 1.52 AU",
-                briefingTitle: "Chặng 1: Vượt Vành Đai Tới Sao Hỏa",
-                briefingDesc: "Chúng ta đang rời Trái Đất tiến về Sao Hỏa. Các mảnh thiên thạch sắt đang lao tới với vận tốc cao. Hãy dùng phím R (bắn trái) và E (bắn phải) để tiêu diệt chúng!",
-                envInfo: "Khí quyển Sao Hỏa cực kỳ mỏng (chỉ bằng 0.6% Trái Đất) với 95% là khí CO₂. Nhiệt độ trung bình -63°C, bề mặt phủ đầy oxit sắt và có băng nước dưới lòng đất.",
-                flightDuration: 15,
-                asteroidRate: 0.045,
-                questions: [
-                    {
-                        q: "Vì sao nước lỏng không thể tồn tại ổn định trên bề mặt Sao Hỏa dù nhiệt độ ban trưa ở xích đạo có thể đạt 20°C?",
-                        options: [
-                            "A. Do áp suất khí quyển quá thấp khiến nước lập tức sôi và bốc hơi",
-                            "B. Do lực hấp dẫn của Sao Hỏa đẩy nước bay ngược lên vũ trụ",
-                            "C. Do bề mặt Sao Hỏa toàn bộ là nam châm hút hết hơi nước",
-                            "D. Do Sao Hỏa quay nhanh gấp 10 lần Trái Đất làm văng hết nước"
-                        ],
-                        correct: 0,
-                        hint: "Gợi ý V.E.G.A.: Áp suất khí quyển ở đây chỉ bằng 0.6% Trái Đất. Khi áp suất quá thấp, nhiệt độ sôi của nước giảm xuống cực thấp!",
-                        explain: "Chính xác! Áp suất khí quyển Sao Hỏa quá thấp khiến nước lỏng sôi và thăng hoa ngay lập tức thành hơi."
-                    },
-                    {
-                        q: "Màu đỏ đặc trưng của bề mặt hành tinh Sao Hỏa được tạo thành chủ yếu từ hợp chất hóa học nào?",
-                        options: [
-                            "A. Khí Metan đóng băng",
-                            "B. Oxit sắt (Fe₂O₃ - gỉ sắt) trong lớp bụi đá",
-                            "C. Dung nham núi lửa đang phun trào khắp hành tinh",
-                            "D. Phản chiếu ánh sáng đỏ từ Mặt Trời"
-                        ],
-                        correct: 1,
-                        hint: "Gợi ý V.E.G.A.: Hãy nhìn vào thành phần hóa học phổ biến của bụi đất trên Sao Hỏa!",
-                        explain: "Chuẩn xác! Bụi đá giàu khoáng chất sắt bị oxy hóa tạo thành lớp oxit sắt màu đỏ cam bao phủ hành tinh."
-                    },
-                    {
-                        q: "Để con người có thể sinh sống lâu dài trên Sao Hỏa trong năm 2800, công nghệ quan trọng nhất cần xây dựng là gì?",
-                        options: [
-                            "A. Trồng cây trực tiếp ngoài trời không cần mái che",
-                            "B. Khu nhà vòm kín điều áp, tạo khí Oxy và chắn bức xạ vũ trụ",
-                            "C. Đào hồ chứa nước mưa tự nhiên ngoài bề mặt",
-                            "D. Tắt hoàn toàn hệ thống sưởi vì ban đêm rất nóng"
-                        ],
-                        correct: 1,
-                        hint: "Gợi ý V.E.G.A.: Khí quyển Sao Hỏa toàn khí CO₂, áp suất cực thấp và không có tầng Ozon.",
-                        explain: "Tuyệt vời! Nhà vòm kín giúp duy trì áp suất, cung cấp Oxy và bảo vệ phi hành gia khỏi bức xạ."
-                    }
+                id: 'moon',
+                name: 'Mặt Trăng (The Moon)',
+                subtitle: 'Vệ Tinh Trái Đất',
+                distKm: '384,400 km',
+                difficulty: 'Dễ',
+                reqDeltaV: 4.2,
+                reqShield: 10,
+                reqPayload: 'any',
+                baseScience: 400,
+                color: '#cbd5e1',
+                size: 22,
+                icon: 'fa-moon',
+                desc: 'Mục tiêu thử nghiệm cơ bản. Yêu cầu tải trọng nhẹ và Delta-V thấp.'
+            },
+            {
+                id: 'mars',
+                name: 'Sao Hỏa (Mars)',
+                subtitle: 'Hành Tinh Đỏ',
+                distKm: '225,000,000 km',
+                difficulty: 'Trung Bình',
+                reqDeltaV: 9.5,
+                reqShield: 35,
+                reqPayload: 'rover',
+                baseScience: 900,
+                color: '#ef4444',
+                size: 30,
+                icon: 'fa-globe-americas',
+                desc: 'Đòi hỏi Xe Tự Hành Rover để nghiên cứu địa chất và lá chắn nhiệt hạ cánh.'
+            },
+            {
+                id: 'asteroids',
+                name: 'Vành Đai Tiểu Hành Tinh',
+                subtitle: 'Vùng Mảnh Vỡ Vũ Trụ',
+                distKm: '400,000,000 km',
+                difficulty: 'Khó',
+                reqDeltaV: 12.0,
+                reqShield: 60,
+                reqPayload: 'probe',
+                baseScience: 1500,
+                color: '#a1a1aa',
+                size: 38,
+                icon: 'fa-meteor',
+                desc: 'Môi trường va chạm nguy hiểm! Yêu cầu giáp bảo vệ cao và Tàu Thăm Dò.'
+            },
+            {
+                id: 'jupiter',
+                name: 'Sao Mộc (Jupiter)',
+                subtitle: 'Gã Khổng Lồ Khí',
+                distKm: '778,000,000 km',
+                difficulty: 'Rất Khó',
+                reqDeltaV: 17.5,
+                reqShield: 80,
+                reqPayload: 'station',
+                baseScience: 2600,
+                color: '#f97316',
+                size: 52,
+                icon: 'fa-sun',
+                desc: 'Bức xạ cực lớn. Đòi hỏi Trạm Nghiên Cứu Quỹ Đạo và động cơ công suất lớn.'
+            },
+            {
+                id: 'deepspace',
+                name: 'Vũ Trụ Sâu (Deep Space)',
+                subtitle: 'Hệ Nối Proxima Centauri',
+                distKm: '4.24 Năm Ánh Sáng',
+                difficulty: 'Cực Siêu',
+                reqDeltaV: 30.0,
+                reqShield: 100,
+                reqPayload: 'telescope',
+                baseScience: 5000,
+                color: '#a855f7',
+                size: 42,
+                icon: 'fa-bahai',
+                desc: 'Thách thức tối thượng. Yêu cầu Kính Thiên Văn Không Gian và động cơ Hạt Nhân.'
+            }
+        ];
+
+        // KHO LINH KIỆN VỚI CƠ CHẾ MỞ KHÓA BẰNG ĐIỂM KHOA HỌC
+        const COMPONENT_CATEGORIES = [
+            {
+                id: 'payload',
+                title: 'Tải Trọng / Thiết Bị Sứ Mệnh',
+                icon: 'fa-microchip',
+                items: [
+                    { id: 'pay_probe', type: 'probe', name: 'Tàu Thăm Dò Vi Mô (Micro Probe)', cost: 40, weight: 8, sci: 200, unlocked: true, unlockCost: 0, desc: 'Nhỏ nhẹ, tối ưu cho khảo sát nhanh không gian.' },
+                    { id: 'pay_rover', type: 'rover', name: 'Xe Tự Hành Rover Khám Phá', cost: 85, weight: 22, sci: 650, unlocked: false, unlockCost: 400, desc: 'Hạ cánh di động, thu thập mẫu vật đất đá.' },
+                    { id: 'pay_station', type: 'station', name: 'Trạm Nghiên Cứu Quỹ Đạo', cost: 150, weight: 35, sci: 1200, unlocked: false, unlockCost: 900, desc: 'Phân tích khoa học quy mô lớn dài hạn.' },
+                    { id: 'pay_telescope', type: 'telescope', name: 'Kính Thiên Văn Siêu Phổ', cost: 190, weight: 28, sci: 2000, unlocked: false, unlockCost: 1500, desc: 'Quan sát thiên văn vũ trụ sâu xa.' }
                 ]
             },
             {
-                id: "europa",
-                name: "Vệ Tinh Europa (Quỹ Đạo Sao Mộc)",
-                tag3D: "EUROPA • JUPITER MOON",
-                briefingTitle: "Chặng 2: Xuyên Vành Đai Tiểu Hành Tinh Tới Europa",
-                briefingDesc: "Cảnh báo! Vành đai tiểu hành tinh giữa Sao Hỏa và Sao Mộc rất dày đặc. Hãy sử dụng phím R và E để bắn tan các tảng băng thiên thạch!",
-                envInfo: "Europa là vệ tinh của Sao Mộc, có lớp vỏ băng dày 15-25 km bao bọc một đại dương nước mặn khổng lồ bên dưới được làm nóng bởi lực thủy triều.",
-                flightDuration: 18,
-                asteroidRate: 0.06,
-                questions: [
-                    {
-                        q: "Dưới lớp vỏ băng dày hàng chục km không có ánh sáng Mặt Trời, sinh vật dưới đại dương Europa có thể tồn tại nhờ nguồn năng lượng nào?",
-                        options: [
-                            "A. Quang hợp nhờ ánh sáng xuyên qua lớp băng dày 20 km",
-                            "B. Hóa tổng hợp từ các miệng phun thủy nhiệt nóng dưới đáy đại dương",
-                            "C. Hấp thụ năng lượng gió thổi dưới đáy biển",
-                            "D. Hấp thụ sóng vô tuyến từ Trái Đất gửi tới"
-                        ],
-                        correct: 1,
-                        hint: "Gợi ý V.E.G.A.: Không có ánh sáng thì không thể quang hợp. Hãy chú ý tới các 'miệng phun thủy nhiệt'!",
-                        explain: "Đúng rồi! Vi sinh vật dùng hóa năng từ các miệng phun thủy nhiệt dưới đáy biển sâu."
-                    },
-                    {
-                        q: "Nguyên nhân chính giữ cho đại dương bên dưới lớp băng của Europa không bị đóng băng hoàn toàn là gì?",
-                        options: [
-                            "A. Lực hấp dẫn thủy triều cực mạnh từ Sao Mộc làm ma sát và sinh nhiệt bên trong",
-                            "B. Europa nằm sát Mặt Trời hơn cả Sao Thủy",
-                            "C. Nước biển ở Europa là xăng dầu không thể đóng băng",
-                            "D. Có hàng triệu ngọn lửa cháy trên bề mặt băng"
-                        ],
-                        correct: 0,
-                        hint: "Gợi ý V.E.G.A.: Sao Mộc là hành tinh khổng lồ có lực hấp dẫn cực lớn kéo giãn lõi Europa.",
-                        explain: "Chính xác! Lực thủy triều của Sao Mộc liên tục bóp méo lõi Europa, sinh ra nhiệt năng giữ nước lỏng."
-                    },
-                    {
-                        q: "Nếu muốn lấy mẫu nước từ đại dương ngầm của Europa để kiểm tra sự sống, tàu thăm dò cần thiết bị nào?",
-                        options: [
-                            "A. Lưới đánh cá thả trên mặt băng",
-                            "B. Robot khoan nhiệt (Cryobot) làm tan chảy băng để lặn xuống",
-                            "C. Máy hút bụi không khí",
-                            "D. Kính lúp hội tụ ánh sáng Mặt Trời"
-                        ],
-                        correct: 1,
-                        hint: "Gợi ý V.E.G.A.: Lớp vỏ băng dày tới 15-25 km rất cứng ở nhiệt độ -160°C.",
-                        explain: "Xuất sắc! Robot khoan nhiệt sử dụng nguồn nhiệt nhỏ để làm tan chảy băng và tiến xuống đại dương."
-                    }
+                id: 'engine',
+                title: 'Động Cơ Tên Lửa',
+                icon: 'fa-fire-flame-curved',
+                items: [
+                    { id: 'eng_chem', name: 'Động Cơ Hóa Học Đẩy Tốc', cost: 50, weight: 25, deltaV: 6.0, fuelBurn: 1.2, unlocked: true, unlockCost: 0, desc: 'Lực đẩy mạnh mẽ ban đầu nhưng tốn nhiên liệu.' },
+                    { id: 'eng_ion', name: 'Động Cơ Ion Điện Từ Khai Phá', cost: 110, weight: 15, deltaV: 14.0, fuelBurn: 0.6, unlocked: false, unlockCost: 600, desc: 'Tốc độ tăng dần, vô cùng tiết kiệm nhiên liệu.' },
+                    { id: 'eng_nuclear', name: 'Động Cơ Nhiệt Hạt Nhân Vô Hướng', cost: 210, weight: 38, deltaV: 26.0, fuelBurn: 0.8, unlocked: false, unlockCost: 1200, desc: 'Công suất đỉnh cao dành cho liên sao.' }
                 ]
             },
             {
-                id: "gliese",
-                name: "Siêu Trái Đất Gliese 667Cc",
-                tag3D: "GLIESE 667Cc • 23.6 LY",
-                briefingTitle: "Chặng 3: Bước Nhảy Không Gian Tới Gliese 667Cc",
-                briefingDesc: "Chúng ta đang tiến vào hệ sao lùn đỏ Gliese 667. Mật độ thiên thạch lửa tăng cao, hãy dùng phím R và E khai hỏa 2 bên!",
-                envInfo: "Gliese 667Cc là một 'Siêu Trái Đất' có khối lượng gấp 3.8 lần Trái Đất, bị khóa thủy triều: một mặt luôn ngày, một mặt luôn đêm.",
-                flightDuration: 20,
-                asteroidRate: 0.072,
-                questions: [
-                    {
-                        q: "Vì Gliese 667Cc bị 'khóa thủy triều', khu vực nào trên hành tinh có khí hậu ôn hòa nhất để đặt trạm căn cứ?",
-                        options: [
-                            "A. Vùng tâm điểm luôn hướng thẳng vào ngôi sao lùn đỏ",
-                            "B. Vùng ranh giới hoàng hôn (Terminator Zone) giữa nửa sáng và nửa tối",
-                            "C. Vùng cực tối vĩnh cửu không bao giờ thấy ánh sao",
-                            "D. Lơ lửng trên tầng bình lưu bằng khinh khí cầu"
-                        ],
-                        correct: 1,
-                        hint: "Gợi ý V.E.G.A.: Nửa sáng thì quá nóng, nửa tối đóng băng. Nơi giao thoa sẽ có nhiệt độ vừa phải!",
-                        explain: "Hoàn hảo! Vùng ranh giới hoàng hôn vĩnh cửu có nhiệt độ cân bằng, cho phép nước lỏng tồn tại."
-                    },
-                    {
-                        q: "Do Gliese 667Cc có khối lượng lớn gấp 3.8 lần Trái Đất, phi hành gia khi bước đi trên bề mặt sẽ cảm thấy thế nào?",
-                        options: [
-                            "A. Bay lơ lửng như không trọng lực",
-                            "B. Cơ thể nặng nề hơn đáng kể do lực hấp dẫn bề mặt mạnh hơn Trái Đất",
-                            "C. Nhẹ hơn 10 lần so với khi ở Trái Đất",
-                            "D. Không có bất kỳ sự khác biệt nào về trọng lượng"
-                        ],
-                        correct: 1,
-                        hint: "Gợi ý V.E.G.A.: Khối lượng hành tinh càng lớn thì lực hút hấp dẫn càng mạnh.",
-                        explain: "Đúng vậy! Lực hấp dẫn lớn hơn khiến trọng lượng phi hành gia tăng lên đáng kể."
-                    },
-                    {
-                        q: "Ánh sáng từ ngôi sao lùn đỏ Gliese 667C chủ yếu là hồng ngoại. Lá cây trồng tại đây có thể tiến hóa thành màu gì?",
-                        options: [
-                            "A. Màu trắng tinh khiết để phản xạ hết ánh sáng",
-                            "B. Màu xanh tím sẫm hoặc gần như đen để hấp thụ trọn vẹn bức xạ yếu",
-                            "C. Trong suốt như thủy tinh",
-                            "D. Phát sáng như đèn neon"
-                        ],
-                        correct: 1,
-                        hint: "Gợi ý V.E.G.A.: Màu tối hấp thụ ánh sáng tốt hơn khi nguồn sáng yếu.",
-                        explain: "Tuyệt vời! Thực vật dưới sao lùn đỏ thường có sắc tố sẫm màu để thu nhận tối đa quang năng yếu."
-                    }
-                ]
-            },
-            {
-                id: "kepler",
-                name: "Kepler-452b • Trái Đất Thứ Hai",
-                tag3D: "KEPLER-452b • 1,400 LY",
-                briefingTitle: "Chặng Cuối: Cơn Bão Thiên Thạch Trước Cửa Ngõ Kepler-452b",
-                briefingDesc: "Đích đến Kepler-452b đã ở ngay trước mắt! Khai hỏa liên tục phím R và E để dọn sạch vành đai thiên thạch cuối cùng!",
-                envInfo: "Kepler-452b quay quanh một ngôi sao giống hệt Mặt Trời với chu kỳ 385 ngày, nằm trong Vùng Sống Được (Goldilocks Zone), có đại dương và bầu khí quyển ổn định.",
-                flightDuration: 22,
-                asteroidRate: 0.085,
-                questions: [
-                    {
-                        q: "Vì sao Kepler-452b được các nhà thiên văn học gọi là 'Người anh em họ gần gũi nhất của Trái Đất'?",
-                        options: [
-                            "A. Vì nó quay quanh một ngôi sao giống Mặt Trời và nằm trong vùng Goldilocks có nước lỏng",
-                            "B. Vì nó nằm ngay cạnh Mặt Trăng của Trái Đất",
-                            "C. Vì trên đó đã có sẵn các thành phố hiện đại",
-                            "D. Vì nó có kích thước nhỏ bằng quả bóng đá"
-                        ],
-                        correct: 0,
-                        hint: "Gợi ý V.E.G.A.: Hãy đối chiếu loại sao mẹ và vị trí vùng sống được!",
-                        explain: "Chính xác! Kepler-452b nhận lượng ánh sáng tương đương Trái Đất từ một ngôi sao giống Mặt Trời."
-                    },
-                    {
-                        q: "Một năm trên Kepler-452b kéo dài 385 ngày Trái Đất. Điều này cho biết điều gì về quỹ đạo của nó?",
-                        options: [
-                            "A. Nó quay quanh ngôi sao mẹ ở khoảng cách lớn hơn một chút so với Trái Đất tới Mặt Trời",
-                            "B. Nó đứng yên một chỗ không di chuyển",
-                            "C. Nó nằm sát ngôi sao mẹ hơn cả Sao Thủy",
-                            "D. Ngôi sao mẹ của nó đã tắt hoàn toàn"
-                        ],
-                        correct: 0,
-                        hint: "Gợi ý V.E.G.A.: Trái Đất mất 365 ngày cho 1 vòng quỹ đạo, Kepler-452b mất 385 ngày.",
-                        explain: "Chuẩn xác! Quỹ đạo rộng hơn Trái Đất một chút nên chu kỳ quay quanh sao mẹ dài hơn."
-                    },
-                    {
-                        q: "Để tránh lặp lại thảm họa môi trường như Trái Đất năm 2800, nguyên tắc sinh thái đầu tiên nhân loại phải áp dụng là gì?",
-                        options: [
-                            "A. Khai thác cạn kiệt rừng và nhiên liệu hóa thạch thật nhanh",
-                            "B. Sử dụng năng lượng tái tạo sạch, bảo tồn rừng và tuần hoàn tài nguyên khép kín",
-                            "C. Xả toàn bộ rác thải công nghiệp thẳng xuống đại dương mới",
-                            "D. Phá hủy tầng khí quyển tự nhiên để xây nhà máy"
-                        ],
-                        correct: 1,
-                        hint: "Gợi ý V.E.G.A.: Bài học từ sự sụp đổ của Trái Đất năm 2800 chính là phát triển bền vững!",
-                        explain: "Hoàn hảo! Phát triển bền vững giúp bảo vệ ngôi nhà mới Kepler-452b mãi mãi."
-                    }
+                id: 'protection',
+                title: 'Nhiên Liệu & Khiên Bảo Vệ',
+                icon: 'fa-shield-halved',
+                items: [
+                    { id: 'prot_basic', name: 'Khiên Nhiệt & Bồn Nhiên Liệu Tiêu Chuẩn', cost: 35, weight: 15, shield: 25, fuelCap: 100, unlocked: true, unlockCost: 0, desc: 'Bảo vệ cơ bản cho hành trình ngắn.' },
+                    { id: 'prot_rad', name: 'Giáp Chống Bức Xạ & Bồn Nhiên Liệu Kép', cost: 85, weight: 28, shield: 65, fuelCap: 160, unlocked: false, unlockCost: 500, desc: 'Bảo vệ tuyệt vời trước bão mặt trời.' },
+                    { id: 'prot_heavy', name: 'Khiên Từ Trường & Bồn Nhiên Liệu Khổng Lồ', cost: 140, weight: 42, shield: 110, fuelCap: 250, unlocked: false, unlockCost: 1000, desc: 'Khả năng chịu đựng tối đa trước va chạm và va đập.' }
                 ]
             }
         ];
 
-        let currentStageIdx = 0;
-        let currentQIdx = 0;
-        let shield = 20;
-        const maxShield = 20;
-        let oxygen = 100;
-        let score = 0;
-        let gameMode = "INTRO";
+        // 60 SỰ THẬT NASA KÈM WIKI LINK
+        const NASA_FACTS = [
+            { id: 1, category: "Hệ Mặt Trời", text: "Sao Thủy là hành tinh nhỏ nhất và nằm gần Mặt Trời nhất trong Hệ Mặt Trời.", wiki: "https://vi.wikipedia.org/wiki/Sao_Thủy" },
+            { id: 2, category: "Hệ Mặt Trời", text: "Sao Kim có nhiệt độ bề mặt nóng nhất do hiệu ứng nhà kính cực đoan của khí quyển CO2.", wiki: "https://vi.wikipedia.org/wiki/Sao_Kim" },
+            { id: 3, category: "Hệ Mặt Trời", text: "Trái Đất là hành tinh duy nhất được NASA xác nhận có sự sống và nước lỏng ở bề mặt.", wiki: "https://vi.wikipedia.org/wiki/Trái_Đất" },
+            { id: 4, category: "Hệ Mặt Trời", text: "Sao Hỏa có ngọn núi lửa lớn nhất Hệ Mặt Trời tên là Olympus Mons, cao gấp 3 lần đỉnh Everest.", wiki: "https://vi.wikipedia.org/wiki/Olympus_Mons" },
+            { id: 5, category: "Hệ Mặt Trời", text: "Sao Mộc là hành tinh khí khổng lồ lớn nhất, có vết đỏ lớn là một cơn bão khổng lồ tồn tại hàng thế kỷ.", wiki: "https://vi.wikipedia.org/wiki/Sao_Mộc" },
+            { id: 6, category: "Hệ Mặt Trời", text: "Sao Thổ nổi tiếng với hệ thống vành đai băng và đá tuyệt đẹp bao quanh.", wiki: "https://vi.wikipedia.org/wiki/Sao_Thổ" },
+            { id: 7, category: "Hệ Mặt Trời", text: "Sao Thiên Vương quay quanh Mặt Trời theo tư thế 'lăn ngang' với trục nghiêng gần 98 độ.", wiki: "https://vi.wikipedia.org/wiki/Sao_Thiên_Vương" },
+            { id: 8, category: "Hệ Mặt Trời", text: "Sao Hải Vương là hành tinh có gió thổi mạnh nhất Hệ Mặt Trời, đạt vận tốc siêu thanh.", wiki: "https://vi.wikipedia.org/wiki/Sao_Hải_Vương" },
+            { id: 9, category: "Hệ Mặt Trời", text: "Vành đai Kuiper nằm ở rìa ngoài Hệ Mặt Trời chứa hàng triệu vật thể băng giá nguyên thủy.", wiki: "https://vi.wikipedia.org/wiki/Vành_đai_Kuiper" },
+            { id: 10, category: "Hệ Mặt Trời", text: "Mặt Trời chiếm tới 99.8% tổng khối lượng của toàn bộ Hệ Mặt Trời.", wiki: "https://vi.wikipedia.org/wiki/Mặt_Trời" },
 
-        let audioCtx = null;
-        function playSound(freq, type = "sine", dur = 0.12, vol = 0.12) {
-            try {
-                if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-                const osc = audioCtx.createOscillator();
-                const gain = audioCtx.createGain();
-                osc.type = type;
-                osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
-                gain.gain.setValueAtTime(vol, audioCtx.currentTime);
-                gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + dur);
-                osc.connect(gain);
-                gain.connect(audioCtx.destination);
-                osc.start();
-                osc.stop(audioCtx.currentTime + dur);
-            } catch (e) {}
+            { id: 11, category: "Mặt Trăng & Vệ Tinh", text: "Mặt Trăng là vệ tinh tự nhiên lớn thứ năm trong Hệ Mặt Trời.", wiki: "https://vi.wikipedia.org/wiki/Mặt_Trăng" },
+            { id: 12, category: "Mặt Trăng & Vệ Tinh", text: "Khoảng cách trung bình từ Trái Đất đến Mặt Trăng là khoảng 384,400 km.", wiki: "https://vi.wikipedia.org/wiki/Khoảng_cách_Trái_Đất–Mặt_Trăng" },
+            { id: 13, category: "Mặt Trăng & Vệ Tinh", text: "Mặt Trăng luôn hướng một mặt về phía Trái Đất do hiện tượng khóa thủy triều (tidal locking).", wiki: "https://vi.wikipedia.org/wiki/Khóa_thủy_triều" },
+            { id: 14, category: "Mặt Trăng & Vệ Tinh", text: "Vết chân của các phi hành gia Apollo trên Mặt Trăng có thể tồn tại hàng triệu năm vì không có gió hay nước xói mòn.", wiki: "https://vi.wikipedia.org/wiki/Chương_trình_Apollo" },
+            { id: 15, category: "Mặt Trăng & Vệ Tinh", text: "Europa (vệ tinh của Sao Mộc) có lớp vỏ băng dày và đại dương ngầm chứa lượng nước lớn gấp đôi Trái Đất.", wiki: "https://vi.wikipedia.org/wiki/Europa_(vệ_tinh)" },
+            { id: 16, category: "Mặt Trăng & Vệ Tinh", text: "Titan (vệ tinh của Sao Thổ) là thiên thể duy nhất ngoài Trái Đất có chất lỏng dạng methane/ethane trên bề mặt.", wiki: "https://vi.wikipedia.org/wiki/Titan_(vệ_tinh)" },
+            { id: 17, category: "Mặt Trăng & Vệ Tinh", text: "Enceladus (vệ tinh Sao Thổ) phun các mạch nước ngầm giàu hợp chất hữu cơ qua các khe nứt ở cực nam.", wiki: "https://vi.wikipedia.org/wiki/Enceladus_(vệ_tinh)" },
+            { id: 18, category: "Mặt Trăng & Vệ Tinh", text: "Io (vệ tinh Sao Mộc) là thiên thể hoạt động núi lửa mạnh mẽ nhất Hệ Mặt Trời.", wiki: "https://vi.wikipedia.org/wiki/Io_(vệ_tinh)" },
+            { id: 19, category: "Mặt Trăng & Vệ Tinh", text: "Ganymede là vệ tinh lớn nhất Hệ Mặt Trời, thậm chí lớn hơn cả hành tinh Sao Thủy.", wiki: "https://vi.wikipedia.org/wiki/Ganymede_(vệ_tinh)" },
+            { id: 20, category: "Mặt Trăng & Vệ Tinh", text: "Phobos và Deimos là hai vệ tinh nhỏ hình dáng bất định của Sao Hỏa, được cho là tiểu hành tinh bị bắt giữ.", wiki: "https://vi.wikipedia.org/wiki/Phobos_(vệ_tinh)" },
+
+            { id: 21, category: "Sao Chổi & Tiểu Hành Tinh", text: "Sao chổi cấu thành từ đá, bụi và băng dễ bay hơi, thường có quỹ đạo hình elip rất dẹt.", wiki: "https://vi.wikipedia.org/wiki/Sao_chổi" },
+            { id: 22, category: "Sao Chổi & Tiểu Hành Tinh", text: "Đuôi ion của sao chổi luôn hướng thẳng ra xa Mặt Trời do tác động của gió mặt trời.", wiki: "https://vi.wikipedia.org/wiki/Sao_chổi" },
+            { id: 23, category: "Sao Chổi & Tiểu Hành Tinh", text: "Tiểu hành tinh Ceres nằm trong vành đai chính và được công nhận là một hành tinh lùn.", wiki: "https://vi.wikipedia.org/wiki/1_Ceres" },
+            { id: 24, category: "Sao Chổi & Tiểu Hành Tinh", text: "Vành đai chính giữa Sao Hỏa và Sao Mộc chứa hàng triệu mảnh vỡ từ thuở sơ khai hình thành Hệ Mặt Trời.", wiki: "https://vi.wikipedia.org/wiki/Vành_đai_tiểu_hành_tinh" },
+            { id: 25, category: "Sao Chổi & Tiểu Hành Tinh", text: "Sứ mệnh OSIRIS-REx của NASA đã lấy mẫu thành công từ tiểu hành tinh Bennu mang về Trái Đất.", wiki: "https://vi.wikipedia.org/wiki/OSIRIS-REx" },
+            { id: 26, category: "Sao Chổi & Tiểu Hành Tinh", text: "Thiên thạch lao vào bầu khí quyển Trái Đất bốc cháy tạo ra hiện tượng sao băng nhờ ma sát lớn.", wiki: "https://vi.wikipedia.org/wiki/Sao_băng" },
+            { id: 27, category: "Sao Chổi & Tiểu Hành Tinh", text: "Pluto (Diêm Vương Tỉnh) từng là hành tinh thứ 9 nhưng đã được xếp vào nhóm hành tinh lùn từ năm 2006.", wiki: "https://vi.wikipedia.org/wiki/Diêm_Vương_Tinh" },
+            { id: 28, category: "Sao Chổi & Tiểu Hành Tinh", text: "Haumea là một hành tinh lùn hình bầu dục đặc biệt quay vòng cực kỳ nhanh ở vành đai Kuiper.", wiki: "https://vi.wikipedia.org/wiki/136108_Haumea" },
+            { id: 29, category: "Sao Chổi & Tiểu Hành Tinh", text: "Eris là hành tinh lùn có khối lượng lớn hơn cả Pluto, nằm ở vùng ngoài xa của Hệ Mặt Trời.", wiki: "https://vi.wikipedia.org/wiki/136199_Eris" },
+            { id: 30, category: "Sao Chổi & Tiểu Hành Tinh", text: "Các thiên thể NEO (Near-Earth Objects) được NASA theo dõi sát sao để phòng ngừa nguy cơ va chạm.", wiki: "https://vi.wikipedia.org/wiki/Thiên_thể_gần_Trái_Đất" },
+
+            { id: 31, category: "Lịch Sử & Sứ Mệnh", text: "Yuri Gagarin (Liên Xô) là người đầu tiên bay vào không gian ngày 12/04/1961 trên tàu Vostok 1.", wiki: "https://vi.wikipedia.org/wiki/Yuri_Gagarin" },
+            { id: 32, category: "Lịch Sử & Sứ Mệnh", text: "Neil Armstrong và Buzz Aldrin là hai phi hành gia đầu tiên đặt chân lên Mặt Trăng ngày 20/07/1969.", wiki: "https://vi.wikipedia.org/wiki/Neil_Armstrong" },
+            { id: 33, category: "Lịch Sử & Sứ Mệnh", text: "Chương trình Apollo của NASA đã thực hiện 6 lần hạ cánh thành công con người xuống Mặt Trăng.", wiki: "https://vi.wikipedia.org/wiki/Chương_trình_Apollo" },
+            { id: 34, category: "Lịch Sử & Sứ Mệnh", text: "Tàu Voyager 1 của NASA phóng năm 1977 hiện là vật thể nhân tạo bay xa nhất, đã vươn tới không gian liên sao.", wiki: "https://vi.wikipedia.org/wiki/Voyager_1" },
+            { id: 35, category: "Lịch Sử & Sứ Mệnh", text: "Tàu Voyager 2 là sứ mệnh duy nhất ghé thăm cả 4 hành tinh khí khổng lồ ngoài cùng của Hệ Mặt Trời.", wiki: "https://vi.wikipedia.org/wiki/Voyager_2" },
+            { id: 36, category: "Lịch Sử & Sứ Mệnh", text: "Chương trình Artemis của NASA đặt mục tiêu đưa phụ nữ và người da màu đầu tiên lên bề mặt Mặt Trăng.", wiki: "https://vi.wikipedia.org/wiki/Chương_trình_Artemis" },
+            { id: 37, category: "Lịch Sử & Sứ Mệnh", text: "Xe tự hành Perseverance của NASA đang tìm kiếm dấu hiệu sự sống cổ đại trên bề mặt Sao Hỏa tại hố chẻ Jezero.", wiki: "https://vi.wikipedia.org/wiki/Perseverance" },
+            { id: 38, category: "Lịch Sử & Sứ Mệnh", text: "Trực thăng Ingenuity đã thực hiện thành công chuyến bay cơ giới đầu tiên trên một hành tinh khác (Sao Hỏa).", wiki: "https://vi.wikipedia.org/wiki/Ingenuity" },
+            { id: 39, category: "Lịch Sử & Sứ Mệnh", text: "Trạm Không Gian Quốc Tế (ISS) bay quanh Trái Đất ở độ cao khoảng 400 km với vận tốc 28,000 km/h.", wiki: "https://vi.wikipedia.org/wiki/Trạm_Không_gian_Quốc_tế" },
+            { id: 40, category: "Lịch Sử & Sứ Mệnh", text: "Sứ mệnh DART của NASA đã thử nghiệm thành công kỹ thuật va chạm động học để làm lệch quỹ đạo tiểu hành tinh.", wiki: "https://vi.wikipedia.org/wiki/DART_(sứ_mệnh_không_gian)" },
+
+            { id: 41, category: "Kính Viễn Vọng", text: "Kính viễn vọng không gian Hubble phóng năm 1990 đã cách mạng hóa hiểu biết của nhân loại về vũ trụ.", wiki: "https://vi.wikipedia.org/wiki/Kính_viễn_vọng_không_gian_Hubble" },
+            { id: 42, category: "Kính Viễn Vọng", text: "Kính viễn vọng James Webb (JWST) hoạt động chủ yếu ở dải sóng hồng ngoại để xuyên qua các đám mây bụi vũ trụ.", wiki: "https://vi.wikipedia.org/wiki/Kính_viễn_vọng_không_gian_James_Webb" },
+            { id: 43, category: "Kính Viễn Vọng", text: "Kính Kepler của NASA đã phát hiện hàng ngàn hành tinh ngoài hệ mặt trời (exoplanet) bằng phương pháp quá cảnh.", wiki: "https://vi.wikipedia.org/wiki/Kính_viễn_vọng_không_gian_Kepler" },
+            { id: 44, category: "Kính Viễn Vọng", text: "Vùng Hubble Ultra Deep Field ghi lại hình ảnh hàng ngàn thiên hà cổ đại cách xa hàng tỷ năm ánh sáng.", wiki: "https://vi.wikipedia.org/wiki/Hubble_Ultra-Deep_Field" },
+            { id: 45, category: "Kính Viễn Vọng", text: "Tia gamma và tia X từ các vụ nổ siêu tân tinh chỉ có thể được quan sát bằng kính thiên văn ngoài không gian.", wiki: "https://vi.wikipedia.org/wiki/Thiên_văn_học_tia_gamma" },
+            { id: 46, category: "Kính Viễn Vọng", text: "Hiện tượng quang sai từng khiến Hubble mờ ảo lúc đầu trước khi được các phi hành gia sửa chữa thành công năm 1993.", wiki: "https://vi.wikipedia.org/wiki/Quang_sai" },
+            { id: 47, category: "Kính Viễn Vọng", text: "Điểm Lagrange L2 (nơi đặt kính James Webb) nằm cách Trái Đất 1.5 triệu km về phía đối diện Mặt Trời.", wiki: "https://vi.wikipedia.org/wiki/Điểm_Lagrange" },
+            { id: 48, category: "Kính Viễn Vọng", text: "Kính thiên văn vô tuyến khổng lồ giúp các nhà khoa học thu tín hiệu từ những ẩn tinh (pulsar) trong vũ trụ.", wiki: "https://vi.wikipedia.org/wiki/Kính_viễn_vọng_vô_tuyến" },
+            { id: 49, category: "Kính Viễn Vọng", text: "Sóng hấp dẫn được dự đoán bởi Einstein và lần đầu ghi nhận trực tiếp vào năm 2015 mở ra kỷ nguyên thiên văn mới.", wiki: "https://vi.wikipedia.org/wiki/Sóng_hấp_dẫn" },
+            { id: 50, category: "Kính Viễn Vọng", text: "Hình ảnh trực tiếp đầu tiên của siêu hố đen M87* được công bố bởi dự án Kính Chân Trời Sự Kiện (EHT) năm 2019.", wiki: "https://vi.wikipedia.org/wiki/M87*" },
+
+            { id: 51, category: "Vật Lý & Hố Đen", text: "Delta-V (Δv) là đại lượng đo tổng xung lực đổi vận tốc cần thiết để thực hiện một cơ động quỹ đạo.", wiki: "https://vi.wikipedia.org/wiki/Delta-v" },
+            { id: 52, category: "Vật Lý & Hố Đen", text: "Tốc độ ánh sáng trong chân không là hằng số vật lý cơ bản, xấp xỉ 299,792 km/s.", wiki: "https://vi.wikipedia.org/wiki/Tốc_độ_ánh_sáng" },
+            { id: 53, category: "Vật Lý & Hố Đen", text: "Chân trời sự kiện (Event Horizon) là biên giới quanh hố đen nơi vận tốc thoát vượt quá tốc độ ánh sáng.", wiki: "https://vi.wikipedia.org/wiki/Chân_trời_sự_kiện" },
+            { id: 54, category: "Vật Lý & Hố Đen", text: "Điểm kỳ dị (Singularity) ở tâm hố đen là nơi mật độ vật chất vô hạn và các định luật vật lý thông thường sụp đổ.", wiki: "https://vi.wikipedia.org/wiki/Điểm_kỳ_dị_gravitational" },
+            { id: 55, category: "Vật Lý & Hố Đen", text: "Hiệu ứng giãn nở thời gian theo thuyết tương đối hẹp xảy ra khi vật thể di chuyển gần tốc độ ánh sáng.", wiki: "https://vi.wikipedia.org/wiki/Giãn_nở_thời_gian" },
+            { id: 56, category: "Vật Lý & Hố Đen", text: "Trọng lực cực mạnh của hố đen có thể bẻ cong ánh sáng từ các thiên thể ở phía sau nó (hiện tượng thấu kính hấp dẫn).", wiki: "https://vi.wikipedia.org/wiki/Thấu_kính_hấp_dẫn" },
+            { id: 57, category: "Vật Lý & Hố Đen", text: "Vực thẳm không gian liên sao chứa đựng plasma loãng và bức xạ phông vi sóng vũ trụ (CMB).", wiki: "https://vi.wikipedia.org/wiki/Môi_trường_liên_sao" },
+            { id: 58, category: "Vật Lý & Hố Đen", text: "Định luật vạn vật hấp dẫn của Newton mô tả lực hút giữa các vật thể có khối lượng trong vũ trụ.", wiki: "https://vi.wikipedia.org/wiki/Định_luật_vạn_vật_hấp_dẫn_của_Newton" },
+            { id: 59, category: "Vật Lý & Hố Đen", text: "Lực hướng tâm và lực ly tâm cân bằng giúp các vệ tinh duy trì quỹ đạo ổn định quanh hành tinh.", wiki: "https://vi.wikipedia.org/wiki/Lực_hướng_tâm" },
+            { id: 60, category: "Vật Lý & Hố Đen", text: "Phản ứng tổng hợp hạt nhân hydro thành heli tại lõi là nguồn năng lượng khổng lồ giúp Mặt Trời tỏa sáng.", wiki: "https://vi.wikipedia.org/wiki/Phản_ứng_tổng_hợp_hạt_nhân" }
+        ];
+
+        // 20 CÂU HỎI TRẮC NGHIỆM GẮN LIỀN VỚI factId
+        const SPACE_QUESTIONS = [
+            { difficulty: 'rookie', category: 'HỆ MẶT TRỜI CƠ BẢN', factId: 5, q: 'Hành tinh nào lớn nhất trong Hệ Mặt Trời của chúng ta?', options: ['Sao Thổ (Saturn)', 'Sao Mộc (Jupiter)', 'Sao Hải Vương (Neptune)', 'Sao Thiên Vương (Uranus)'], answer: 1, explanation: 'Sao Mộc là hành tinh khí khổng lồ lớn nhất Hệ Mặt Trời.' },
+            { difficulty: 'rookie', category: 'HỆ MẶT TRỜI CƠ BẢN', factId: 1, q: 'Hành tinh nào nằm ở quỹ đạo gần Mặt Trời nhất?', options: ['Sao Thủy (Mercury)', 'Sao Kim (Venus)', 'Sao Hỏa (Mars)', 'Trái Đất (Earth)'], answer: 0, explanation: 'Sao Thủy là hành tinh nhỏ nhất và ở vị trí gần Mặt Trời nhất.' },
+            { difficulty: 'rookie', category: 'HỆ MẶT TRỜI CƠ BẢN', factId: 4, q: 'Vì sao Sao Hỏa thường được gọi là "Hành tinh Đỏ"?', options: ['Do dung nham núi lửa bao phủ', 'Do phản chiếu ánh sáng hoàng hôn', 'Do bề mặt phủ nhiều bụi sắt oxit (gỉ sắt)', 'Do nhiệt độ bề mặt cực nóng'], answer: 2, explanation: 'Sắt oxit (gỉ sắt) chiếm đa phần tạo nên màu đỏ đặc trưng của Sao Hỏa.' },
+            { difficulty: 'rookie', category: 'HỆ MẶT TRỜI CƠ BẢN', factId: 10, q: 'Thiên thể nào chiếm tới khoảng 99.8% tổng khối lượng của toàn bộ Hệ Mặt Trời?', options: ['Mặt Trời', 'Sao Mộc', 'Sao Thổ', 'Lỗ đen trung tâm'], answer: 0, explanation: 'Mặt Trời nắm giữ gần như toàn bộ khối lượng của cả hệ thống.' },
+            { difficulty: 'apprentice', category: 'VỆ TINH & THIÊN THỂ', factId: 11, q: 'Vệ tinh tự nhiên duy nhất của Trái Đất là gì?', options: ['Europa', 'Titan', 'Mặt Trăng', 'Phobos'], answer: 2, explanation: 'Mặt Trăng là vệ tinh tự nhiên quay quanh Trái Đất.' },
+            { difficulty: 'apprentice', category: 'VỆ TINH & THIÊN THỂ', factId: 24, q: 'Vành đai tiểu hành tinh chính nằm giữa quỹ đạo của hai hành tinh nào?', options: ['Sao Kim và Trái Đất', 'Sao Hỏa và Sao Mộc', 'Sao Mộc và Sao Thổ', 'Trái Đất và Sao Hỏa'], answer: 1, explanation: 'Vành đai tiểu hành tinh nằm ở khoảng không gian giữa Sao Hỏa và Sao Mộc.' },
+            { difficulty: 'apprentice', category: 'VỆ TINH & THIÊN THỂ', factId: 16, q: 'Thiên thể nào ngoài Trái Đất được xác nhận có chất lỏng dạng methane/ethane trên bề mặt?', options: ['Titan (vệ tinh Sao Thổ)', 'Io (vệ tinh Sao Mộc)', 'Ganymede', 'Deimos'], answer: 0, explanation: 'Titan là vệ tinh độc đáo của Sao Thổ có ao hồ và mưa chất lỏng dạng hydrocacbon.' },
+            { difficulty: 'apprentice', category: 'VỆ TINH & THIÊN THỂ', factId: 27, q: 'Hành tinh lùn nổi tiếng nào từng được tính là hành tinh thứ 9 trước khi bị phân loại lại năm 2006?', options: ['Ceres', 'Pluto (Diêm Vương Tỉnh)', 'Eris', 'Haumea'], answer: 1, explanation: 'Pluto đã được Hiệp hội Thiên văn Quốc tế xếp vào nhóm hành tinh lùn từ năm 2006.' },
+            { difficulty: 'intermediate', category: 'LỊCH SỬ & CÔNG NGHỆ', factId: 31, q: 'Ai là nhà du hành vũ trụ đầu tiên trên thế giới bay vào không gian năm 1961?', options: ['Neil Armstrong', 'Yuri Gagarin', 'Buzz Aldrin', 'John Glenn'], answer: 1, explanation: 'Yuri Gagarin (Liên Xô) thực hiện chuyến bay lịch sử trên tàu Vostok 1.' },
+            { difficulty: 'intermediate', category: 'LỊCH SỬ & CÔNG NGHỆ', factId: 42, q: 'Kính viễn vọng không gian nào chuyên quan sát vũ trụ sâu ở dải sóng hồng ngoại hiện nay?', options: ['Kính Hubble', 'Kính James Webb (JWST)', 'Kính Kepler', 'Kính Spitzer'], answer: 1, explanation: 'James Webb (JWST) là kính thiên văn hồng ngoại tối tân nhất của NASA.' },
+            { difficulty: 'intermediate', category: 'LỊCH SỬ & CÔNG NGHỆ', factId: 32, q: 'Chương trình thám hiểm nào của NASA đã đưa con người đặt chân lên Mặt Trăng lần đầu tiên năm 1969?', options: ['Chương trình Apollo', 'Chương trình Artemis', 'Chương trình Gemini', 'Chương trình Voyager'], answer: 0, explanation: 'Chương trình Apollo với sứ mệnh Apollo 11 lịch sử.' },
+            { difficulty: 'intermediate', category: 'LỊCH SỬ & CÔNG NGHỆ', factId: 34, q: 'Tàu thăm dò nào của NASA hiện giữ kỷ lục bay xa nhất và đã vươn tới không gian liên sao?', options: ['Voyager 1', 'Voyager 2', 'New Horizons', 'Pioneer 10'], answer: 0, explanation: 'Voyager 1 phóng năm 1977 là vật thể nhân tạo bay xa nhất nhân loại.' },
+            { difficulty: 'advanced', category: 'CƠ HỌC QUỸ ĐẠO & VẬT LÝ', factId: 51, q: 'Đại lượng "Delta-V" (Δv) trong thiết kế sứ mệnh biểu thị điều gì?', options: ['Khả năng thay đổi vận tốc của tàu vũ trụ', 'Trọng lượng tối đa của tên lửa', 'Nhiệt độ chịu đựng của khiên nhiệt', 'Sức chứa nhiên liệu bồn chứa'], answer: 0, explanation: 'Delta-V đo tổng xung lực đổi vận tốc cần thiết để thực hiện quỹ đạo.' },
+            { difficulty: 'advanced', category: 'CƠ HỌC QUỸ ĐẠO & VẬT LÝ', factId: 52, q: 'Vận tốc di chuyển của ánh sáng trong chân không có giá trị xấp xỉ bao nhiêu?', options: ['300,000 km/s', '150,000 km/s', '1,080,000 km/s', '3,000,000 km/s'], answer: 0, explanation: 'Ánh sáng truyền đi trong chân không với tốc độ xấp xỉ 299,792 km/s.' },
+            { difficulty: 'advanced', category: 'CƠ HỌC QUỸ ĐẠO & VẬT LÝ', factId: 47, q: 'Điểm cân bằng hấp dẫn trong hệ hai thiên thể giúp tàu vũ trụ tiết kiệm nhiên liệu gọi là gì?', options: ['Điểm kỳ dị', 'Điểm Lagrange', 'Vùng nhật quyển', 'Chân trời sự kiện'], answer: 1, explanation: 'Điểm Lagrange là các vị trí cân bằng hấp dẫn quan trọng trong cơ học quỹ đạo.' },
+            { difficulty: 'advanced', category: 'CƠ HỌC QUỸ ĐẠO & VẬT LÝ', factId: 55, q: 'Hiện tượng giãn nở thời gian theo thuyết tương đối hẹp xảy ra khi nào?', options: ['Khi vật thể di chuyển gần bằng tốc độ ánh sáng', 'Khi tàu vũ trụ đứng yên ở trạm', 'Khi bay qua vành đai tiểu hành tinh', 'Khi đi qua khí quyển Trái Đất'], answer: 0, explanation: 'Vật thể di chuyển với vận tốc cực cao tiệm cận tốc độ ánh sáng sẽ trải qua hiệu ứng giãn nở thời gian.' },
+            { difficulty: 'commander', category: 'VẬT LÝ THIÊN VĂN CỰC HẠN', factId: 53, q: 'Ranh giới quanh hố đen mà tại đó vận tốc thoát vượt quá tốc độ ánh sáng gọi là gì?', options: ['Điểm kỳ dị (Singularity)', 'Chân trời sự kiện (Event Horizon)', 'Đĩa bồi tụ (Accretion Disk)', 'Vùng bức xạ Hawking'], answer: 1, explanation: 'Chân trời sự kiện là biên giới tuyệt đối không gì có thể quay đầu thoát ra.' },
+            { difficulty: 'commander', category: 'VẬT LÝ THIÊN VĂN CỰC HẠN', factId: 60, q: 'Bức xạ phát ra từ hố đen do hiệu ứng lượng tử tại chân trời sự kiện được đặt theo tên nhà vật lý nào?', options: ['Stephen Hawking', 'Albert Einstein', 'Isaac Newton', 'Niels Bohr'], answer: 0, explanation: 'Bức xạ Hawking do nhà vật lý thiên tài Stephen Hawking lý thuyết hóa.' },
+            { difficulty: 'commander', category: 'VẬT LÝ THIÊN VĂN CỰC HẠN', factId: 56, q: 'Hiện tượng trọng lực cực mạnh của hố đen bẻ cong ánh sáng từ các thiên thể phía sau được gọi là gì?', options: ['Thấu kính hấp dẫn', 'Khúc xạ ánh sáng', 'Hiệu ứng Doppler', 'Phản xạ toàn phần'], answer: 0, explanation: 'Thấu kính hấp dẫn giúp phóng đại và bẻ cong đường đi của ánh sáng qua các vùng khối lượng khổng lồ.' },
+            { difficulty: 'commander', category: 'VẬT LÝ THIÊN VĂN CỰC HẠN', factId: 4, q: 'Tên của ngọn núi lửa cao nhất Hệ Mặt Trời nằm trên bề mặt Sao Hỏa là gì?', options: ['Olympus Mons', 'Mauna Kea', 'Maxwell Montes', 'Elysium Mons'], answer: 0, explanation: 'Olympus Mons là siêu núi lửa trên Sao Hỏa có chiều cao gấp khoảng 3 lần đỉnh Everest.' }
+        ];
+
+        // CÂU HỎI TRẠM KIỂM TRA TRÊN QUỸ ĐẠO (IN-FLIGHT CHECKPOINTS)
+        const IN_FLIGHT_QUESTIONS = [
+            {
+                title: "TRẠM KIỂM TRA #1 (33% CHẶNG ĐƯỜNG)",
+                factId: 51,
+                q: "Khi tên lửa tiến vào không gian ngoài khí quyển, lực cản không khí thay đổi thế nào?",
+                options: ["Tăng lên cực đại", "Giảm dần về 0 (chân không)", "Không thay đổi", "Biến đổi liên tục"],
+                answer: 1,
+                explanation: "Chính xác! Lực cản không khí giảm dần và biến mất khi ra khỏi tầng khí quyển."
+            },
+            {
+                title: "TRẠM KIỂM TRA #2 (66% CHẶNG ĐƯỜNG)",
+                factId: 59,
+                q: "Lực nào giúp tàu vũ trụ duy trì quỹ đạo quanh hành tinh mà không cần động cơ liên tục?",
+                options: ["Lực hấp dẫn cân bằng với lực ly tâm", "Lực ma sát bề mặt", "Lực đẩy ion", "Áp suất ánh sáng"],
+                answer: 0,
+                explanation: "Chính xác! Sự cân bằng giữa lực hấp dẫn và lực ly tâm giữ cho quỹ đạo ổn định."
+            }
+        ];
+
+        const DIFFICULTY_CONFIG = {
+            rookie: { label: 'Tân Binh', time: 22, budgetReward: 30, sciReward: 150 },
+            apprentice: { label: 'Tập Sự', time: 19, budgetReward: 55, sciReward: 300 },
+            intermediate: { label: 'Trung Cấp', time: 16, budgetReward: 90, sciReward: 550 },
+            advanced: { label: 'Cao Cấp', time: 13, budgetReward: 140, sciReward: 850 },
+            commander: { label: 'Chỉ Huy', time: 10, budgetReward: 200, sciReward: 1200 }
+        };
+
+        let gameState = {
+            activeMode: 'mission',
+            phase: 'design',
+            selectedDest: DESTINATIONS[0],
+            selectedComponents: {
+                payload: COMPONENT_CATEGORIES[0].items[0],
+                engine: COMPONENT_CATEGORIES[1].items[0],
+                protection: COMPONENT_CATEGORIES[2].items[0]
+            },
+            shipName: 'Astraea-X',
+            availableBudget: INITIAL_BUDGET,
+            accumulatedScience: 0,
+            totalCost: 0,
+            totalWeight: 0,
+            deltaV: 0,
+            shieldScore: 0,
+            scienceScore: 0,
+            maxFuelCap: 100,
+            flightProgress: 0,
+            fuel: 100,
+            hull: 100,
+            isPaused: false,
+            checkpoint33Triggered: false,
+            checkpoint66Triggered: false,
+            inFlightQuizActive: false,
+            fqTimer: null,
+            fqTimeLeft: 15,
+            logs: [],
+            quizDifficulty: 'rookie',
+            quizStreak: 0,
+            quizSolvedCount: 0,
+            quizQuestionNum: 0,
+            currentQuestion: null,
+            quizTimer: null,
+            quizTimeLeft: 22,
+            quizAnswered: false
+        };
+
+        window.onload = function() {
+            renderDestinations();
+            renderComponents();
+            renderLibraryFacts();
+            recalculateStats();
+            initCanvas();
+            animate();
+        };
+
+        function renderLibraryFacts() {
+            const container = document.getElementById('library-facts-container');
+            if (!container) return;
+            container.innerHTML = NASA_FACTS.map(fact => `
+                <div id="fact-card-${fact.id}" class="bg-space-900/90 border border-slate-800 hover:border-cyan-500/40 p-3.5 rounded-xl transition flex flex-col justify-between gap-2 relative">
+                    <div class="flex items-start gap-3">
+                        <span class="w-7 h-7 rounded-lg bg-space-950 border border-cyan-500/30 text-cyan-400 font-orbitron font-bold text-xs flex items-center justify-center shrink-0">#${fact.id}</span>
+                        <div class="space-y-1">
+                            <span class="text-[10px] font-mono text-purple-400 uppercase tracking-wider block">${fact.category}</span>
+                            <p class="text-xs md:text-sm text-slate-200 leading-relaxed">${fact.text}</p>
+                        </div>
+                    </div>
+                    <div class="flex justify-end pt-1 border-t border-slate-800/60 mt-1">
+                        <a href="${fact.wiki}" target="_blank" class="text-[11px] text-cyan-400 hover:text-cyan-300 font-mono flex items-center gap-1 transition">
+                            <i class="fa-solid fa-book-open"></i> Xem Wikipedia <i class="fa-solid fa-arrow-up-right-from-square text-[9px]"></i>
+                        </a>
+                    </div>
+                </div>
+            `).join('');
         }
 
-        const p3dCanvas = document.getElementById("planet-3d-canvas");
-        const p3dCtx = p3dCanvas.getContext("2d");
-        let planetRotAngle = 0;
+        function goToFactCard(factId) {
+            switchQuizSubTab('library');
+            setTimeout(() => {
+                document.querySelectorAll('.library-highlight').forEach(el => {
+                    el.classList.remove('neon-border', 'scale-[1.02]');
+                    const oldIndicator = el.querySelector('.target-arrow');
+                    if (oldIndicator) oldIndicator.remove();
+                });
 
-        function renderRealistic3DPlanet() {
-            const w = p3dCanvas.width;
-            const h = p3dCanvas.height;
-            p3dCtx.clearRect(0, 0, w, h);
-
-            p3dCtx.fillStyle = "#030712";
-            p3dCtx.fillRect(0, 0, w, h);
-            for (let i = 0; i < 28; i++) {
-                const sx = (i * 73 + Math.sin(planetRotAngle * 0.2 + i) * 3) % w;
-                const sy = (i * 41) % h;
-                p3dCtx.fillStyle = i % 3 === 0 ? "rgba(186,230,253,0.8)" : "rgba(255,255,255,0.45)";
-                p3dCtx.fillRect(sx, sy, (i % 2) + 1, (i % 2) + 1);
-            }
-
-            const stage = PLANETS_DATA[currentStageIdx] || PLANETS_DATA[0];
-            const cx = w / 2;
-            const cy = h / 2 - 6;
-            const r = 64;
-            planetRotAngle += 0.014;
-
-            if (stage.id === "europa") {
-                const jx = cx + 44;
-                const jy = cy - 26;
-                const jr = 38;
-                p3dCtx.save();
-                p3dCtx.beginPath();
-                p3dCtx.arc(jx, jy, jr, 0, Math.PI * 2);
-                p3dCtx.clip();
-
-                const jGrad = p3dCtx.createLinearGradient(jx - jr, jy - jr, jx + jr, jy + jr);
-                jGrad.addColorStop(0, "#d97706");
-                jGrad.addColorStop(0.3, "#fed7aa");
-                jGrad.addColorStop(0.6, "#b45309");
-                jGrad.addColorStop(1, "#451a03");
-                p3dCtx.fillStyle = jGrad;
-                p3dCtx.fillRect(jx - jr, jy - jr, jr * 2, jr * 2);
-                p3dCtx.restore();
-            }
-
-            let haloColor = stage.id === "mars" ? "rgba(249, 115, 22, 0.35)" :
-                            stage.id === "europa" ? "rgba(125, 211, 252, 0.4)" :
-                            stage.id === "gliese" ? "rgba(244, 63, 94, 0.38)" : "rgba(52, 211, 153, 0.42)";
-
-            const outerGlow = p3dCtx.createRadialGradient(cx - 15, cy - 15, r * 0.85, cx, cy, r * 1.28);
-            outerGlow.addColorStop(0, haloColor);
-            outerGlow.addColorStop(1, "rgba(0,0,0,0)");
-            p3dCtx.fillStyle = outerGlow;
-            p3dCtx.beginPath();
-            p3dCtx.arc(cx, cy, r * 1.28, 0, Math.PI * 2);
-            p3dCtx.fill();
-
-            p3dCtx.save();
-            p3dCtx.beginPath();
-            p3dCtx.arc(cx, cy, r, 0, Math.PI * 2);
-            p3dCtx.clip();
-
-            const baseGrad = p3dCtx.createRadialGradient(cx - 24, cy - 24, 8, cx, cy, r * 1.2);
-            if (stage.id === "mars") {
-                baseGrad.addColorStop(0, "#fb923c"); baseGrad.addColorStop(0.55, "#c2410c"); baseGrad.addColorStop(1, "#431407");
-            } else if (stage.id === "europa") {
-                baseGrad.addColorStop(0, "#f0f9ff"); baseGrad.addColorStop(0.6, "#bae6fd"); baseGrad.addColorStop(1, "#0369a1");
-            } else if (stage.id === "gliese") {
-                baseGrad.addColorStop(0, "#fda4af"); baseGrad.addColorStop(0.5, "#be123c"); baseGrad.addColorStop(1, "#1e1b4b");
-            } else {
-                baseGrad.addColorStop(0, "#38bdf8"); baseGrad.addColorStop(0.6, "#0284c7"); baseGrad.addColorStop(1, "#082f49");
-            }
-            p3dCtx.fillStyle = baseGrad;
-            p3dCtx.fillRect(cx - r, cy - r, r * 2, r * 2);
-            p3dCtx.restore();
-
-            p3dCtx.beginPath();
-            p3dCtx.arc(cx, cy, r, 0, Math.PI * 2);
-            p3dCtx.strokeStyle = "rgba(255,255,255,0.22)";
-            p3dCtx.lineWidth = 1.2;
-            p3dCtx.stroke();
-
-            requestAnimationFrame(renderRealistic3DPlanet);
+                const targetCard = document.getElementById(`fact-card-${factId}`);
+                if (targetCard) {
+                    targetCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    targetCard.classList.add('neon-border', 'scale-[1.02]', 'library-highlight');
+                    
+                    let indicator = targetCard.querySelector('.target-arrow');
+                    if (!indicator) {
+                        indicator = document.createElement('div');
+                        indicator.className = 'target-arrow text-amber-400 font-orbitron font-bold text-xs animate-bounce flex items-center gap-1.5 mt-2 bg-amber-950/40 border border-amber-500/50 p-2 rounded-lg';
+                        indicator.innerHTML = '<i class="fa-solid fa-hand-point-right text-base"></i><span>👉 Thông tin chính xác cho câu hỏi của bạn!</span>';
+                        targetCard.appendChild(indicator);
+                    }
+                }
+            }, 100);
         }
-        renderRealistic3DPlanet();
 
-        const spaceCanvas = document.getElementById("space-canvas");
-        const sCtx = spaceCanvas.getContext("2d");
-
-        function resizeSpaceCanvas() {
-            spaceCanvas.width = spaceCanvas.parentElement.clientWidth;
-            spaceCanvas.height = spaceCanvas.parentElement.clientHeight;
+        function goToFactFromFlight(factId) {
+            document.getElementById('flight-quiz-modal').classList.add('hidden');
+            gameState.inFlightQuizActive = false;
+            gameState.isPaused = false;
+            switchGameMode('quiz');
+            switchQuizSubTab('library');
+            setTimeout(() => { goToFactCard(factId); }, 200);
         }
-        window.addEventListener("resize", resizeSpaceCanvas);
-        resizeSpaceCanvas();
 
-        let shipX = 0;
-        let shipVelX = 0;
-        let keys = { left: false, right: false };
-        let invulnTimer = 0;
-        let flightElapsed = 0;
-        let asteroids = [];
-        let lasers = [];
-        let stars = [];
-
-        for (let i = 0; i < 90; i++) {
-            stars.push({
-                x: (Math.random() - 0.5) * 2,
-                y: (Math.random() - 0.5) * 2,
-                z: Math.random()
+        function switchTab(tab) {
+            ['dest', 'rocket', 'summary'].forEach(t => {
+                const btn = document.getElementById(`tab-${t}`);
+                const content = document.getElementById(`content-${t}`);
+                if (t === tab) {
+                    btn.classList.add('border-cyan-400', 'text-cyan-400', 'font-bold');
+                    btn.classList.remove('border-transparent', 'text-slate-400');
+                    content.classList.remove('hidden');
+                } else {
+                    btn.classList.remove('border-cyan-400', 'text-cyan-400', 'font-bold');
+                    btn.classList.add('border-transparent', 'text-slate-400');
+                    content.classList.add('hidden');
+                }
             });
         }
 
-        function fireLaser(side) {
-            if (gameMode !== "FLIGHT") return;
-            // side: 'left' hoặc 'right'
-            const offset = side === 'left' ? -0.32 : 0.32;
-            lasers.push({ x: shipX + offset, z: 0.05, side: side });
-            playSound(side === 'left' ? 850 : 980, "square", 0.08, 0.1);
+        function switchQuizSubTab(sub) {
+            const isQuiz = sub === 'quiz';
+            document.getElementById('subtab-quiz-btn').className = isQuiz ? "flex-1 py-2.5 rounded-xl bg-purple-600/30 border border-purple-400/50 text-purple-200 font-bold transition flex items-center justify-center gap-2" : "flex-1 py-2.5 rounded-xl bg-space-900/90 border border-slate-700 text-slate-300 transition flex items-center justify-center gap-2";
+            document.getElementById('subtab-lib-btn').className = !isQuiz ? "flex-1 py-2.5 rounded-xl bg-purple-600/30 border border-purple-400/50 text-purple-200 font-bold transition flex items-center justify-center gap-2" : "flex-1 py-2.5 rounded-xl bg-space-900/90 border border-slate-700 text-slate-300 transition flex items-center justify-center gap-2";
+            document.getElementById('subtab-quiz-content').classList.toggle('hidden', !isQuiz);
+            document.getElementById('subtab-lib-content').classList.toggle('hidden', isQuiz);
         }
 
-        window.addEventListener("keydown", (e) => {
-            if (e.key === "ArrowLeft" || e.key === "a" || e.key === "A") keys.left = true;
-            if (e.key === "ArrowRight" || e.key === "d" || e.key === "D") keys.right = true;
-            if (e.key === "r" || e.key === "R") {
-                e.preventDefault();
-                fireLaser('left');
+        function renderDestinations() {
+            const container = document.getElementById('destination-list');
+            if (!container) return;
+            container.innerHTML = DESTINATIONS.map(dest => {
+                const isSelected = gameState.selectedDest.id === dest.id;
+                return `
+                    <div onclick="selectDestination('${dest.id}')" 
+                         class="p-3.5 rounded-xl border transition-all cursor-pointer ${isSelected ? 'bg-cyan-950/50 border-cyan-400 neon-border' : 'bg-space-900/70 border-slate-800 hover:border-slate-600'}">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-9 h-9 rounded-lg flex items-center justify-center text-lg" style="background: ${dest.color}22; color: ${dest.color}; border: 1px solid ${dest.color}55">
+                                    <i class="fa-solid ${dest.icon}"></i>
+                                </div>
+                                <div>
+                                    <div class="font-orbitron font-bold text-xs md:text-sm text-white">${dest.name}</div>
+                                    <div class="text-[11px] text-slate-400 font-mono">${dest.subtitle} • ${dest.distKm}</div>
+                                </div>
+                            </div>
+                            <span class="text-[10px] font-orbitron px-2 py-0.5 rounded bg-space-950 border border-slate-700 text-cyan-300">${dest.difficulty}</span>
+                        </div>
+                        <p class="text-xs text-slate-300 mt-2 leading-relaxed">${dest.desc}</p>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function selectDestination(destId) {
+            const found = DESTINATIONS.find(d => d.id === destId);
+            if (found) {
+                gameState.selectedDest = found;
+                renderDestinations();
+                recalculateStats();
             }
-            if (e.key === "e" || e.key === "E") {
-                e.preventDefault();
-                fireLaser('right');
-            }
-        });
-        window.addEventListener("keyup", (e) => {
-            if (e.key === "ArrowLeft" || e.key === "a" || e.key === "A") keys.left = false;
-            if (e.key === "ArrowRight" || e.key === "d" || e.key === "D") keys.right = false;
-        });
+        }
 
-        const btnLeft = document.getElementById("btn-left");
-        const btnRight = document.getElementById("btn-right");
-        const btnShootLeft = document.getElementById("btn-shoot-left");
-        const btnShootRight = document.getElementById("btn-shoot-right");
-
-        btnLeft.addEventListener("touchstart", (e) => { e.preventDefault(); keys.left = true; });
-        btnLeft.addEventListener("touchend", () => { keys.left = false; });
-        btnLeft.addEventListener("mousedown", () => { keys.left = true; });
-        btnLeft.addEventListener("mouseup", () => { keys.left = false; });
-
-        btnRight.addEventListener("touchstart", (e) => { e.preventDefault(); keys.right = true; });
-        btnRight.addEventListener("touchend", () => { keys.right = false; });
-        btnRight.addEventListener("mousedown", () => { keys.right = true; });
-        btnRight.addEventListener("mouseup", () => { keys.right = false; });
-
-        btnShootLeft.addEventListener("click", () => { fireLaser('left'); });
-        btnShootLeft.addEventListener("touchstart", (e) => { e.preventDefault(); fireLaser('left'); });
-
-        btnShootRight.addEventListener("click", () => { fireLaser('right'); });
-        btnShootRight.addEventListener("touchstart", (e) => { e.preventDefault(); fireLaser('right'); });
-
-        let lastFrameTime = performance.now();
-        function gameLoop(now) {
-            const dt = Math.min(0.05, (now - lastFrameTime) / 1000);
-            lastFrameTime = now;
-
-            const w = spaceCanvas.width;
-            const h = spaceCanvas.height;
-            const cx = w / 2;
-            const cy = h * 0.44;
-
-            sCtx.fillStyle = "#020510";
-            sCtx.fillRect(0, 0, w, h);
-
-            const speedMult = gameMode === "FLIGHT" ? 1.45 : 0.25;
-            stars.forEach(st => {
-                st.z -= dt * speedMult;
-                if (st.z <= 0.01) {
-                    st.x = (Math.random() - 0.5) * 2;
-                    st.y = (Math.random() - 0.5) * 2;
-                    st.z = 1;
-                }
-                const sx = cx + (st.x / st.z) * (w * 0.55) - shipX * 45 * (1 - st.z);
-                const sy = cy + (st.y / st.z) * (h * 0.55);
-                const sz = (1 - st.z) * 3.2;
-
-                sCtx.strokeStyle = `rgba(186, 230, 253, ${(1 - st.z) * 0.85})`;
-                sCtx.lineWidth = sz;
-                sCtx.beginPath();
-                sCtx.moveTo(sx, sy);
-                sCtx.lineTo(sx + (sx - cx) * 0.08, sy + (sy - cy) * 0.08);
-                sCtx.stroke();
-            });
-
-            if (gameMode === "FLIGHT") {
-                const stage = PLANETS_DATA[currentStageIdx];
-                flightElapsed += dt;
-
-                const acceleration = 7.5;
-                const damping = 8.5;
-                
-                let targetInput = 0;
-                if (keys.left) targetInput -= 1;
-                if (keys.right) targetInput += 1;
-
-                shipVelX += (targetInput * acceleration - shipVelX) * damping * dt;
-                shipX += shipVelX * dt;
-
-                if (shipX < -0.88) { shipX = -0.88; shipVelX = 0; }
-                if (shipX > 0.88) { shipX = 0.88; shipVelX = 0; }
-
-                if (invulnTimer > 0) invulnTimer -= dt;
-
-                sCtx.strokeStyle = "rgba(56, 189, 248, 0.16)";
-                sCtx.lineWidth = 1.5;
-                for (let g = -3; g <= 3; g++) {
-                    sCtx.beginPath();
-                    sCtx.moveTo(cx + g * 30, cy);
-                    sCtx.lineTo(cx + g * 240 - shipX * 180, h);
-                    sCtx.stroke();
-                }
-
-                // Cập nhật tia Laser từ phía Trái / Phải
-                for (let l = lasers.length - 1; l >= 0; l--) {
-                    let laser = lasers[l];
-                    laser.z += dt * 1.8;
-                    if (laser.z >= 1.0) {
-                        lasers.splice(l, 1);
-                        continue;
-                    }
-
-                    for (let a = asteroids.length - 1; a >= 0; a--) {
-                        let ast = asteroids[a];
-                        if (Math.abs(laser.z - ast.z) < 0.15 && Math.abs(laser.x - ast.lane) < 0.32) {
-                            score += 50;
-                            updateHUD();
-                            playSound(300, "sawtooth", 0.15, 0.15);
-                            asteroids.splice(a, 1);
-                            lasers.splice(l, 1);
-                            break;
-                        }
-                    }
-
-                    if (lasers[l]) {
-                        const lScale = 1 - laser.z;
-                        const lx = cx + laser.x * (w * 0.48) * lScale;
-                        const ly = cy + (h * 0.54) * Math.pow(lScale, 1.35);
-                        
-                        const startOffsetX = laser.side === 'left' ? -140 : 140;
-                        sCtx.strokeStyle = laser.side === 'left' ? "#38bdf8" : "#ef4444";
-                        sCtx.lineWidth = 5;
-                        sCtx.beginPath();
-                        sCtx.moveTo(cx + startOffsetX, h);
-                        sCtx.lineTo(lx, ly);
-                        sCtx.stroke();
-                    }
-                }
-
-                if (Math.random() < stage.asteroidRate) {
-                    const isIce = stage.id === "europa" && Math.random() < 0.45;
-                    asteroids.push({
-                        lane: (Math.random() - 0.5) * 1.75,
-                        drift: isIce ? (Math.random() - 0.5) * 0.4 : 0,
-                        z: 1.0,
-                        rot: Math.random() * Math.PI * 2,
-                        rotSpd: (Math.random() - 0.5) * 3,
-                        type: isIce ? "ice" : "rock"
-                    });
-                }
-
-                asteroids.sort((a, b) => b.z - a.z);
-                for (let i = asteroids.length - 1; i >= 0; i--) {
-                    const ast = asteroids[i];
-                    ast.z -= dt * (0.62 + currentStageIdx * 0.08);
-                    ast.lane += ast.drift * dt;
-                    ast.rot += ast.rotSpd * dt;
-
-                    if (ast.z <= 0.05) {
-                        if (Math.abs(ast.lane - shipX) < 0.24 && invulnTimer <= 0) {
-                            shield = Math.max(0, shield - 1);
-                            invulnTimer = 1.2;
-                            updateHUD();
-                            playSound(130, "sawtooth", 0.25, 0.2);
-
-                            const vp = document.getElementById("main-viewport");
-                            vp.classList.remove("shake-hit");
-                            void vp.offsetWidth;
-                            vp.classList.add("shake-hit");
-
-                            document.getElementById("flight-bot-tip").innerHTML =
-                                `<span class="text-amber-300 font-bold">Va chạm thiên thạch!</span> Còn <b>${shield}/20</b> giáp.`;
-
-                            if (shield <= 0) {
-                                endGame(false, "Giáp chiến cơ Phoenix X-900 đã vỡ nát do va chạm thiên thạch!");
-                                return;
+        function renderComponents() {
+            const container = document.getElementById('component-categories');
+            if (!container) return;
+            container.innerHTML = COMPONENT_CATEGORIES.map(cat => `
+                <div class="bg-space-900/70 p-3 rounded-xl border border-slate-800 space-y-2">
+                    <div class="text-xs font-orbitron font-bold text-cyan-300 flex items-center gap-2">
+                        <i class="fa-solid ${cat.icon}"></i>
+                        <span>${cat.title}</span>
+                    </div>
+                    <div class="space-y-2">
+                        ${cat.items.map(item => {
+                            const isSelected = gameState.selectedComponents[cat.id]?.id === item.id;
+                            if (item.unlocked) {
+                                return `
+                                    <div onclick="selectComponent('${cat.id}', '${item.id}')"
+                                         class="p-2.5 rounded-lg border transition-all cursor-pointer ${isSelected ? 'bg-cyan-950/40 border-cyan-400' : 'bg-space-950/70 border-slate-800 hover:border-slate-600'}">
+                                        <div class="flex justify-between items-start gap-2">
+                                            <span class="text-xs font-semibold text-white flex items-center gap-1.5">
+                                                <i class="fa-solid fa-check text-emerald-400 text-[10px]"></i> ${item.name}
+                                            </span>
+                                            <span class="text-xs font-mono font-bold text-amber-400 shrink-0">$${item.cost}M</span>
+                                        </div>
+                                        <p class="text-[11px] text-slate-400 mt-1">${item.desc}</p>
+                                    </div>
+                                `;
+                            } else {
+                                const canBuy = gameState.accumulatedScience >= item.unlockCost;
+                                return `
+                                    <div class="p-2.5 rounded-lg border bg-space-950/90 border-slate-800 flex flex-col gap-2">
+                                        <div class="flex justify-between items-start gap-2">
+                                            <span class="text-xs font-semibold text-slate-400 flex items-center gap-1.5">
+                                                <i class="fa-solid fa-lock text-purple-400 text-[10px]"></i> ${item.name}
+                                            </span>
+                                            <span class="text-xs font-mono font-bold text-purple-300 shrink-0"><i class="fa-solid fa-atom mr-0.5"></i>${item.unlockCost} KH</span>
+                                        </div>
+                                        <p class="text-[11px] text-slate-500">${item.desc}</p>
+                                        <button onclick="unlockComponent('${cat.id}', '${item.id}')" 
+                                            class="w-full py-1.5 rounded font-orbitron text-[11px] font-bold transition flex items-center justify-center gap-1.5 ${canBuy ? 'bg-purple-600 hover:bg-purple-500 text-white shadow-md shadow-purple-500/20' : 'bg-slate-800 text-slate-500 cursor-not-allowed'}">
+                                            <i class="fa-solid fa-key"></i> ${canBuy ? 'Mở Khóa Ngay' : 'Chưa Đủ Điểm KH'}
+                                        </button>
+                                    </div>
+                                `;
                             }
-                        }
-                        asteroids.splice(i, 1);
-                        continue;
-                    }
+                        }).join('')}
+                    </div>
+                </div>
+            `).join('');
+        }
 
-                    const scale = 1 - ast.z;
-                    const ax = cx + (ast.lane - shipX * 0.65) * (w * 0.48) * scale;
-                    const ay = cy + (h * 0.54) * Math.pow(scale, 1.35);
-                    const rad = 12 + 65 * Math.pow(scale, 1.5);
+        function unlockComponent(catId, itemId) {
+            const cat = COMPONENT_CATEGORIES.find(c => c.id === catId);
+            if (!cat) return;
+            const item = cat.items.find(i => i.id === itemId);
+            if (!item || item.unlocked) return;
 
-                    sCtx.save();
-                    sCtx.translate(ax, ay);
-                    sCtx.rotate(ast.rot);
-
-                    sCtx.fillStyle = "rgba(0, 0, 0, 0.45)";
-                    sCtx.beginPath();
-                    sCtx.arc(rad * 0.2, rad * 0.2, rad * 0.95, 0, Math.PI * 2);
-                    sCtx.fill();
-
-                    const astGrad = sCtx.createRadialGradient(-rad * 0.35, -rad * 0.35, rad * 0.1, 0, 0, rad);
-                    if (ast.type === "ice") {
-                        astGrad.addColorStop(0, "#e0f2fe");
-                        astGrad.addColorStop(0.4, "#38bdf8");
-                        astGrad.addColorStop(0.8, "#0284c7");
-                        astGrad.addColorStop(1, "#032845");
-                    } else {
-                        astGrad.addColorStop(0, "#fed7aa");
-                        astGrad.addColorStop(0.35, "#c2410c");
-                        astGrad.addColorStop(0.75, "#78350f");
-                        astGrad.addColorStop(1, "#1c1917");
-                    }
-
-                    sCtx.fillStyle = astGrad;
-                    sCtx.beginPath();
-                    const vertices = 8;
-                    for (let v = 0; v < vertices; v++) {
-                        const vAngle = (v / vertices) * Math.PI * 2;
-                        const offsetRad = rad * (1 + Math.sin(v * 3 + ast.rot) * 0.18);
-                        const vx = Math.cos(vAngle) * offsetRad;
-                        const vy = Math.sin(vAngle) * offsetRad;
-                        if (v === 0) sCtx.moveTo(vx, vy);
-                        else sCtx.lineTo(vx, vy);
-                    }
-                    sCtx.closePath();
-                    sCtx.fill();
-                    sCtx.strokeStyle = "rgba(255, 255, 255, 0.25)";
-                    sCtx.lineWidth = 1.5;
-                    sCtx.stroke();
-
-                    sCtx.fillStyle = "rgba(0, 0, 0, 0.35)";
-                    sCtx.beginPath();
-                    sCtx.arc(-rad * 0.25, -rad * 0.2, rad * 0.22, 0, Math.PI * 2);
-                    sCtx.arc(rad * 0.3, rad * 0.25, rad * 0.15, 0, Math.PI * 2);
-                    sCtx.fill();
-
-                    sCtx.restore();
-                }
-
-                // TÂM NGẮM CHÍNH GIỮA CỐ ĐỊNH
-                const crosshairX = cx;
-                const crosshairY = cy + h * 0.05;
-                
-                sCtx.save();
-                sCtx.translate(crosshairX, crosshairY);
-                sCtx.strokeStyle = "rgba(239, 68, 68, 0.9)";
-                sCtx.lineWidth = 2;
-                
-                sCtx.beginPath();
-                sCtx.arc(0, 0, 18, 0, Math.PI * 2);
-                sCtx.stroke();
-                
-                sCtx.beginPath();
-                sCtx.moveTo(-24, 0); sCtx.lineTo(-10, 0);
-                sCtx.moveTo(10, 0); sCtx.lineTo(24, 0);
-                sCtx.moveTo(0, -24); sCtx.lineTo(0, -10);
-                sCtx.moveTo(0, 10); sCtx.lineTo(0, 24);
-                sCtx.stroke();
-                
-                sCtx.fillStyle = "#ef4444";
-                sCtx.beginPath();
-                sCtx.arc(0, 0, 3.5, 0, Math.PI * 2);
-                sCtx.fill();
-                sCtx.restore();
-
-                const bankAngle = shipVelX * 0.035;
-                sCtx.save();
-                sCtx.translate(cx, h);
-                sCtx.rotate(bankAngle);
-
-                if (invulnTimer > 0 && Math.floor(invulnTimer * 12) % 2 === 0) {
-                    sCtx.strokeStyle = "rgba(250, 204, 21, 0.85)";
-                    sCtx.lineWidth = 6;
-                    sCtx.beginPath();
-                    sCtx.arc(0, -40, 230, Math.PI, 0);
-                    sCtx.stroke();
-                }
-
-                sCtx.fillStyle = "#0f172a";
-                sCtx.strokeStyle = "#38bdf8";
-                sCtx.lineWidth = 2.5;
-
-                sCtx.beginPath();
-                sCtx.moveTo(-260, 0); sCtx.lineTo(-140, -95); sCtx.lineTo(-95, -85); sCtx.lineTo(-130, 0);
-                sCtx.closePath(); sCtx.fill(); sCtx.stroke();
-
-                sCtx.beginPath();
-                sCtx.moveTo(260, 0); sCtx.lineTo(140, -95); sCtx.lineTo(95, -85); sCtx.lineTo(130, 0);
-                sCtx.closePath(); sCtx.fill(); sCtx.stroke();
-
-                sCtx.fillStyle = "rgba(15, 23, 42, 0.92)";
-                sCtx.beginPath();
-                sCtx.moveTo(-170, 0); sCtx.lineTo(-115, -62); sCtx.lineTo(115, -62); sCtx.lineTo(170, 0);
-                sCtx.closePath(); sCtx.fill(); sCtx.strokeStyle = "#0ea5e9"; sCtx.stroke();
-
-                sCtx.restore();
-
-                const pct = Math.min(100, Math.floor((flightElapsed / stage.flightDuration) * 100));
-                document.getElementById("flight-percent").innerText = pct + "%";
-                document.getElementById("flight-progress-bar").style.width = pct + "%";
-
-                if (flightElapsed >= stage.flightDuration) {
-                    enterPlanetOrbit();
-                }
+            if (gameState.accumulatedScience >= item.unlockCost) {
+                gameState.accumulatedScience -= item.unlockCost;
+                item.unlocked = true;
+                gameState.selectedComponents[catId] = item;
+                renderComponents();
+                recalculateStats();
+                document.getElementById('header-science').innerText = `${gameState.accumulatedScience}`;
+                alert(`🎉 Chúc mừng! Bạn đã mở khóa thành công linh kiện: ${item.name}`);
+            } else {
+                alert(`⚠️ Bạn chưa đủ Điểm Khoa Học! Cần ${item.unlockCost} Điểm KH (Hiện có: ${gameState.accumulatedScience} Điểm KH). Hãy vào Trạm Tri Thức để làm trắc nghiệm!`);
             }
-
-            requestAnimationFrame(gameLoop);
-        }
-        requestAnimationFrame(gameLoop);
-
-        let questionTimerInterval = null;
-        let timeRemaining = 40;
-        let assistActivated = false;
-        let questionAnswered = false;
-
-        function updateHUD() {
-            document.getElementById("hud-shield-text").innerText = `${shield}/${maxShield}`;
-            document.getElementById("hud-shield-bar").style.width = `${(shield / maxShield) * 100}%`;
-            const oxRounded = Math.max(0, Math.round(oxygen));
-            document.getElementById("hud-oxygen-text").innerText = `${oxRounded}%`;
-            document.getElementById("hud-oxygen-bar").style.width = `${oxRounded}%`;
-            document.getElementById("hud-score").innerText = score;
         }
 
-        function showBriefing() {
-            gameMode = "BRIEFING";
-            const stage = PLANETS_DATA[currentStageIdx];
-            document.getElementById("intro-screen").classList.add("hidden");
-            document.getElementById("quiz-screen").classList.add("hidden");
-            document.getElementById("flight-hud-overlay").classList.add("hidden");
-            document.getElementById("touch-controls").classList.add("hidden");
-
-            document.getElementById("briefing-title").innerText = stage.briefingTitle;
-            document.getElementById("briefing-desc").innerText = stage.briefingDesc;
-            document.getElementById("briefing-screen").classList.remove("hidden");
+        function selectComponent(catId, itemId) {
+            const category = COMPONENT_CATEGORIES.find(c => c.id === catId);
+            if (!category) return;
+            const item = category.items.find(i => i.id === itemId);
+            if (item && item.unlocked) {
+                gameState.selectedComponents[catId] = item;
+                renderComponents();
+                recalculateStats();
+            }
         }
 
-        function startFlight() {
-            gameMode = "FLIGHT";
-            const stage = PLANETS_DATA[currentStageIdx];
-            flightElapsed = 0;
-            asteroids = [];
-            lasers = [];
-            shipX = 0;
-            shipVelX = 0;
+        function switchGameMode(mode) {
+            gameState.activeMode = mode;
+            const missionBtn = document.getElementById('mode-btn-mission');
+            const quizBtn = document.getElementById('mode-btn-quiz');
+            const quizPanel = document.getElementById('quiz-panel');
 
-            document.getElementById("briefing-screen").classList.add("hidden");
-            document.getElementById("flight-hud-overlay").classList.remove("hidden");
-            document.getElementById("touch-controls").classList.remove("hidden");
-
-            document.getElementById("flight-target-label").innerText = `Đang tới: ${stage.name.split(" - ")[0]}`;
-            document.getElementById("flight-bot-tip").innerText = "Phím R bắn Trái, phím E bắn Phải chuẩn xác!";
-            document.getElementById("stage-subtitle").innerText = stage.briefingTitle;
-            playSound(440, "sine", 0.2);
+            if (mode === 'mission') {
+                missionBtn.className = "px-3 py-1.5 rounded-lg bg-cyan-500/20 text-cyan-300 border border-cyan-500/50 font-bold transition flex items-center gap-1.5";
+                quizBtn.className = "px-3 py-1.5 rounded-lg text-slate-400 hover:text-purple-300 transition flex items-center gap-1.5";
+                quizPanel.classList.add('hidden');
+                quizPanel.classList.remove('flex');
+                stopQuizTimer();
+                recalculateStats();
+                renderComponents();
+            } else {
+                quizBtn.className = "px-3 py-1.5 rounded-lg bg-purple-500/20 text-purple-300 border border-purple-500/50 font-bold transition flex items-center gap-1.5";
+                missionBtn.className = "px-3 py-1.5 rounded-lg text-slate-400 hover:text-cyan-300 transition flex items-center gap-1.5";
+                quizPanel.classList.remove('hidden');
+                quizPanel.classList.add('flex');
+                updateQuizHeaderStats();
+            }
         }
 
-        function enterPlanetOrbit() {
-            gameMode = "QUIZ";
-            currentQIdx = 0;
-            document.getElementById("flight-hud-overlay").classList.add("hidden");
-            document.getElementById("touch-controls").classList.add("hidden");
-            document.getElementById("quiz-screen").classList.remove("hidden");
-            playSound(660, "triangle", 0.3);
-            loadQuestion();
-        }
+        function recalculateStats() {
+            let cost = 0, weight = 0, deltaV = 0, shield = 0, sci = 0, fuelCap = 100;
 
-        function loadQuestion() {
-            clearInterval(questionTimerInterval);
-            questionAnswered = false;
-            assistActivated = false;
-
-            timeRemaining = 40;
-            oxygen = 100;
-            updateHUD();
-
-            const stage = PLANETS_DATA[currentStageIdx];
-            const qData = stage.questions[currentQIdx];
-
-            document.getElementById("planet-badge").innerText = `HÀNH TINH ${currentStageIdx + 1}/4`;
-            document.getElementById("planet-name").innerText = stage.name;
-            document.getElementById("planet-3d-tag").innerText = stage.tag3D;
-            document.getElementById("planet-env-info").innerText = `📡 Dữ liệu khí hậu: ${stage.envInfo}`;
-            document.getElementById("question-counter").innerText = `Câu hỏi ${currentQIdx + 1} / 3`;
-            document.getElementById("question-text").innerText = qData.q;
-
-            const timerNum = document.getElementById("quiz-timer-num");
-            const phaseLabel = document.getElementById("timer-phase-label");
-            const oxBar = document.getElementById("quiz-oxygen-bar");
-            const oxLabel = document.getElementById("oxygen-status-label");
-            const vignette = document.getElementById("oxygen-vignette");
-
-            timerNum.innerText = "40s";
-            timerNum.className = "font-hud text-2xl md:text-3xl font-bold text-cyan-400 min-w-[54px] text-center";
-            phaseLabel.innerText = "GIAI ĐOẠN TỰ PHÂN TÍCH (25S ĐẦU)";
-            phaseLabel.className = "text-[10px] font-bold text-emerald-400 uppercase";
-
-            oxBar.style.width = "100%";
-            oxBar.className = "h-full bg-gradient-to-r from-emerald-400 via-teal-400 to-cyan-400 transition-all duration-300";
-            oxLabel.innerText = "🫁 Dưỡng khí phi hành gia: 100% (Ổn định)";
-            oxLabel.className = "text-emerald-300";
-            vignette.classList.remove("oxygen-critical-border");
-
-            document.getElementById("assist-badge").innerText = "Sẵn sàng hỗ trợ sau 25s";
-            document.getElementById("assist-badge").className = "text-[10px] px-2 py-0.5 rounded-full bg-slate-800 text-slate-400 border border-slate-700";
-            document.getElementById("vega-message").innerText = "Hãy đọc kỹ thông số môi trường. Sau 25 giây, tôi sẽ kích hoạt hệ thống trợ giúp loại bỏ 2 đáp án sai!";
-            document.getElementById("btn-next-question").classList.add("hidden");
-
-            const grid = document.getElementById("options-grid");
-            grid.innerHTML = "";
-            qData.options.forEach((optText, idx) => {
-                const btn = document.createElement("button");
-                btn.className = "option-btn text-left p-3.5 rounded-xl bg-slate-950/90 border border-slate-700 text-slate-100 text-xs md:text-sm font-semibold cursor-pointer";
-                btn.innerText = optText;
-                btn.dataset.index = idx;
-                btn.onclick = () => handleSelectAnswer(idx);
-                grid.appendChild(btn);
+            Object.values(gameState.selectedComponents).forEach(item => {
+                if (item) {
+                    cost += item.cost;
+                    weight += item.weight;
+                    deltaV += item.deltaV || 0;
+                    shield += item.shield || 0;
+                    sci += item.sci || 0;
+                    if(item.fuelCap) fuelCap = item.fuelCap;
+                }
             });
 
-            questionTimerInterval = setInterval(() => {
-                if (questionAnswered) return;
+            gameState.totalCost = cost;
+            gameState.totalWeight = weight;
+            gameState.deltaV = deltaV;
+            gameState.shieldScore = shield;
+            gameState.scienceScore = sci;
+            gameState.maxFuelCap = fuelCap;
 
-                timeRemaining--;
-                oxygen = Math.max(0, (timeRemaining / 40) * 100);
-                updateHUD();
+            const remainingBudget = gameState.availableBudget - cost;
 
-                timerNum.innerText = `${timeRemaining}s`;
-                oxBar.style.width = `${oxygen}%`;
+            document.getElementById('header-budget').innerText = `$${remainingBudget}M`;
+            document.getElementById('header-science').innerText = `${gameState.accumulatedScience}`;
+            document.getElementById('header-weight').innerText = `${weight} / ${MAX_WEIGHT_LIMIT}T`;
 
-                if (timeRemaining === 15 && !assistActivated) {
-                    activateVegaAssist(qData);
-                }
+            document.getElementById('summary-cost').innerText = `$${cost}M`;
+            document.getElementById('budget-bar').style.width = `${Math.min(100, (cost / gameState.availableBudget) * 100)}%`;
 
-                if (timeRemaining <= 10 && timeRemaining > 0) {
-                    timerNum.className = "font-hud text-2xl md:text-3xl font-bold text-red-500 min-w-[54px] text-center animate-pulse";
-                    oxBar.className = "h-full bg-gradient-to-r from-red-600 to-amber-500 transition-all duration-300";
-                    oxLabel.innerText = `⚠️ BÁO ĐỘNG NGẠT THỞ: OXYGEN CHỈ CÒN ${Math.round(oxygen)}%!`;
-                    oxLabel.className = "text-red-400 font-extrabold";
-                    vignette.classList.add("oxygen-critical-border");
-                    playSound(880, "square", 0.08, 0.12);
-                } else if (timeRemaining > 10) {
-                    oxLabel.innerText = `🫁 Dưỡng khí phi hành gia: ${Math.round(oxygen)}%`;
-                }
+            document.getElementById('summary-weight').innerText = `${weight} Tấn`;
+            document.getElementById('weight-bar').style.width = `${Math.min(100, (weight / MAX_WEIGHT_LIMIT) * 100)}%`;
 
-                if (timeRemaining <= 0) {
-                    clearInterval(questionTimerInterval);
-                    handleOxygenDepleted(qData);
+            document.getElementById('stat-deltav').innerText = `${deltaV} km/s`;
+            document.getElementById('stat-fuel').innerText = `${fuelCap}% Cap`;
+            document.getElementById('stat-shield').innerText = `${shield} Pt`;
+            document.getElementById('stat-science').innerText = `${sci} Điểm`;
+
+            const dest = gameState.selectedDest;
+            const validCost = cost <= gameState.availableBudget;
+            const validWeight = weight <= MAX_WEIGHT_LIMIT;
+            const validDV = deltaV >= dest.reqDeltaV;
+            const validShield = shield >= dest.reqShield;
+
+            document.getElementById('req-checklist').innerHTML = `
+                <div class="flex justify-between ${validCost ? 'text-emerald-400' : 'text-red-400'}"><span>• Ngân sách:</span><span>${validCost ? 'Đạt' : 'Thiếu'}</span></div>
+                <div class="flex justify-between ${validWeight ? 'text-emerald-400' : 'text-red-400'}"><span>• Tải Trọng:</span><span>${validWeight ? 'An Toàn' : 'Quá Tải'}</span></div>
+                <div class="flex justify-between ${validDV ? 'text-emerald-400' : 'text-amber-400'}"><span>• Delta-V:</span><span>${validDV ? 'Đủ Lực' : 'Thiếu Tốc Độ'}</span></div>
+                <div class="flex justify-between ${validShield ? 'text-emerald-400' : 'text-amber-400'}"><span>• Khiên:</span><span>${validShield ? 'Đạt' : 'Rủi Ro'}</span></div>
+            `;
+
+            document.getElementById('launch-btn').disabled = !(validCost && validWeight);
+        }
+
+        function startMissionLaunch() {
+            const shipInput = document.getElementById('ship-name-input').value;
+            if(shipInput.trim()) gameState.shipName = shipInput.trim();
+
+            gameState.phase = 'flying';
+            gameState.flightProgress = 0;
+            gameState.fuel = 100;
+            gameState.hull = 100;
+            gameState.checkpoint33Triggered = false;
+            gameState.checkpoint66Triggered = false;
+            gameState.inFlightQuizActive = false;
+            gameState.logs = [`Khởi hành tàu ${gameState.shipName} hướng tới ${gameState.selectedDest.name}.`];
+
+            document.getElementById('design-panel').classList.add('hidden', 'lg:flex');
+            document.getElementById('flight-hud').classList.remove('opacity-0', '-translate-y-4');
+        }
+
+        function togglePauseSimulation() {
+            gameState.isPaused = !gameState.isPaused;
+            document.getElementById('pause-btn').innerHTML = gameState.isPaused ? '<i class="fa-solid fa-play"></i> Tiếp Tục' : '<i class="fa-solid fa-pause"></i> Tạm Dừng';
+        }
+
+        function requestAbortMission() {
+            gameState.isPaused = true;
+            document.getElementById('confirm-modal').classList.remove('hidden');
+        }
+
+        function closeConfirmModal() {
+            document.getElementById('confirm-modal').classList.add('hidden');
+            gameState.isPaused = false;
+        }
+
+        function confirmAbortMission() {
+            document.getElementById('confirm-modal').classList.add('hidden');
+            resetToDesign();
+        }
+
+        function finishMission() {
+            gameState.phase = 'debrief';
+            const dest = gameState.selectedDest;
+            let success = (gameState.fuel > 0 && gameState.hull > 20 && gameState.deltaV >= dest.reqDeltaV);
+            const earnedSci = success ? (dest.baseScience + gameState.scienceScore) : Math.round(gameState.scienceScore * 0.3);
+            gameState.accumulatedScience += earnedSci;
+            document.getElementById('header-science').innerText = `${gameState.accumulatedScience}`;
+
+            document.getElementById('debrief-title').innerText = success ? "SỨ MỆNH THÀNH CÔNG!" : "SỨ MỆNH THẤT BẠI";
+            document.getElementById('debrief-subtitle').innerText = `TÀU ${gameState.shipName.toUpperCase()} ĐÃ ${success ? 'HOÀN THÀNH MỤC TIÊU' : 'GẶP SỰ CỐ'}`;
+            document.getElementById('debrief-science').innerText = `+${earnedSci}`;
+            document.getElementById('debrief-samples').innerText = `${success ? 3 : 0} Mẫu`;
+            document.getElementById('debrief-badge').innerText = success ? 'Chuyên Gia Vũ Trụ' : 'Tập Sự';
+
+            document.getElementById('debrief-logs').innerHTML = gameState.logs.map(l => `<div class="text-slate-300"><i class="fa-solid fa-angle-right text-cyan-400 mr-1.5"></i> ${l}</div>`).join('');
+            document.getElementById('debrief-modal').classList.remove('hidden');
+        }
+
+        function resetToDesign() {
+            gameState.phase = 'design';
+            document.getElementById('debrief-modal').classList.add('hidden');
+            document.getElementById('flight-hud').classList.add('opacity-0', '-translate-y-4');
+            document.getElementById('design-panel').classList.remove('hidden');
+            recalculateStats();
+        }
+
+        // TRẠM KIỂM TRA TRÊN QUỸ ĐẠO (IN-FLIGHT QUIZ)
+        function triggerInFlightQuiz(checkpointIndex) {
+            gameState.inFlightQuizActive = true;
+            gameState.isPaused = true;
+            
+            const qData = IN_FLIGHT_QUESTIONS[checkpointIndex];
+            document.getElementById('fq-checkpoint-title').innerHTML = `<i class="fa-solid fa-satellite mr-1"></i> ${qData.title}`;
+            document.getElementById('fq-question-text').innerText = qData.q;
+            document.getElementById('fq-feedback').classList.add('hidden');
+            document.getElementById('fq-hint-prompt').classList.add('hidden');
+            
+            const grid = document.getElementById('fq-options-grid');
+            const letters = ['A', 'B', 'C', 'D'];
+            grid.innerHTML = qData.options.map((opt, idx) => `
+                <button onclick="answerInFlightQuiz(${idx}, ${qData.answer}, '${qData.explanation.replace(/'/g, "\\'")}', ${qData.factId})"
+                    class="p-3 rounded-xl bg-space-900/90 hover:bg-space-800 border border-slate-700 hover:border-cyan-400 text-left transition flex items-center gap-3 text-xs md:text-sm text-slate-200">
+                    <span class="w-7 h-7 rounded-lg bg-space-950 border border-slate-700 flex items-center justify-center font-orbitron font-bold text-xs text-cyan-400 shrink-0">${letters[idx]}</span>
+                    <span>${opt}</span>
+                </button>
+            `).join('');
+            
+            document.getElementById('flight-quiz-modal').classList.remove('hidden');
+            startFqTimer(15, qData.answer, qData.explanation, qData.factId);
+        }
+
+        function startFqTimer(seconds, correctIdx, explanation, factId) {
+            gameState.fqTimeLeft = seconds;
+            const timerEl = document.getElementById('fq-timer');
+            timerEl.innerText = `${seconds}s`;
+            
+            if(gameState.fqTimer) clearInterval(gameState.fqTimer);
+            gameState.fqTimer = setInterval(() => {
+                gameState.fqTimeLeft--;
+                timerEl.innerText = `${gameState.fqTimeLeft}s`;
+                if(gameState.fqTimeLeft <= 0) {
+                    clearInterval(gameState.fqTimer);
+                    answerInFlightQuiz(-1, correctIdx, explanation, factId);
                 }
             }, 1000);
         }
 
-        function activateVegaAssist(qData) {
-            assistActivated = true;
-            playSound(740, "triangle", 0.35, 0.18);
+        function answerInFlightQuiz(selectedIdx, correctIdx, explanation, factId) {
+            if(gameState.fqTimer) clearInterval(gameState.fqTimer);
+            
+            const isCorrect = selectedIdx === correctIdx;
+            const feedbackBox = document.getElementById('fq-feedback');
+            feedbackBox.classList.remove('hidden');
+            
+            if(isCorrect) {
+                feedbackBox.className = "text-xs font-mono p-3 rounded-xl border border-emerald-500/50 bg-emerald-950/40 text-emerald-300";
+                feedbackBox.innerHTML = `<i class="fa-solid fa-circle-check mr-1 text-emerald-400"></i> <strong class="text-emerald-400">ĐÚNG!</strong> +250 Điểm Khoa Học.<br>${explanation}`;
+                gameState.accumulatedScience += 250;
+                gameState.logs.push(`Vượt qua trạm kiểm tra quỹ đạo: +250 KH`);
+                document.getElementById('fq-hint-prompt').classList.add('hidden');
 
-            const phaseLabel = document.getElementById("timer-phase-label");
-            phaseLabel.innerText = "⚡ CHẾ ĐỘ TRỢ GIÚP KHẨN CẤP (15S CUỐI)";
-            phaseLabel.className = "text-[10px] font-bold text-amber-400 uppercase";
-
-            document.getElementById("assist-badge").innerText = "ĐÃ LOẠI 2 ĐÁP ÁN SAI (50:50)";
-            document.getElementById("assist-badge").className = "text-[10px] px-2.5 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-400 font-bold";
-
-            document.getElementById("vega-message").innerHTML =
-                `<span class="text-amber-300 font-bold">Đã qua 25 giây!</span> Tôi vừa loại bỏ 2 phương án nhiễu. ${qData.hint}`;
-
-            const wrongIndices = [0, 1, 2, 3].filter(i => i !== qData.correct);
-            wrongIndices.sort(() => Math.random() - 0.5);
-            const toEliminate = wrongIndices.slice(0, 2);
-
-            const buttons = document.querySelectorAll("#options-grid button");
-            buttons.forEach(btn => {
-                const idx = parseInt(btn.dataset.index);
-                if (toEliminate.includes(idx)) {
-                    btn.classList.add("option-eliminated");
-                    btn.disabled = true;
-                }
-            });
-        }
-
-        function handleOxygenDepleted(qData) {
-            questionAnswered = true;
-            document.getElementById("oxygen-vignette").classList.remove("oxygen-critical-border");
-
-            shield = Math.max(0, shield - 5);
-            updateHUD();
-            playSound(110, "sawtooth", 0.5, 0.25);
-
-            const buttons = document.querySelectorAll("#options-grid button");
-            buttons.forEach(btn => {
-                btn.disabled = true;
-                const idx = parseInt(btn.dataset.index);
-                if (idx === qData.correct) {
-                    btn.classList.add("border-emerald-400", "bg-emerald-500/20", "text-emerald-200");
-                }
-            });
-
-            document.getElementById("vega-message").innerHTML =
-                `<span class="text-red-400 font-extrabold">🫁 OXYGEN ĐÃ CẠN KIỆT (0%)!</span> Hệ thống bơm dưỡng khí khẩn cấp tiêu hao <b>-5 Giáp</b>. Đáp án đúng là: <b>${qData.options[qData.correct]}</b>.`;
-
-            if (shield <= 0) {
                 setTimeout(() => {
-                    endGame(false, "Bình dưỡng khí cạn kiệt khiến hệ thống hỗ trợ sự sống ngừng hoạt động!");
-                }, 2200);
+                    document.getElementById('flight-quiz-modal').classList.add('hidden');
+                    gameState.inFlightQuizActive = false;
+                    gameState.isPaused = false;
+                }, 3000);
             } else {
-                document.getElementById("btn-next-question").classList.remove("hidden");
+                feedbackBox.className = "text-xs font-mono p-3 rounded-xl border border-red-500/50 bg-red-950/40 text-red-300";
+                feedbackBox.innerHTML = `<i class="fa-solid fa-triangle-exclamation mr-1 text-red-400"></i> <strong class="text-red-400">CHƯA CHÍNH XÁC!</strong> Vỏ tàu giảm 15%.<br>${explanation}`;
+                gameState.hull = Math.max(0, gameState.hull - 15);
+                gameState.logs.push(`Va chạm bụi vũ trụ tại trạm kiểm tra: Vỏ tàu còn ${gameState.hull}%`);
+                
+                document.getElementById('fq-hint-prompt').classList.remove('hidden');
+                document.getElementById('fq-goto-lib-btn').setAttribute('onclick', `goToFactFromFlight(${factId})`);
             }
+            
+            document.getElementById('header-science').innerText = `${gameState.accumulatedScience}`;
         }
 
-        function handleSelectAnswer(selectedIdx) {
-            if (questionAnswered) return;
-            questionAnswered = true;
-            clearInterval(questionTimerInterval);
-            document.getElementById("oxygen-vignette").classList.remove("oxygen-critical-border");
+        function selectQuizDifficulty(diff) {
+            gameState.quizDifficulty = diff;
+            ['rookie', 'apprentice', 'intermediate', 'advanced', 'commander'].forEach(d => {
+                const btn = document.getElementById(`diff-btn-${d}`);
+                if (!btn) return;
+                btn.className = d === diff ? "p-4 rounded-xl border border-cyan-400 bg-cyan-950/40 neon-border transition-all space-y-2 text-left" : "p-4 rounded-xl border border-slate-800 bg-space-900/80 hover:border-purple-400/60 transition-all space-y-2 text-left";
+            });
+        }
 
-            const stage = PLANETS_DATA[currentStageIdx];
-            const qData = stage.questions[currentQIdx];
-            const buttons = document.querySelectorAll("#options-grid button");
+        function startQuizSession() {
+            document.getElementById('quiz-lobby').classList.add('hidden');
+            document.getElementById('quiz-arena').classList.remove('hidden');
+            nextQuizQuestion();
+        }
 
-            buttons.forEach(btn => {
+        function returnToQuizLobby() {
+            stopQuizTimer();
+            document.getElementById('quiz-arena').classList.add('hidden');
+            document.getElementById('quiz-lobby').classList.remove('hidden');
+        }
+
+        function updateQuizHeaderStats() {
+            document.getElementById('quiz-streak').innerText = `${gameState.quizStreak}x`;
+            document.getElementById('quiz-sci-display').innerText = `${gameState.accumulatedScience}`;
+        }
+
+        function nextQuizQuestion() {
+            stopQuizTimer();
+            gameState.quizAnswered = false;
+            gameState.quizQuestionNum++;
+
+            const pool = SPACE_QUESTIONS.filter(q => q.difficulty === gameState.quizDifficulty);
+            const chosen = pool[Math.floor(Math.random() * pool.length)] || SPACE_QUESTIONS[0];
+            gameState.currentQuestion = chosen;
+            const cfg = DIFFICULTY_CONFIG[gameState.quizDifficulty];
+
+            document.getElementById('quiz-category-tag').innerHTML = `<i class="fa-solid fa-tag mr-1"></i> ${chosen.category}`;
+            document.getElementById('quiz-q-number').innerText = `CÂU HỎI #${gameState.quizQuestionNum} • ${cfg.label.toUpperCase()}`;
+            document.getElementById('quiz-question-text').innerText = chosen.q;
+            document.getElementById('quiz-feedback-box').classList.add('hidden');
+            document.getElementById('quiz-hint-prompt').classList.add('hidden');
+
+            const letters = ['A', 'B', 'C', 'D'];
+            document.getElementById('quiz-options-grid').innerHTML = chosen.options.map((opt, idx) => `
+                <button onclick="submitQuizAnswer(${idx})" id="quiz-opt-${idx}"
+                    class="p-4 rounded-xl bg-space-900/90 hover:bg-space-800 border border-slate-700 hover:border-cyan-400 text-left transition-all flex items-center gap-3">
+                    <span class="w-8 h-8 rounded-lg bg-space-950 border border-slate-700 flex items-center justify-center font-orbitron font-bold text-xs text-cyan-400 shrink-0">${letters[idx]}</span>
+                    <span class="text-xs md:text-sm text-slate-200 font-medium">${opt}</span>
+                </button>
+            `).join('');
+
+            startQuizTimer(cfg.time);
+        }
+
+        function startQuizTimer(seconds) {
+            gameState.quizTimeLeft = seconds;
+            const timerText = document.getElementById('quiz-timer-text');
+            const timerBar = document.getElementById('quiz-timer-bar');
+
+            timerText.innerText = `${seconds}s`;
+            timerBar.style.width = '100%';
+
+            gameState.quizTimer = setInterval(() => {
+                gameState.quizTimeLeft = Math.max(0, +(gameState.quizTimeLeft - 0.1).toFixed(1));
+                timerBar.style.width = `${(gameState.quizTimeLeft / seconds) * 100}%`;
+                timerText.innerText = `${Math.ceil(gameState.quizTimeLeft)}s`;
+                if (gameState.quizTimeLeft <= 0) { stopQuizTimer(); submitQuizAnswer(-1); }
+            }, 100);
+        }
+
+        function stopQuizTimer() {
+            if (gameState.quizTimer) { clearInterval(gameState.quizTimer); gameState.quizTimer = null; }
+        }
+
+        function submitQuizAnswer(selectedIdx) {
+            if (gameState.quizAnswered) return;
+            gameState.quizAnswered = true;
+            stopQuizTimer();
+
+            const q = gameState.currentQuestion;
+            const isCorrect = selectedIdx === q.answer;
+            const cfg = DIFFICULTY_CONFIG[gameState.quizDifficulty];
+
+            q.options.forEach((_, idx) => {
+                const btn = document.getElementById(`quiz-opt-${idx}`);
+                if (!btn) return;
                 btn.disabled = true;
-                const idx = parseInt(btn.dataset.index);
-                if (idx === qData.correct) {
-                    btn.classList.add("border-emerald-400", "bg-emerald-500/25", "text-emerald-200");
-                } else if (idx === selectedIdx && selectedIdx !== qData.correct) {
-                    btn.classList.add("border-red-500", "bg-red-500/25", "text-red-200");
+                if (idx === q.answer) {
+                    btn.className = "p-4 rounded-xl bg-emerald-950/70 border-2 border-emerald-400 text-left flex items-center gap-3 text-emerald-300 font-semibold";
+                } else if (idx === selectedIdx && !isCorrect) {
+                    btn.className = "p-4 rounded-xl bg-red-950/70 border-2 border-red-500 text-left flex items-center gap-3 text-red-300";
+                } else {
+                    btn.className = "p-4 rounded-xl bg-space-950/50 border border-slate-800 opacity-40 text-left flex items-center gap-3 text-slate-400";
                 }
             });
 
-            if (selectedIdx === qData.correct) {
-                const timeBonus = timeRemaining * 10;
-                score += 200 + timeBonus;
-                oxygen = 100;
-                shield = Math.min(maxShield, shield + 1);
-                updateHUD();
-                playSound(820, "sine", 0.25, 0.18);
+            const feedbackBox = document.getElementById('quiz-feedback-box');
+            feedbackBox.classList.remove('hidden');
 
-                document.getElementById("vega-message").innerHTML =
-                    `<span class="text-emerald-400 font-bold">✅ CHÍNH XÁC (+${200 + timeBonus} điểm, hồi đầy 100% Oxygen & +1 Giáp)!</span> ${qData.explain}`;
+            if (isCorrect) {
+                gameState.quizStreak++;
+                gameState.quizSolvedCount++;
+                
+                const streakMultiplierBonus = (gameState.quizStreak - 1) * 30;
+                const totalSciReward = cfg.sciReward + streakMultiplierBonus;
+                const totalBudgetReward = cfg.budgetReward + (gameState.quizStreak - 1) * 15;
+
+                gameState.accumulatedScience += totalSciReward;
+                gameState.availableBudget += totalBudgetReward;
+
+                feedbackBox.className = "rounded-xl p-4 border border-emerald-500/50 bg-emerald-950/30 space-y-3";
+                document.getElementById('quiz-feedback-title').innerHTML = `<span class="text-emerald-400 font-bold"><i class="fa-solid fa-check-circle mr-1"></i> ĐÚNG! (Combo ${gameState.quizStreak}x) NHẬN THƯỞNG: +${totalSciReward} Điểm KH & +$${totalBudgetReward}M Ngân Sách</span>`;
+                document.getElementById('quiz-hint-prompt').classList.add('hidden');
             } else {
-                shield = Math.max(0, shield - 3);
-                updateHUD();
-                playSound(150, "sawtooth", 0.35, 0.2);
-
-                const vp = document.getElementById("main-viewport");
-                vp.classList.remove("shake-hit");
-                void vp.offsetWidth;
-                vp.classList.add("shake-hit");
-
-                document.getElementById("vega-message").innerHTML =
-                    `<span class="text-red-400 font-bold">❌ SAI RỒI (-3 Giáp trừng phạt)!</span> ${qData.explain}`;
-
-                if (shield <= 0) {
-                    setTimeout(() => {
-                        endGame(false, "Phân tích sai dữ liệu môi trường khiến hệ thống tàu quá tải!");
-                    }, 2200);
-                    return;
-                }
+                gameState.quizStreak = 0;
+                feedbackBox.className = "rounded-xl p-4 border border-red-500/50 bg-red-950/30 space-y-3";
+                document.getElementById('quiz-feedback-title').innerHTML = `<span class="text-red-400 font-bold"><i class="fa-solid fa-circle-xmark mr-1"></i> CHƯA CHÍNH XÁC! (Chuỗi combo bị đặt lại)</span>`;
+                
+                const gotoBtn = document.getElementById('goto-lib-btn');
+                gotoBtn.setAttribute('onclick', `goToFactCard(${q.factId})`);
+                
+                document.getElementById('quiz-hint-prompt').classList.remove('hidden');
             }
 
-            document.getElementById("btn-next-question").classList.remove("hidden");
+            document.getElementById('quiz-explanation-text').innerText = q.explanation;
+            recalculateStats();
+            updateQuizHeaderStats();
         }
 
-        document.getElementById("btn-next-question").onclick = () => {
-            currentQIdx++;
-            if (currentQIdx < 3) {
-                loadQuestion();
-            } else {
-                currentStageIdx++;
-                if (currentStageIdx < PLANETS_DATA.length) {
-                    oxygen = 100;
-                    updateHUD();
-                    showBriefing();
-                } else {
-                    oxygen = 100;
-                    updateHUD();
-                    endGame(true);
-                }
+        let canvas, ctx, stars = [], camX = 0, camY = 0, zoom = 1, isDragging = false, dragStart = { x: 0, y: 0 };
+
+        function initCanvas() {
+            canvas = document.getElementById('spaceCanvas');
+            ctx = canvas.getContext('2d');
+            resizeCanvas();
+            window.addEventListener('resize', resizeCanvas);
+
+            for(let i = 0; i < 350; i++) {
+                stars.push({ x: (Math.random() - 0.5) * 3200, y: (Math.random() - 0.5) * 3200, size: Math.random() * 1.8 + 0.3, alpha: Math.random() * 0.8 + 0.2 });
             }
-        };
 
-        function endGame(isVictory, failReason = "") {
-            gameMode = "END";
-            clearInterval(questionTimerInterval);
-            document.getElementById("flight-hud-overlay").classList.add("hidden");
-            document.getElementById("touch-controls").classList.add("hidden");
-            document.getElementById("quiz-screen").classList.add("hidden");
+            canvas.addEventListener('mousedown', e => { isDragging = true; dragStart = { x: e.clientX - camX, y: e.clientY - camY }; });
+            window.addEventListener('mousemove', e => { if(isDragging) { camX = e.clientX - dragStart.x; camY = e.clientY - dragStart.y; } });
+            window.addEventListener('mouseup', () => isDragging = false);
+            canvas.addEventListener('wheel', e => { e.preventDefault(); zoom = Math.max(0.4, Math.min(2.5, zoom * (e.deltaY < 0 ? 1.1 : 0.9))); });
+        }
 
-            const endScreen = document.getElementById("end-screen");
-            endScreen.classList.remove("hidden");
+        function resizeCanvas() {
+            canvas.width = canvas.parentElement.clientWidth;
+            canvas.height = canvas.parentElement.clientHeight;
+        }
 
-            document.getElementById("final-score").innerText = score;
-            document.getElementById("final-shield").innerText = `${shield}/${maxShield}`;
-            document.getElementById("final-oxygen").innerText = `${Math.round(oxygen)}%`;
+        function animate() {
+            requestAnimationFrame(animate);
+            renderCanvas();
 
-            if (isVictory) {
-                document.getElementById("end-icon").innerText = "🌍✨";
-                document.getElementById("end-title").innerText = "HẠ CÁNH THÀNH CÔNG TẠI KEPLER-452b!";
-                document.getElementById("end-title").className = "text-2xl md:text-3xl font-extrabold text-emerald-300";
-                document.getElementById("end-desc").innerText =
-                    "Xuất sắc! Bạn đã vượt qua mọi vành đai thiên thạch và hoàn thành 12 thử thách khoa học để mở ra kỷ nguyên mới cho nhân loại trên Kepler-452b!";
-                playSound(980, "triangle", 0.5, 0.2);
-            } else {
-                document.getElementById("end-icon").innerText = "💀🚀";
-                document.getElementById("end-title").innerText = "SỨ MỆNH THẤT BẠI!";
-                document.getElementById("end-title").className = "text-2xl md:text-3xl font-extrabold text-red-400";
-                document.getElementById("end-desc").innerText = failReason;
-                playSound(95, "sawtooth", 0.6, 0.25);
+            if (gameState.phase === 'flying' && !gameState.isPaused && !gameState.inFlightQuizActive) {
+                gameState.flightProgress += 0.0012;
+                gameState.fuel = Math.max(0, gameState.fuel - 0.03);
+
+                if (gameState.flightProgress >= 0.33 && !gameState.checkpoint33Triggered) {
+                    gameState.checkpoint33Triggered = true;
+                    triggerInFlightQuiz(0);
+                } else if (gameState.flightProgress >= 0.66 && !gameState.checkpoint66Triggered) {
+                    gameState.checkpoint66Triggered = true;
+                    triggerInFlightQuiz(1);
+                }
+
+                const pct = Math.min(100, Math.round(gameState.flightProgress * 100));
+                document.getElementById('hud-progress').innerText = `${pct}%`;
+                document.getElementById('hud-progress-bar').style.width = `${pct}%`;
+                document.getElementById('hud-fuel').innerText = `${Math.round(gameState.fuel)}%`;
+                document.getElementById('hud-hull').innerText = `${Math.round(gameState.hull)}%`;
+
+                if (gameState.flightProgress >= 1.0) finishMission();
             }
         }
 
-        document.getElementById("btn-start-mission").onclick = showBriefing;
-        document.getElementById("btn-launch-flight").onclick = startFlight;
+        function renderCanvas() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.save();
+            ctx.translate(canvas.width / 2 + camX, canvas.height / 2 + camY);
+            ctx.scale(zoom, zoom);
+
+            ctx.strokeStyle = 'rgba(0, 243, 255, 0.04)';
+            ctx.lineWidth = 1;
+            const gridSize = 40;
+            for (let x = -1600; x < 1600; x += gridSize) {
+                ctx.beginPath(); ctx.moveTo(x, -1600); ctx.lineTo(x, 1600); ctx.stroke();
+            }
+            for (let y = -1600; y < 1600; y += gridSize) {
+                ctx.beginPath(); ctx.moveTo(-1600, y); ctx.lineTo(1600, y); ctx.stroke();
+            }
+
+            stars.forEach(s => {
+                ctx.fillStyle = `rgba(255, 255, 255, ${s.alpha})`;
+                ctx.beginPath();
+                ctx.arc(s.x, s.y, s.size, 0, Math.PI * 2);
+                ctx.fill();
+            });
+
+            const startPos = { x: -380, y: 0 };
+            const endPos = { x: 380, y: 0 };
+
+            drawPlanet(startPos.x, startPos.y, 45, '#3b82f6', 'Trái Đất');
+            const dest = gameState.selectedDest;
+            drawPlanet(endPos.x, endPos.y, dest.size, dest.color, dest.name);
+
+            ctx.beginPath();
+            ctx.moveTo(startPos.x, startPos.y);
+            const ctrlY = -140;
+            ctx.quadraticCurveTo(0, ctrlY, endPos.x, endPos.y);
+            ctx.strokeStyle = 'rgba(0, 243, 255, 0.35)';
+            ctx.setLineDash([8, 8]);
+            ctx.lineWidth = 2.5;
+            ctx.stroke();
+            ctx.setLineDash([]);
+
+            let t = gameState.phase === 'flying' ? gameState.flightProgress : 0.05;
+            const shipX = (1-t)*(1-t)*startPos.x + 2*(1-t)*t*0 + t*t*endPos.x;
+            const shipY = (1-t)*(1-t)*startPos.y + 2*(1-t)*t*ctrlY + t*t*endPos.y;
+            const dx = 2*(1-t)*(0 - startPos.x) + 2*t*(endPos.x - 0);
+            const dy = 2*(1-t)*(ctrlY - startPos.y) + 2*t*(endPos.y - ctrlY);
+            const angle = Math.atan2(dy, dx);
+
+            drawSpaceship(shipX, shipY, angle);
+            ctx.restore();
+        }
+
+        function drawPlanet(x, y, radius, color, label) {
+            ctx.save();
+            ctx.translate(x, y);
+            const glow = ctx.createRadialGradient(0, 0, radius * 0.8, 0, 0, radius * 1.5);
+            glow.addColorStop(0, color);
+            glow.addColorStop(1, 'transparent');
+            ctx.fillStyle = glow;
+            ctx.beginPath();
+            ctx.arc(0, 0, radius * 1.5, 0, Math.PI * 2);
+            ctx.fill();
+
+            const grad = ctx.createRadialGradient(-radius*0.3, -radius*0.3, radius*0.1, 0, 0, radius);
+            grad.addColorStop(0, '#ffffff');
+            grad.addColorStop(0.4, color);
+            grad.addColorStop(1, '#03050c');
+            ctx.fillStyle = grad;
+            ctx.beginPath();
+            ctx.arc(0, 0, radius, 0, Math.PI * 2);
+            ctx.fill();
+
+            ctx.font = '11px Orbitron, sans-serif';
+            ctx.fillStyle = '#94a3b8';
+            ctx.textAlign = 'center';
+            ctx.fillText(label, 0, radius + 18);
+            ctx.restore();
+        }
+
+        // HÀM VẼ TÀU VŨ TRỤ SFS CHUẨN MẪU HÌNH ẢNH (CENTRAL CORE + 2 SIDE BOOSTERS + KHOANG TẢI TRỌNG & ĐỘNG CƠ)
+        function drawSpaceship(x, y, angle) {
+            ctx.save();
+            ctx.translate(x, y);
+            ctx.rotate(angle + Math.PI / 2);
+
+            const comp = gameState.selectedComponents;
+            const pType = comp.payload ? comp.payload.type : 'probe';
+            const eId = comp.engine ? comp.engine.id : 'eng_chem';
+            const protId = comp.protection ? comp.protection.id : 'prot_basic';
+
+            // Hiệu ứng lửa phun khi bay
+            if (gameState.phase === 'flying' && !gameState.isPaused) {
+                let flameColor = '#00f3ff';
+                let flameLen = 40 + Math.random() * 20;
+                if (eId === 'eng_ion') { flameColor = '#b026ff'; flameLen = 50 + Math.random() * 15; }
+                else if (eId === 'eng_nuclear') { flameColor = '#ffb700'; flameLen = 65 + Math.random() * 25; }
+
+                const gradFlame = ctx.createLinearGradient(0, 50, 0, 50 + flameLen);
+                gradFlame.addColorStop(0, '#ffffff');
+                gradFlame.addColorStop(0.3, flameColor);
+                gradFlame.addColorStop(1, 'transparent');
+                
+                // Lửa phun 3 động cơ (giữa và 2 bên boosters)
+                [-28, 0, 28].forEach(fx => {
+                    ctx.fillStyle = gradFlame;
+                    ctx.beginPath();
+                    ctx.moveTo(fx - 8, 50);
+                    ctx.lineTo(fx, 50 + flameLen);
+                    ctx.lineTo(fx + 8, 50);
+                    ctx.closePath();
+                    ctx.fill();
+                });
+            }
+
+            let tankColor = '#f8fafc';
+            let outlineColor = protId === 'prot_heavy' ? '#ff007f' : '#64748b';
+
+            ctx.fillStyle = tankColor;
+            ctx.strokeStyle = outlineColor;
+            ctx.lineWidth = 1.5;
+
+            // --- 1. HAI TÊN LỬA ĐẨY PHỤ (SIDE BOOSTERS) 2 BÊN ---
+            // Booster trái
+            ctx.fillRect(-36, -15, 14, 65);
+            ctx.strokeRect(-36, -15, 14, 65);
+            // Chóp nón booster trái
+            ctx.beginPath(); ctx.moveTo(-36, -15); ctx.lineTo(-29, -42); ctx.lineTo(-22, -15); ctx.closePath();
+            ctx.fill(); ctx.stroke();
+            // Động cơ booster trái
+            ctx.fillStyle = '#334155';
+            ctx.fillRect(-34, 50, 10, 8);
+            ctx.strokeRect(-34, 50, 10, 8);
+
+            // Booster phải
+            ctx.fillStyle = tankColor;
+            ctx.fillRect(22, -15, 14, 65);
+            ctx.strokeRect(22, -15, 14, 65);
+            // Chóp nón booster phải
+            ctx.beginPath(); ctx.moveTo(22, -15); ctx.lineTo(29, -42); ctx.lineTo(36, -15); ctx.closePath();
+            ctx.fill(); ctx.stroke();
+            // Động cơ booster phải
+            ctx.fillStyle = '#334155';
+            ctx.fillRect(24, 50, 10, 8);
+            ctx.strokeRect(24, 50, 10, 8);
+
+            // Thanh giằng kết nối (Connector struts) giữa core và boosters
+            ctx.strokeStyle = '#94a3b8';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(-22, 10); ctx.lineTo(-12, 10);
+            ctx.moveTo(12, 10); ctx.lineTo(22, 10);
+            ctx.stroke();
+
+            // --- 2. THÂN TÊN LỬA CHÍNH (CENTRAL CORE) ---
+            ctx.fillStyle = tankColor;
+            ctx.strokeStyle = outlineColor;
+            ctx.lineWidth = 1.5;
+            ctx.fillRect(-12, -55, 24, 105);
+            ctx.strokeRect(-12, -55, 24, 105);
+
+            // Các đường phân đoạn bồn chứa nhiên liệu
+            ctx.strokeStyle = '#64748b';
+            ctx.beginPath();
+            ctx.moveTo(-12, -25); ctx.lineTo(12, -25);
+            ctx.moveTo(-12, 20); ctx.lineTo(12, 20);
+            ctx.stroke();
+
+            // --- 3. KHOANG TẢI TRỌNG & CỬA SỔ KÍNH GIỮA THÂN ---
+            ctx.fillStyle = '#0f172a';
+            ctx.fillRect(-8, -45, 16, 18);
+            ctx.strokeStyle = '#00f3ff';
+            ctx.strokeRect(-8, -45, 16, 18);
+
+            // Các thanh sọc kính bên trong khoang tải trọng
+            ctx.strokeStyle = '#00f3ff';
+            ctx.lineWidth = 1;
+            for(let ky = -42; ky <= -30; ky += 3) {
+                ctx.beginPath(); ctx.moveTo(-6, ky); ctx.lineTo(6, ky); ctx.stroke();
+            }
+
+            // Biểu tượng thiết bị trong khoang
+            ctx.fillStyle = '#00f3ff';
+            if (pType === 'rover') {
+                ctx.fillRect(-5, -38, 10, 5);
+                ctx.fillStyle = '#ffffff';
+                ctx.fillRect(-3, -33, 2, 2); ctx.fillRect(1, -33, 2, 2);
+            } else if (pType === 'station') {
+                ctx.beginPath(); ctx.arc(0, -36, 4, 0, Math.PI*2); ctx.fill();
+            } else if (pType === 'telescope') {
+                ctx.fillRect(-1.5, -42, 3, 10);
+            } else {
+                ctx.beginPath(); ctx.arc(0, -36, 2.5, 0, Math.PI*2); ctx.fill();
+            }
+
+            // --- 4. CHÓP NÓN ĐẦU TÀU CHÍNH (NOSE CONE) ---
+            ctx.fillStyle = '#cbd5e1';
+            ctx.strokeStyle = outlineColor;
+            ctx.beginPath();
+            ctx.moveTo(-12, -55);
+            ctx.lineTo(0, -85);
+            ctx.lineTo(12, -55);
+            ctx.closePath();
+            ctx.fill();
+            ctx.stroke();
+
+            // Đầu đỉnh chóp chóp đen nhỏ đặc trưng SFS
+            ctx.fillStyle = '#1e293b';
+            ctx.beginPath();
+            ctx.moveTo(-4, -75);
+            ctx.lineTo(0, -85);
+            ctx.lineTo(4, -75);
+            ctx.closePath();
+            ctx.fill();
+
+            // --- 5. ĐỘNG CƠ DƯỚI ĐÁY CHÍNH (MAIN ENGINE NOZZLE) ---
+            ctx.fillStyle = '#334155';
+            if (eId === 'eng_ion') {
+                ctx.fillRect(-10, 50, 20, 14);
+                ctx.strokeStyle = '#b026ff';
+                ctx.strokeRect(-10, 50, 20, 14);
+            } else if (eId === 'eng_nuclear') {
+                ctx.beginPath();
+                ctx.moveTo(-12, 50);
+                ctx.lineTo(-16, 65);
+                ctx.lineTo(16, 65);
+                ctx.lineTo(12, 50);
+                ctx.closePath();
+                ctx.fill(); ctx.stroke();
+            } else {
+                ctx.fillRect(-10, 50, 20, 10);
+                ctx.strokeRect(-10, 50, 20, 10);
+            }
+
+            ctx.restore();
+        }
     </script>
 </body>
 </html>
