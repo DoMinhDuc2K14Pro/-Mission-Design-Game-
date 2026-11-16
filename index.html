@@ -4,11 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sứ Mệnh Vũ Trụ - SFS Blueprint Builder & Knowledge Hub</title>
-    <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Google Fonts: Orbitron & Inter -->
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;800;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <!-- FontAwesome icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script>
         tailwind.config = {
@@ -27,7 +24,7 @@
         body { background-color: #03050c; color: #e2e8f0; font-family: 'Inter', sans-serif; overflow-x: hidden; }
         .neon-border { box-shadow: 0 0 20px rgba(0, 243, 255, 0.5), inset 0 0 15px rgba(0, 243, 255, 0.2); border: 2px solid rgba(0, 243, 255, 0.9); }
         .neon-border-purple { box-shadow: 0 0 15px rgba(176, 38, 255, 0.25), inset 0 0 15px rgba(176, 38, 255, 0.1); border: 1px solid rgba(176, 38, 255, 0.5); }
-        .glass-panel { background: rgba(11, 14, 38, 0.85); backdrop-filter: blur(16px); border: 1px solid rgba(0, 243, 255, 0.15); }
+        .glass-panel { background: rgba(11, 14, 38, 0.88); backdrop-filter: blur(16px); border: 1px solid rgba(0, 243, 255, 0.15); }
         .scanlines { background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.35) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.03)); background-size: 100% 3px, 6px 100%; pointer-events: none; }
         .custom-scrollbar::-webkit-scrollbar { width: 6px; }
         .custom-scrollbar::-webkit-scrollbar-track { background: rgba(6, 8, 20, 0.8); }
@@ -45,7 +42,7 @@
             </div>
             <div>
                 <h1 class="font-orbitron font-bold text-sm md:text-lg text-white tracking-wider flex items-center gap-2">SFS BLUEPRINT BUILDER</h1>
-                <p class="text-[10px] text-cyan-400 font-mono hidden xl:block">Hệ Thống Lắp Ráp SFS & Mở Khóa Kho Linh Kiện</p>
+                <p class="text-[10px] text-cyan-400 font-mono hidden xl:block">Hệ Thống Lắp Ráp SFS • Bản Đồ Hệ Mặt Trời & Kho 140 Thông Tin NASA</p>
             </div>
         </div>
 
@@ -85,7 +82,7 @@
     <!-- Main Workspace -->
     <main class="flex-1 flex flex-col lg:flex-row relative overflow-hidden">
         
-        <!-- Left Control Sidebar (Blueprint Style Sidebar) -->
+        <!-- Left Control Sidebar -->
         <section id="design-panel" class="w-full lg:w-[460px] glass-panel border-r border-slate-800 flex flex-col h-full z-10 transition-all duration-300">
             <div class="flex border-b border-slate-800 bg-space-900/90 font-orbitron text-xs">
                 <button onclick="switchTab('dest')" id="tab-dest" class="flex-1 py-3 text-center border-b-2 border-cyan-400 text-cyan-400 font-bold hover:bg-space-800 transition">
@@ -109,7 +106,7 @@
                     <div class="grid grid-cols-1 gap-2.5" id="destination-list"></div>
                 </div>
 
-                <!-- BƯỚC 2: KHO LINH KIỆN & CƠ CHẾ MỞ KHÓA BẰNG ĐIỂM KH -->
+                <!-- BƯỚC 2 -->
                 <div id="content-rocket" class="space-y-4 hidden">
                     <div class="bg-purple-950/30 border border-purple-500/40 p-3 rounded-xl flex items-center justify-between gap-3">
                         <div class="text-xs">
@@ -120,6 +117,7 @@
                             Kiếm Điểm KH
                         </button>
                     </div>
+                    <div id="unlock-toast" class="hidden text-xs font-mono p-2.5 rounded-lg border"></div>
                     <div id="component-categories" class="space-y-3"></div>
                 </div>
 
@@ -134,7 +132,7 @@
                         </div>
                         <hr class="border-slate-800">
                         <div class="flex justify-between items-center text-xs">
-                            <span class="text-slate-400">Chi Phí / Ngân Sách ($600M):</span>
+                            <span class="text-slate-400">Chi Phí / Ngân Sách:</span>
                             <span id="summary-cost" class="font-bold text-amber-400">$0M</span>
                         </div>
                         <div class="w-full bg-space-950 h-2 rounded-full overflow-hidden">
@@ -183,13 +181,103 @@
             </div>
         </section>
 
-        <!-- Main Canvas & Blueprint Grid Display -->
+        <!-- Main Canvas & Blueprint / Solar System Display -->
         <section class="flex-1 relative bg-space-950 blueprint-grid flex flex-col items-center justify-center overflow-hidden">
             <div class="absolute inset-0 scanlines z-10 pointer-events-none"></div>
             <canvas id="spaceCanvas" class="w-full h-full block cursor-crosshair"></canvas>
 
+            <!-- THANH CHUYỂN CHẾ ĐỘ XEM NGAY TRONG MỤC LẮP RÁP & MÔ PHỎNG -->
+            <div id="canvas-view-switcher" class="absolute top-4 left-1/2 transform -translate-x-1/2 z-20 flex items-center gap-1.5 bg-space-900/90 backdrop-blur-md p-1.5 rounded-2xl border border-cyan-500/40 shadow-xl font-orbitron text-[11px] md:text-xs">
+                <button onclick="setCanvasView('trajectory')" id="view-btn-trajectory" class="px-3.5 py-2 rounded-xl bg-cyan-500/25 text-cyan-300 border border-cyan-400/60 font-bold transition flex items-center gap-1.5">
+                    <i class="fa-solid fa-route"></i> Quỹ Đạo Sứ Mệnh
+                </button>
+                <button onclick="setCanvasView('solarsystem')" id="view-btn-solarsystem" class="px-3.5 py-2 rounded-xl text-slate-300 hover:text-amber-300 transition flex items-center gap-1.5">
+                    <i class="fa-solid fa-sun text-amber-400"></i> Hệ Mặt Trời (Bấm Xem Hành Tinh)
+                </button>
+            </div>
+
+            <!-- Điều khiển nhỏ cho Hệ Mặt Trời -->
+            <div id="solar-controls" class="hidden absolute top-20 left-4 z-20 flex flex-col gap-2">
+                <button onclick="toggleSolarOrbitPause()" id="solar-orbit-btn" class="glass-panel px-3 py-2 rounded-xl text-xs font-orbitron text-amber-300 border border-amber-500/40 hover:bg-amber-950/50 transition flex items-center gap-2">
+                    <i class="fa-solid fa-pause"></i> Dừng Quỹ Đạo Để Dễ Bấm
+                </button>
+                <button onclick="resetCameraView()" class="glass-panel px-3 py-2 rounded-xl text-xs font-orbitron text-cyan-300 border border-cyan-500/40 hover:bg-cyan-950/50 transition flex items-center gap-2">
+                    <i class="fa-solid fa-compress-arrows-alt"></i> Căn Giữa Hệ Mặt Trời
+                </button>
+            </div>
+
+            <!-- BẢNG THÔNG TIN CHI TIẾT KHI BẤM VÀO HÀNH TINH TRONG HỆ MẶT TRỜI -->
+            <div id="planet-info-card" class="hidden absolute top-20 right-4 bottom-16 w-[340px] md:w-[390px] glass-panel neon-border rounded-2xl z-30 flex flex-col overflow-hidden shadow-2xl">
+                <div class="p-4 border-b border-slate-800 bg-space-900/95 flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <div id="pi-badge-color" class="w-9 h-9 rounded-full border-2 border-white/40 shadow-lg shrink-0"></div>
+                        <div>
+                            <h3 id="pi-name" class="font-orbitron font-bold text-sm md:text-base text-white">Tên Hành Tinh</h3>
+                            <span id="pi-type" class="text-[11px] font-mono text-cyan-400 block">Loại thiên thể</span>
+                        </div>
+                    </div>
+                    <button onclick="closePlanetInfo()" class="w-8 h-8 rounded-lg bg-space-800 hover:bg-red-500/30 text-slate-300 hover:text-red-300 flex items-center justify-center transition">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
+
+                <div class="flex-1 overflow-y-auto p-4 custom-scrollbar space-y-4 text-xs">
+                    <!-- Bảng thông số kỹ thuật -->
+                    <div class="grid grid-cols-2 gap-2 font-mono">
+                        <div class="bg-space-950/80 p-2.5 rounded-xl border border-slate-800">
+                            <span class="text-[10px] text-slate-400 block">Khoảng cách Mặt Trời</span>
+                            <span id="pi-distance" class="text-cyan-300 font-bold text-xs mt-0.5 block">-</span>
+                        </div>
+                        <div class="bg-space-950/80 p-2.5 rounded-xl border border-slate-800">
+                            <span class="text-[10px] text-slate-400 block">Nhiệt độ trung bình</span>
+                            <span id="pi-temp" class="text-amber-400 font-bold text-xs mt-0.5 block">-</span>
+                        </div>
+                        <div class="bg-space-950/80 p-2.5 rounded-xl border border-slate-800">
+                            <span class="text-[10px] text-slate-400 block">1 Ngày (Tự quay)</span>
+                            <span id="pi-day" class="text-emerald-300 font-bold text-xs mt-0.5 block">-</span>
+                        </div>
+                        <div class="bg-space-950/80 p-2.5 rounded-xl border border-slate-800">
+                            <span class="text-[10px] text-slate-400 block">1 Năm (Quỹ đạo)</span>
+                            <span id="pi-year" class="text-purple-300 font-bold text-xs mt-0.5 block">-</span>
+                        </div>
+                        <div class="bg-space-950/80 p-2.5 rounded-xl border border-slate-800">
+                            <span class="text-[10px] text-slate-400 block">Trọng lực bề mặt</span>
+                            <span id="pi-gravity" class="text-slate-200 font-bold text-xs mt-0.5 block">-</span>
+                        </div>
+                        <div class="bg-space-950/80 p-2.5 rounded-xl border border-slate-800">
+                            <span class="text-[10px] text-slate-400 block">Vệ tinh tự nhiên</span>
+                            <span id="pi-moons" class="text-slate-200 font-bold text-xs mt-0.5 block">-</span>
+                        </div>
+                    </div>
+
+                    <!-- Giới thiệu dễ hiểu -->
+                    <div class="bg-space-900/90 p-3.5 rounded-xl border border-slate-800 space-y-2">
+                        <div class="font-orbitron font-bold text-cyan-300 text-xs flex items-center gap-1.5">
+                            <i class="fa-solid fa-circle-info"></i> TỔNG QUAN DỄ HIỂU
+                        </div>
+                        <p id="pi-overview" class="text-slate-200 leading-relaxed"></p>
+                    </div>
+
+                    <!-- Đặc điểm nổi bật -->
+                    <div class="bg-space-900/90 p-3.5 rounded-xl border border-slate-800 space-y-2">
+                        <div class="font-orbitron font-bold text-amber-300 text-xs flex items-center gap-1.5">
+                            <i class="fa-solid fa-star"></i> ĐIỂM ĐẶC BIỆT NHẤT
+                        </div>
+                        <ul id="pi-highlights" class="space-y-1.5 text-slate-200 list-disc pl-4 leading-relaxed"></ul>
+                    </div>
+
+                    <!-- Khám phá của NASA -->
+                    <div class="bg-purple-950/30 p-3.5 rounded-xl border border-purple-500/40 space-y-1.5">
+                        <div class="font-orbitron font-bold text-purple-300 text-xs flex items-center gap-1.5">
+                            <i class="fa-solid fa-satellite"></i> SỨ MỆNH KHÁM PHÁ CỦA NASA
+                        </div>
+                        <p id="pi-nasa" class="text-slate-200 leading-relaxed"></p>
+                    </div>
+                </div>
+            </div>
+
             <!-- Flight Telemetry HUD -->
-            <div id="flight-hud" class="absolute top-4 left-4 right-4 flex justify-between items-start pointer-events-none z-20 transition-all duration-500 opacity-0 transform -translate-y-4">
+            <div id="flight-hud" class="absolute top-16 left-4 right-4 flex justify-between items-start pointer-events-none z-20 transition-all duration-500 opacity-0 transform -translate-y-4">
                 <div class="glass-panel p-4 rounded-xl font-mono text-xs space-y-2 pointer-events-auto min-w-[240px]">
                     <div class="text-cyan-400 font-orbitron font-bold border-b border-cyan-900/60 pb-1.5 flex items-center justify-between">
                         <span>ĐIỀU KHIỂN SỨ MỆNH</span>
@@ -233,17 +321,22 @@
                         <h3 id="fq-question-text" class="text-sm md:text-base font-semibold text-white">Đang tải câu hỏi...</h3>
                     </div>
                     <div id="fq-options-grid" class="grid grid-cols-1 gap-2"></div>
-                    <div id="fq-feedback" class="hidden text-xs font-mono p-3 rounded-xl border"></div>
+                    <div id="fq-feedback" class="hidden text-xs font-mono p-3 rounded-xl border space-y-3"></div>
 
-                    <!-- Khung hỏi khi trả lời sai -->
-                    <div id="fq-hint-prompt" class="hidden bg-cyan-950/80 border border-cyan-400/60 p-3 rounded-xl flex items-center justify-between gap-3 text-xs">
-                        <div>
-                            <div class="font-bold text-cyan-300"><i class="fa-solid fa-circle-question mr-1"></i> Bạn có muốn vào phần tìm hiểu không?</div>
-                            <div class="text-[11px] text-slate-300">Xem ngay lý thuyết chi tiết & link Wikipedia cho câu hỏi này!</div>
+                    <div id="fq-hint-prompt" class="hidden bg-cyan-950/90 border border-cyan-400/70 p-3.5 rounded-xl space-y-2.5 text-xs">
+                        <div class="flex items-center gap-2 text-cyan-300 font-bold">
+                            <i class="fa-solid fa-circle-question text-base"></i>
+                            <span>Bạn có muốn vào phần tìm hiểu không?</span>
                         </div>
-                        <button id="fq-goto-lib-btn" onclick="" class="px-3 py-1.5 rounded-lg bg-cyan-600 hover:bg-cyan-500 text-white font-orbitron font-bold text-[11px] shrink-0 transition shadow-md">
-                            Vào Phần Tìm Hiểu <i class="fa-solid fa-arrow-right ml-1"></i>
-                        </button>
+                        <p class="text-[11px] text-slate-300">Tàu sẽ tạm dừng an toàn để bạn đọc thoải mái thông tin NASA & Wikipedia giải thích cho câu hỏi này.</p>
+                        <div class="flex gap-2 pt-1">
+                            <button id="fq-goto-lib-btn" onclick="" class="flex-1 py-2 rounded-lg bg-cyan-600 hover:bg-cyan-500 text-white font-orbitron font-bold text-[11px] transition shadow-md">
+                                <i class="fa-solid fa-book-open mr-1"></i> Có, Vào Phần Tìm Hiểu
+                            </button>
+                            <button onclick="resumeFlightManually()" class="px-3.5 py-2 rounded-lg bg-space-800 hover:bg-space-700 text-slate-300 font-orbitron text-[11px] border border-slate-700 transition">
+                                Tiếp Tục Bay
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -299,28 +392,36 @@
                 </div>
             </div>
 
-            <div id="space-hint" class="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-space-900/80 border border-slate-700/60 text-slate-300 px-4 py-2 rounded-full text-xs font-mono pointer-events-none">
-                <i class="fa-solid fa-hand-pointer text-cyan-400 mr-1.5"></i> Kéo chuột để di chuyển bản vẽ • Lăn chuột để thu phóng
+            <div id="space-hint" class="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-space-900/85 border border-slate-700/60 text-slate-300 px-4 py-2 rounded-full text-xs font-mono pointer-events-none whitespace-nowrap">
+                <i class="fa-solid fa-hand-pointer text-cyan-400 mr-1.5"></i> Kéo chuột để di chuyển • Lăn chuột để thu phóng • Bấm vào hành tinh để xem chi tiết
             </div>
         </section>
 
         <!-- KNOWLEDGE HUB, QUIZ & LEARNING LIBRARY PANEL -->
-        <section id="quiz-panel" class="absolute inset-0 bg-space-950/95 backdrop-blur-xl z-20 hidden flex-col items-center justify-start md:justify-center p-4 md:p-6 overflow-y-auto custom-scrollbar">
-            <div class="max-w-4xl w-full space-y-4 my-auto">
+        <section id="quiz-panel" class="absolute inset-0 bg-space-950/95 backdrop-blur-xl z-20 hidden flex-col items-center justify-start p-4 md:p-6 overflow-y-auto custom-scrollbar">
+            <div class="max-w-5xl w-full space-y-4 my-auto">
                 
-                <!-- Top Header & Stats -->
+                <div id="return-flight-banner" class="hidden glass-panel border border-amber-400/70 bg-amber-950/40 rounded-2xl p-3.5 flex items-center justify-between gap-3">
+                    <div class="flex items-center gap-2.5 text-xs text-amber-200">
+                        <i class="fa-solid fa-pause-circle text-amber-400 text-lg"></i>
+                        <span>Chuyến bay của bạn đang tạm dừng an toàn để bạn xem thông tin. Khi đọc xong, bấm nút bên cạnh để bay tiếp!</span>
+                    </div>
+                    <button onclick="returnToPausedFlight()" class="px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-space-950 font-orbitron font-bold text-xs shrink-0 transition shadow-md">
+                        <i class="fa-solid fa-play mr-1"></i> Quay Lại Sứ Mệnh
+                    </button>
+                </div>
+
                 <div class="glass-panel neon-border-purple rounded-2xl p-4 md:p-5 flex flex-wrap items-center justify-between gap-4">
                     <div class="flex items-center gap-3">
                         <div class="w-11 h-11 rounded-xl bg-purple-500/20 border border-purple-400/50 flex items-center justify-center text-purple-300 text-xl">
                             <i class="fa-solid fa-book-open-reader"></i>
                         </div>
                         <div>
-                            <h2 class="font-orbitron font-bold text-base md:text-lg text-white tracking-wide">TRẠM TRI THỨC & NHẬN THƯỞNG COMBO</h2>
-                            <p class="text-xs text-purple-300 font-mono">Trả lời đúng liên tục để nhận thưởng điểm KH & Ngân sách tăng theo chuỗi combo!</p>
+                            <h2 class="font-orbitron font-bold text-base md:text-lg text-white tracking-wide">TRẠM TRI THỨC & KHO 140 THÔNG TIN NASA</h2>
+                            <p class="text-xs text-purple-300 font-mono">Trả lời đúng nhận Điểm KH & Ngân sách • Tìm kiếm nhanh trong 140 dữ liệu đã kiểm định!</p>
                         </div>
                     </div>
 
-                    <!-- Metrics -->
                     <div class="flex items-center gap-2.5 font-mono text-xs">
                         <div class="bg-space-900/90 px-3 py-1.5 rounded-lg border border-amber-500/40 text-center">
                             <span class="text-[10px] text-slate-400 block">COMBO STREAK</span>
@@ -333,17 +434,16 @@
                     </div>
                 </div>
 
-                <!-- Sub-tabs: Trắc Nghiệm vs Phần Tìm Hiểu -->
                 <div class="flex gap-2 font-orbitron text-xs">
                     <button onclick="switchQuizSubTab('quiz')" id="subtab-quiz-btn" class="flex-1 py-2.5 rounded-xl bg-purple-600/30 border border-purple-400/50 text-purple-200 font-bold transition flex items-center justify-center gap-2">
                         <i class="fa-solid fa-brain"></i> Trắc Nghiệm Nhận Thưởng
                     </button>
                     <button onclick="switchQuizSubTab('library')" id="subtab-lib-btn" class="flex-1 py-2.5 rounded-xl bg-space-900/90 border border-slate-700 text-slate-300 hover:text-cyan-300 transition flex items-center justify-center gap-2">
-                        <i class="fa-solid fa-book-bookmark"></i> Phần Tìm Hiểu (60 Sự Thật NASA)
+                        <i class="fa-solid fa-magnifying-glass"></i> Phần Tìm Hiểu (140 Thông Tin NASA & Wikipedia)
                     </button>
                 </div>
 
-                <!-- SUB-TAB 1: QUIZ LOBBY & ARENA -->
+                <!-- SUB-TAB 1: QUIZ -->
                 <div id="subtab-quiz-content" class="space-y-4">
                     <div id="quiz-lobby" class="glass-panel rounded-2xl p-6 md:p-8 text-center space-y-6 border border-slate-800">
                         <h3 class="font-orbitron text-lg font-bold text-cyan-300">CHỌN CẤP ĐỘ THỬ THÁCH</h3>
@@ -379,7 +479,6 @@
                         </button>
                     </div>
 
-                    <!-- Active Question Arena -->
                     <div id="quiz-arena" class="glass-panel rounded-2xl p-5 space-y-5 border border-cyan-500/30 hidden">
                         <div class="flex items-center justify-between text-xs font-mono">
                             <span id="quiz-category-tag" class="px-2.5 py-1 rounded bg-purple-950/80 text-purple-300 border border-purple-500/40">HỆ MẶT TRỜI</span>
@@ -398,14 +497,13 @@
                             <div id="quiz-feedback-title" class="font-orbitron font-bold text-xs"></div>
                             <p id="quiz-explanation-text" class="text-xs text-slate-300"></p>
                             
-                            <!-- Prompt hỏi người chơi khi trả lời sai -->
-                            <div id="quiz-hint-prompt" class="hidden bg-cyan-950/80 border border-cyan-400/60 p-3 rounded-xl flex items-center justify-between gap-3 text-xs">
+                            <div id="quiz-hint-prompt" class="hidden bg-cyan-950/90 border border-cyan-400/70 p-3.5 rounded-xl flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
                                 <div>
-                                    <div class="font-bold text-cyan-300"><i class="fa-solid fa-circle-question mr-1"></i> Bạn có muốn vào phần tìm hiểu không?</div>
-                                    <div class="text-[11px] text-slate-300">Xem ngay lý thuyết chi tiết & link Wikipedia cho câu hỏi này!</div>
+                                    <div class="font-bold text-cyan-300 text-sm"><i class="fa-solid fa-circle-question mr-1"></i> Bạn có muốn vào phần tìm hiểu không?</div>
+                                    <div class="text-[11px] text-slate-300 mt-0.5">Xem ngay thông tin NASA chi tiết & liên kết Wikipedia cho câu hỏi này!</div>
                                 </div>
-                                <button id="goto-lib-btn" onclick="" class="px-3 py-1.5 rounded-lg bg-cyan-600 hover:bg-cyan-500 text-white font-orbitron font-bold text-[11px] shrink-0 transition shadow-md">
-                                    Vào Phần Tìm Hiểu <i class="fa-solid fa-arrow-right ml-1"></i>
+                                <button id="goto-lib-btn" onclick="" class="px-4 py-2 rounded-lg bg-cyan-600 hover:bg-cyan-500 text-white font-orbitron font-bold text-xs shrink-0 transition shadow-md">
+                                    Có, Vào Phần Tìm Hiểu <i class="fa-solid fa-arrow-right ml-1"></i>
                                 </button>
                             </div>
 
@@ -417,16 +515,42 @@
                     </div>
                 </div>
 
-                <!-- SUB-TAB 2: PHẦN TÌM HIỂU (60 SỰ THẬT KÈM WIKI LINK) -->
-                <div id="subtab-lib-content" class="glass-panel rounded-2xl p-5 space-y-4 hidden custom-scrollbar max-h-[500px] overflow-y-auto text-xs">
-                    <div class="border-b border-slate-800 pb-3">
-                        <h3 class="font-orbitron font-bold text-sm text-cyan-300 flex items-center gap-2">
-                            <i class="fa-solid fa-shield-halved"></i> 60 SỰ THẬT VŨ TRỤ ĐÃ ĐƯỢC NASA KIỂM CHỨNG & WIKIPEDIA
-                        </h3>
-                        <p class="text-xs text-slate-400 mt-1">Danh sách hiển thị chi tiết từng thẻ kèm liên kết Wikipedia tra cứu.</p>
+                <!-- SUB-TAB 2: PHẦN TÌM HIỂU -->
+                <div id="subtab-lib-content" class="glass-panel rounded-2xl p-5 space-y-4 hidden text-xs">
+                    <div class="border-b border-slate-800 pb-4 space-y-3">
+                        <div class="flex flex-wrap items-center justify-between gap-2">
+                            <h3 class="font-orbitron font-bold text-sm text-cyan-300 flex items-center gap-2">
+                                <i class="fa-solid fa-shield-halved"></i> KHO DỮ LIỆU 140 THÔNG TIN DO NASA KIỂM ĐỊNH & WIKIPEDIA
+                            </h3>
+                            <span id="lib-result-count" class="text-xs font-mono text-purple-300 bg-purple-950/60 px-2.5 py-1 rounded border border-purple-500/40">Hiển thị 140 / 140 thông tin</span>
+                        </div>
+
+                        <div class="flex flex-col md:flex-row gap-2.5">
+                            <div class="relative flex-1">
+                                <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-cyan-400"></i>
+                                <input type="text" id="lib-search-input" oninput="filterLibraryFacts()" 
+                                    placeholder="Tìm kiếm thông tin (VD: Sao Hỏa, Apollo, hố đen, Mặt Trăng, #42)..." 
+                                    class="w-full bg-space-950/90 border border-cyan-500/40 focus:border-cyan-400 rounded-xl pl-10 pr-9 py-2.5 text-xs md:text-sm text-white placeholder-slate-500 focus:outline-none">
+                                <button onclick="clearLibrarySearch()" id="lib-clear-btn" class="hidden absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white">
+                                    <i class="fa-solid fa-circle-xmark"></i>
+                                </button>
+                            </div>
+                            <select id="lib-category-filter" onchange="filterLibraryFacts()" 
+                                class="bg-space-950/90 border border-slate-700 focus:border-cyan-400 rounded-xl px-3.5 py-2.5 text-xs md:text-sm text-cyan-300 font-mono focus:outline-none">
+                                <option value="ALL">Tất cả chủ đề (140)</option>
+                                <option value="Hệ Mặt Trời">Hệ Mặt Trời (20)</option>
+                                <option value="Mặt Trăng & Vệ Tinh">Mặt Trăng & Vệ Tinh (20)</option>
+                                <option value="Sao Chổi & Tiểu Hành Tinh">Sao Chổi & Tiểu Hành Tinh (15)</option>
+                                <option value="Lịch Sử & Sứ Mệnh">Lịch Sử & Sứ Mệnh NASA (25)</option>
+                                <option value="Kính Viễn Vọng">Kính Viễn Vọng Không Gian (15)</option>
+                                <option value="Vật Lý & Hố Đen">Vật Lý Thiên Văn & Hố Đen (20)</option>
+                                <option value="Ngoại Hành Tinh & Vũ Trụ Sâu">Ngoại Hành Tinh & Vũ Trụ Sâu (13)</option>
+                                <option value="Công Nghệ Tên Lửa & Phi Hành Gia">Công Nghệ Tên Lửa & Phi Hành Gia (12)</option>
+                            </select>
+                        </div>
                     </div>
 
-                    <div id="library-facts-container" class="grid grid-cols-1 md:grid-cols-2 gap-3"></div>
+                    <div id="library-facts-container" class="grid grid-cols-1 md:grid-cols-2 gap-3 max-h-[430px] overflow-y-auto custom-scrollbar pr-1"></div>
                 </div>
 
             </div>
@@ -438,85 +562,248 @@
         const INITIAL_BUDGET = 600;
         const MAX_WEIGHT_LIMIT = 120;
 
-        const DESTINATIONS = [
+        // DỮ LIỆU CHI TIẾT CÁC THIÊN THỂ TRONG HỆ MẶT TRỜI (BẤM VÀO HÀNH TINH ĐỂ XEM)
+        const SOLAR_SYSTEM_BODIES = [
+            {
+                id: 'sun',
+                name: 'Mặt Trời (The Sun)',
+                type: 'Ngôi sao lùn vàng (G2V) • Trung tâm Hệ Mặt Trời',
+                orbitRadius: 0,
+                speed: 0,
+                angle: 0,
+                radius: 36,
+                color: '#fbbf24',
+                distance: '0 km (Trung tâm)',
+                temp: '5,500°C (Bề mặt) / 15 triệu °C (Lõi)',
+                day: '25 - 35 ngày Trái Đất',
+                year: '230 triệu năm (quanh tâm Ngân Hà)',
+                gravity: '274 m/s² (gấp 28 lần Trái Đất)',
+                moons: '8 hành tinh quay quanh',
+                overview: 'Mặt Trời là trái tim của Hệ Mặt Trời, chiếm tới 99.86% tổng khối lượng của cả hệ thống. Lực hấp dẫn khổng lồ của nó giữ tất cả các hành tinh, tiểu hành tinh và sao chổi quay trên quỹ đạo ổn định.',
+                highlights: [
+                    'Hoạt động như một lò phản ứng nhiệt hạch khổng lồ, biến đổi 600 triệu tấn khí Hydro thành Heli mỗi giây.',
+                    'Ánh sáng từ Mặt Trời mất khoảng 8 phút 20 giây để đi hết quãng đường 150 triệu km tới Trái Đất.',
+                    'Đường kính Mặt Trời lớn gấp 109 lần Trái Đất (có thể chứa vừa khoảng 1.3 triệu Trái Đất bên trong).'
+                ],
+                nasa: 'Tàu thăm dò Parker Solar Probe của NASA đang bay xuyên qua bầu khí quyển ngoài cùng (nhật hoa) của Mặt Trời để giải mã bí ẩn về gió mặt trời.'
+            },
+            {
+                id: 'mercury',
+                name: 'Sao Thủy (Mercury)',
+                type: 'Hành tinh đất đá • Gần Mặt Trời nhất',
+                orbitRadius: 68,
+                speed: 0.018,
+                angle: 0.4,
+                radius: 7,
+                color: '#9ca3af',
+                distance: '57.9 triệu km (0.39 AU)',
+                temp: '-180°C (Đêm) đến +430°C (Ngày)',
+                day: '58.6 ngày Trái Đất',
+                year: '88 ngày Trái Đất',
+                gravity: '3.7 m/s² (38% Trái Đất)',
+                moons: '0 vệ tinh',
+                overview: 'Sao Thủy là hành tinh nhỏ nhất và nằm gần Mặt Trời nhất. Bề mặt của nó đầy rẫy các hố va chạm thiên thạch trông rất giống Mặt Trăng của chúng ta.',
+                highlights: [
+                    'Vì hầu như không có bầu khí quyển giữ nhiệt nên chênh lệch nhiệt độ ngày và đêm ở đây khắc nghiệt nhất Hệ Mặt Trời.',
+                    'Có lõi sắt khổng lồ chiếm tới khoảng 85% bán kính của toàn bộ hành tinh.',
+                    'Di chuyển quanh Mặt Trời nhanh nhất Hệ Mặt Trời với vận tốc gần 47 km/giây.'
+                ],
+                nasa: 'Tàu MESSENGER của NASA đã lập bản đồ toàn bộ bề mặt Sao Thủy và phát hiện băng nước ẩn sâu trong các miệng hố tối vĩnh viễn ở hai cực.'
+            },
+            {
+                id: 'venus',
+                name: 'Sao Kim (Venus)',
+                type: 'Hành tinh đất đá • Nóng nhất Hệ Mặt Trời',
+                orbitRadius: 102,
+                speed: 0.013,
+                angle: 2.1,
+                radius: 11,
+                color: '#fcd34d',
+                distance: '108.2 triệu km (0.72 AU)',
+                temp: '+465°C (Nóng chảy cả chì)',
+                day: '243 ngày Trái Đất (Quay ngược chiều)',
+                year: '225 ngày Trái Đất',
+                gravity: '8.87 m/s² (90% Trái Đất)',
+                moons: '0 vệ tinh',
+                overview: 'Sao Kim có kích thước gần bằng Trái Đất nên thường được gọi là "hành tinh chị em", nhưng môi trường của nó lại cực kỳ khắc nghiệt với những đám mây axit sunfuric dày đặc.',
+                highlights: [
+                    'Là hành tinh nóng nhất Hệ Mặt Trời (nóng hơn cả Sao Thủy) do hiệu ứng nhà kính mất kiểm soát của khí CO2.',
+                    'Một ngày tự quay của Sao Kim dài hơn cả một năm của nó, và nó quay ngược chiều so với hầu hết các hành tinh khác (Mặt Trời mọc ở hướng Tây).',
+                    'Là thiên thể sáng nhất trên bầu trời đêm Trái Đất sau Mặt Trăng (thường gọi là Sao Hôm hoặc Sao Mai).'
+                ],
+                nasa: 'Tàu Magellan của NASA đã dùng radar xuyên qua lớp mây dày để lập bản đồ hàng nghìn ngọn núi lửa trên Sao Kim.'
+            },
+            {
+                id: 'earth',
+                name: 'Trái Đất (Earth)',
+                type: 'Hành tinh đất đá • Hành tinh Xanh của sự sống',
+                orbitRadius: 145,
+                speed: 0.010,
+                angle: 3.8,
+                radius: 12.5,
+                color: '#3b82f6',
+                distance: '149.6 triệu km (1.00 AU)',
+                temp: '+15°C (Trung bình toàn cầu)',
+                day: '23 giờ 56 phút',
+                year: '365.25 ngày',
+                gravity: '9.81 m/s² (Chuẩn 1G)',
+                moons: '1 vệ tinh (Mặt Trăng)',
+                overview: 'Trái Đất là hành tinh thứ ba tính từ Mặt Trời và là nơi duy nhất trong vũ trụ được biết đến có sự sống phát triển phong phú nhờ có nước lỏng bao phủ hơn 70% bề mặt.',
+                highlights: [
+                    'Bầu khí quyển giàu Nitơ (78%) và Oxy (21%) cùng tầng Ozone giúp bảo vệ sinh vật khỏi tia cực tím và thiên thạch nhỏ.',
+                    'Từ trường mạnh mẽ hoạt động như lá chắn vô hình đẩy lùi các hạt bức xạ nguy hiểm từ gió mặt trời.',
+                    'Trục nghiêng 23.5 độ tạo ra 4 mùa Xuân - Hạ - Thu - Đông rõ rệt.'
+                ],
+                nasa: 'NASA vận hành hàng chục vệ tinh quan sát Trái Đất để theo dõi biến đổi khí hậu, đại dương, rừng và dự báo bão.'
+            },
             {
                 id: 'moon',
                 name: 'Mặt Trăng (The Moon)',
-                subtitle: 'Vệ Tinh Trái Đất',
-                distKm: '384,400 km',
-                difficulty: 'Dễ',
-                reqDeltaV: 4.2,
-                reqShield: 10,
-                reqPayload: 'any',
-                baseScience: 400,
-                color: '#cbd5e1',
-                size: 22,
-                icon: 'fa-moon',
-                desc: 'Mục tiêu thử nghiệm cơ bản. Yêu cầu tải trọng nhẹ và Delta-V thấp.'
+                type: 'Vệ tinh tự nhiên duy nhất của Trái Đất',
+                orbitRadius: 172,
+                speed: 0.009,
+                angle: 4.1,
+                radius: 5.5,
+                color: '#e2e8f0',
+                distance: '384,400 km tính từ Trái Đất',
+                temp: '-173°C đến +127°C',
+                day: '27.3 ngày Trái Đất',
+                year: '27.3 ngày (Quay quanh Trái Đất)',
+                gravity: '1.62 m/s² (Bằng 1/6 Trái Đất)',
+                moons: 'Vệ tinh của Trái Đất',
+                overview: 'Mặt Trăng là người bạn đồng hành trung thành của Trái Đất suốt 4.5 tỷ năm qua, giúp ổn định trục nghiêng của Trái Đất và tạo ra hiện tượng thủy triều ở các đại dương.',
+                highlights: [
+                    'Do hiện tượng khóa thủy triều, Mặt Trăng luôn hướng một mặt duy nhất về phía Trái Đất.',
+                    'Trọng lực chỉ bằng 1/6 Trái Đất nên một người nặng 60 kg lên Mặt Trăng sẽ chỉ nhẹ như 10 kg.',
+                    'Là thiên thể ngoài Trái Đất duy nhất con người từng trực tiếp đặt chân lên.'
+                ],
+                nasa: 'Chương trình Apollo (1969–1972) đã đưa 12 phi hành gia đi bộ trên Mặt Trăng, và chương trình Artemis đang chuẩn bị đưa con người trở lại.'
             },
             {
                 id: 'mars',
                 name: 'Sao Hỏa (Mars)',
-                subtitle: 'Hành Tinh Đỏ',
-                distKm: '225,000,000 km',
-                difficulty: 'Trung Bình',
-                reqDeltaV: 9.5,
-                reqShield: 35,
-                reqPayload: 'rover',
-                baseScience: 900,
+                type: 'Hành tinh đất đá • Hành Tinh Đỏ',
+                orbitRadius: 212,
+                speed: 0.0075,
+                angle: 5.4,
+                radius: 9.5,
                 color: '#ef4444',
-                size: 30,
-                icon: 'fa-globe-americas',
-                desc: 'Đòi hỏi Xe Tự Hành Rover để nghiên cứu địa chất và lá chắn nhiệt hạ cánh.'
-            },
-            {
-                id: 'asteroids',
-                name: 'Vành Đai Tiểu Hành Tinh',
-                subtitle: 'Vùng Mảnh Vỡ Vũ Trụ',
-                distKm: '400,000,000 km',
-                difficulty: 'Khó',
-                reqDeltaV: 12.0,
-                reqShield: 60,
-                reqPayload: 'probe',
-                baseScience: 1500,
-                color: '#a1a1aa',
-                size: 38,
-                icon: 'fa-meteor',
-                desc: 'Môi trường va chạm nguy hiểm! Yêu cầu giáp bảo vệ cao và Tàu Thăm Dò.'
+                distance: '227.9 triệu km (1.52 AU)',
+                temp: '-63°C (Trung bình)',
+                day: '24 giờ 37 phút (Rất giống Trái Đất)',
+                year: '687 ngày Trái Đất',
+                gravity: '3.72 m/s² (38% Trái Đất)',
+                moons: '2 vệ tinh (Phobos & Deimos)',
+                overview: 'Sao Hỏa có màu đỏ rực đặc trưng do bụi oxit sắt (gỉ sắt) phủ khắp bề mặt. Hàng tỷ năm trước, Sao Hỏa từng có sông ngòi, hồ nước lỏng và bầu khí quyển dày hơn.',
+                highlights: [
+                    'Sở hữu ngọn núi lửa lớn nhất Hệ Mặt Trời là Olympus Mons (cao gần 22 km, gấp gần 3 lần đỉnh Everest).',
+                    'Có hẻm núi khổng lồ Valles Marineris dài hơn 4,000 km.',
+                    'Có hai chỏm băng vĩnh cửu ở hai cực chứa nước đóng băng và băng khô CO2.'
+                ],
+                nasa: 'Các xe tự hành Curiosity và Perseverance của NASA đang trực tiếp lăn bánh trên Sao Hỏa để tìm kiếm dấu hiệu sự sống cổ đại.'
             },
             {
                 id: 'jupiter',
                 name: 'Sao Mộc (Jupiter)',
-                subtitle: 'Gã Khổng Lồ Khí',
-                distKm: '778,000,000 km',
-                difficulty: 'Rất Khó',
-                reqDeltaV: 17.5,
-                reqShield: 80,
-                reqPayload: 'station',
-                baseScience: 2600,
+                type: 'Hành tinh khí khổng lồ • Lớn nhất Hệ Mặt Trời',
+                orbitRadius: 278,
+                speed: 0.0045,
+                angle: 1.2,
+                radius: 22,
                 color: '#f97316',
-                size: 52,
-                icon: 'fa-sun',
-                desc: 'Bức xạ cực lớn. Đòi hỏi Trạm Nghiên Cứu Quỹ Đạo và động cơ công suất lớn.'
+                distance: '778.5 triệu km (5.20 AU)',
+                temp: '-110°C (Tầng mây trên)',
+                day: '9 giờ 55 phút (Quay nhanh nhất)',
+                year: '11.86 năm Trái Đất',
+                gravity: '24.79 m/s² (Gấp 2.5 lần Trái Đất)',
+                moons: '95 vệ tinh (Io, Europa, Ganymede, Callisto...)',
+                overview: 'Sao Mộc là gã khổng lồ thực sự của Hệ Mặt Trời: khối lượng của nó lớn gấp 2.5 lần tất cả các hành tinh khác cộng lại và cấu tạo chủ yếu từ khí Hydro và Heli.',
+                highlights: [
+                    'Nổi tiếng với Vết Đỏ Lớn – một siêu bão xoáy khổng lồ lớn hơn cả Trái Đất đã hoành hành hàng trăm năm.',
+                    'Tự quay nhanh nhất Hệ Mặt Trời, tạo ra các dải mây sọc ngang rực rỡ và từ trường mạnh gấp 20,000 lần Trái Đất.',
+                    'Vệ tinh Europa của nó có đại dương nước lỏng khổng lồ bên dưới lớp vỏ băng, là ứng cử viên hàng đầu cho sự sống ngoài Trái Đất.'
+                ],
+                nasa: 'Tàu Juno của NASA đang bay quanh Sao Mộc để chụp ảnh cực quang và nghiên cứu cấu trúc lõi sâu bên trong hành tinh.'
             },
             {
-                id: 'deepspace',
-                name: 'Vũ Trụ Sâu (Deep Space)',
-                subtitle: 'Hệ Nối Proxima Centauri',
-                distKm: '4.24 Năm Ánh Sáng',
-                difficulty: 'Cực Siêu',
-                reqDeltaV: 30.0,
-                reqShield: 100,
-                reqPayload: 'telescope',
-                baseScience: 5000,
-                color: '#a855f7',
-                size: 42,
-                icon: 'fa-bahai',
-                desc: 'Thách thức tối thượng. Yêu cầu Kính Thiên Văn Không Gian và động cơ Hạt Nhân.'
+                id: 'saturn',
+                name: 'Sao Thổ (Saturn)',
+                type: 'Hành tinh khí khổng lồ • Viên ngọc vành đai',
+                orbitRadius: 348,
+                speed: 0.0032,
+                angle: 2.9,
+                radius: 18.5,
+                color: '#eab308',
+                distance: '1.43 tỷ km (9.58 AU)',
+                temp: '-140°C (Tầng mây trên)',
+                day: '10 giờ 33 phút',
+                year: '29.45 năm Trái Đất',
+                gravity: '10.44 m/s² (Gần bằng Trái Đất)',
+                moons: '146 vệ tinh (Titan, Enceladus, Mimas...)',
+                overview: 'Sao Thổ nổi tiếng khắp vũ trụ nhờ hệ thống vành đai tráng lệ gồm hàng tỷ mảnh băng và đá kích thước từ hạt bụi đến tảng nhà quay quanh xích đạo.',
+                highlights: [
+                    'Mật độ trung bình của Sao Thổ nhẹ hơn cả nước – nếu có một bể nước khổng lồ đủ lớn, Sao Thổ sẽ nổi lên trên mặt nước.',
+                    'Cực Bắc của Sao Thổ có một cơn bão khí quyển hình lục giác 6 cạnh kỳ lạ rộng gần 30,000 km.',
+                    'Vệ tinh Titan của Sao Thổ có bầu khí quyển dày và những hồ chứa khí methane lỏng.'
+                ],
+                nasa: 'Sứ mệnh Cassini-Huygens đã khám phá Sao Thổ suốt 13 năm và thả tàu đổ bộ xuống bề mặt vệ tinh Titan.'
+            },
+            {
+                id: 'uranus',
+                name: 'Sao Thiên Vương (Uranus)',
+                type: 'Hành tinh băng khổng lồ • Hành tinh lăn ngang',
+                orbitRadius: 412,
+                speed: 0.0022,
+                angle: 4.7,
+                radius: 14,
+                color: '#22d3ee',
+                distance: '2.87 tỷ km (19.2 AU)',
+                temp: '-195°C (Lạnh nhất Hệ Mặt Trời)',
+                day: '17 giờ 14 phút (Quay ngược chiều)',
+                year: '84 năm Trái Đất',
+                gravity: '8.69 m/s²',
+                moons: '28 vệ tinh (Titania, Oberon, Miranda...)',
+                overview: 'Sao Thiên Vương có màu xanh ngọc bích dịu mắt nhờ khí methane trong bầu khí quyển hấp thụ ánh sáng đỏ. Bên trong nó chứa nhiều băng nước, amoniac và methane.',
+                highlights: [
+                    'Có trục nghiêng tới 98 độ – nghĩa là nó gần như "nằm ngang" và lăn trên quỹ đạo quanh Mặt Trời như một quả bóng.',
+                    'Mỗi mùa trên Sao Thiên Vương kéo dài tới 21 năm Trái Đất.',
+                    'Cũng có 13 vành đai mảnh tối màu bao quanh.'
+                ],
+                nasa: 'Tàu Voyager 2 của NASA đã bay ngang qua Sao Thiên Vương vào năm 1986, gửi về những bức ảnh cận cảnh đầu tiên.'
+            },
+            {
+                id: 'neptune',
+                name: 'Sao Hải Vương (Neptune)',
+                type: 'Hành tinh băng khổng lồ • Xa Mặt Trời nhất',
+                orbitRadius: 472,
+                speed: 0.0016,
+                angle: 0.9,
+                radius: 13.5,
+                color: '#6366f1',
+                distance: '4.50 tỷ km (30.1 AU)',
+                temp: '-200°C',
+                day: '16 giờ 6 phút',
+                year: '164.8 năm Trái Đất',
+                gravity: '11.15 m/s²',
+                moons: '16 vệ tinh (Lớn nhất là Triton)',
+                overview: 'Sao Hải Vương là hành tinh thứ 8 và xa Mặt Trời nhất trong Hệ Mặt Trời. Nó tối tăm, lạnh giá và bị quét qua bởi những cơn bão siêu thanh dữ dội nhất.',
+                highlights: [
+                    'Có những cơn gió thổi nhanh nhất Hệ Mặt Trời, vận tốc lên tới 2,100 km/giờ (nhanh hơn cả tốc độ âm thanh).',
+                    'Là hành tinh đầu tiên được tìm thấy nhờ tính toán toán học trước khi được quan sát trực tiếp qua kính thiên văn năm 1846.',
+                    'Từ khi được phát hiện năm 1846 đến năm 2011, Sao Hải Vương mới hoàn thành đúng 1 vòng quỹ đạo quanh Mặt Trời.'
+                ],
+                nasa: 'Tàu Voyager 2 bay ngang qua Sao Hải Vương năm 1989 và phát hiện các mạch phun băng nitơ trên vệ tinh Triton.'
             }
         ];
 
-        // KHO LINH KIỆN VỚI CƠ CHẾ MỞ KHÓA BẰNG ĐIỂM KHOA HỌC
+        const DESTINATIONS = [
+            { id: 'moon', name: 'Mặt Trăng (The Moon)', subtitle: 'Vệ Tinh Trái Đất', distKm: '384,400 km', difficulty: 'Dễ', reqDeltaV: 4.2, reqShield: 10, reqPayload: 'any', baseScience: 400, color: '#cbd5e1', size: 22, icon: 'fa-moon', desc: 'Mục tiêu thử nghiệm cơ bản. Yêu cầu tải trọng nhẹ và Delta-V thấp.' },
+            { id: 'mars', name: 'Sao Hỏa (Mars)', subtitle: 'Hành Tinh Đỏ', distKm: '225,000,000 km', difficulty: 'Trung Bình', reqDeltaV: 9.5, reqShield: 35, reqPayload: 'rover', baseScience: 900, color: '#ef4444', size: 30, icon: 'fa-globe-americas', desc: 'Đòi hỏi Xe Tự Hành Rover để nghiên cứu địa chất và lá chắn nhiệt hạ cánh.' },
+            { id: 'asteroids', name: 'Vành Đai Tiểu Hành Tinh', subtitle: 'Vùng Mảnh Vỡ Vũ Trụ', distKm: '400,000,000 km', difficulty: 'Khó', reqDeltaV: 12.0, reqShield: 60, reqPayload: 'probe', baseScience: 1500, color: '#a1a1aa', size: 38, icon: 'fa-meteor', desc: 'Môi trường va chạm nguy hiểm! Yêu cầu giáp bảo vệ cao và Tàu Thăm Dò.' },
+            { id: 'jupiter', name: 'Sao Mộc (Jupiter)', subtitle: 'Gã Khổng Lồ Khí', distKm: '778,000,000 km', difficulty: 'Rất Khó', reqDeltaV: 17.5, reqShield: 80, reqPayload: 'station', baseScience: 2600, color: '#f97316', size: 52, icon: 'fa-sun', desc: 'Bức xạ cực lớn. Đòi hỏi Trạm Nghiên Cứu Quỹ Đạo và động cơ công suất lớn.' },
+            { id: 'deepspace', name: 'Vũ Trụ Sâu (Deep Space)', subtitle: 'Hệ Nối Proxima Centauri', distKm: '4.24 Năm Ánh Sáng', difficulty: 'Cực Siêu', reqDeltaV: 30.0, reqShield: 100, reqPayload: 'telescope', baseScience: 5000, color: '#a855f7', size: 42, icon: 'fa-bahai', desc: 'Thách thức tối thượng. Yêu cầu Kính Thiên Văn Không Gian và động cơ Hạt Nhân.' }
+        ];
+
         const COMPONENT_CATEGORIES = [
             {
                 id: 'payload',
@@ -551,116 +838,196 @@
             }
         ];
 
-        // 60 SỰ THẬT NASA KÈM WIKI LINK
+        // 140 THÔNG TIN DO NASA KIỂM ĐỊNH KÈM LIÊN KẾT WIKIPEDIA CHUẨN
         const NASA_FACTS = [
-            { id: 1, category: "Hệ Mặt Trời", text: "Sao Thủy là hành tinh nhỏ nhất và nằm gần Mặt Trời nhất trong Hệ Mặt Trời.", wiki: "https://vi.wikipedia.org/wiki/Sao_Thủy" },
-            { id: 2, category: "Hệ Mặt Trời", text: "Sao Kim có nhiệt độ bề mặt nóng nhất do hiệu ứng nhà kính cực đoan của khí quyển CO2.", wiki: "https://vi.wikipedia.org/wiki/Sao_Kim" },
-            { id: 3, category: "Hệ Mặt Trời", text: "Trái Đất là hành tinh duy nhất được NASA xác nhận có sự sống và nước lỏng ở bề mặt.", wiki: "https://vi.wikipedia.org/wiki/Trái_Đất" },
-            { id: 4, category: "Hệ Mặt Trời", text: "Sao Hỏa có ngọn núi lửa lớn nhất Hệ Mặt Trời tên là Olympus Mons, cao gấp 3 lần đỉnh Everest.", wiki: "https://vi.wikipedia.org/wiki/Olympus_Mons" },
-            { id: 5, category: "Hệ Mặt Trời", text: "Sao Mộc là hành tinh khí khổng lồ lớn nhất, có vết đỏ lớn là một cơn bão khổng lồ tồn tại hàng thế kỷ.", wiki: "https://vi.wikipedia.org/wiki/Sao_Mộc" },
-            { id: 6, category: "Hệ Mặt Trời", text: "Sao Thổ nổi tiếng với hệ thống vành đai băng và đá tuyệt đẹp bao quanh.", wiki: "https://vi.wikipedia.org/wiki/Sao_Thổ" },
-            { id: 7, category: "Hệ Mặt Trời", text: "Sao Thiên Vương quay quanh Mặt Trời theo tư thế 'lăn ngang' với trục nghiêng gần 98 độ.", wiki: "https://vi.wikipedia.org/wiki/Sao_Thiên_Vương" },
-            { id: 8, category: "Hệ Mặt Trời", text: "Sao Hải Vương là hành tinh có gió thổi mạnh nhất Hệ Mặt Trời, đạt vận tốc siêu thanh.", wiki: "https://vi.wikipedia.org/wiki/Sao_Hải_Vương" },
-            { id: 9, category: "Hệ Mặt Trời", text: "Vành đai Kuiper nằm ở rìa ngoài Hệ Mặt Trời chứa hàng triệu vật thể băng giá nguyên thủy.", wiki: "https://vi.wikipedia.org/wiki/Vành_đai_Kuiper" },
-            { id: 10, category: "Hệ Mặt Trời", text: "Mặt Trời chiếm tới 99.8% tổng khối lượng của toàn bộ Hệ Mặt Trời.", wiki: "https://vi.wikipedia.org/wiki/Mặt_Trời" },
+            { id: 1, category: "Hệ Mặt Trời", text: "Sao Thủy là hành tinh nhỏ nhất và nằm gần Mặt Trời nhất trong Hệ Mặt Trời.", wiki: "https://vi.wikipedia.org/wiki/Sao_Th%E1%BB%A7y" },
+            { id: 2, category: "Hệ Mặt Trời", text: "Sao Kim có nhiệt độ bề mặt nóng nhất (khoảng 465°C) do hiệu ứng nhà kính cực đoan của khí quyển CO2.", wiki: "https://vi.wikipedia.org/wiki/Sao_Kim" },
+            { id: 3, category: "Hệ Mặt Trời", text: "Trái Đất là hành tinh duy nhất được NASA xác nhận có sự sống và nước lỏng ổn định ở bề mặt.", wiki: "https://vi.wikipedia.org/wiki/Tr%C3%A1i_%C4%90%E1%BA%A5t" },
+            { id: 4, category: "Hệ Mặt Trời", text: "Sao Hỏa có ngọn núi lửa lớn nhất Hệ Mặt Trời tên là Olympus Mons, cao gần 22 km (gấp gần 3 lần đỉnh Everest).", wiki: "https://vi.wikipedia.org/wiki/Olympus_Mons" },
+            { id: 5, category: "Hệ Mặt Trời", text: "Sao Mộc là hành tinh khí khổng lồ lớn nhất, có Vết Đỏ Lớn là một cơn bão khổng lồ tồn tại hàng trăm năm.", wiki: "https://vi.wikipedia.org/wiki/Sao_M%E1%BB%99c" },
+            { id: 6, category: "Hệ Mặt Trời", text: "Sao Thổ nổi tiếng với hệ thống vành đai gồm hàng tỷ mảnh băng và đá phản chiếu ánh sáng rực rỡ.", wiki: "https://vi.wikipedia.org/wiki/Sao_Th%E1%BB%95" },
+            { id: 7, category: "Hệ Mặt Trời", text: "Sao Thiên Vương quay quanh Mặt Trời theo tư thế 'lăn ngang' với trục nghiêng gần 98 độ.", wiki: "https://vi.wikipedia.org/wiki/Sao_Thi%C3%AAn_V%C6%B0%C6%A1ng" },
+            { id: 8, category: "Hệ Mặt Trời", text: "Sao Hải Vương là hành tinh có gió thổi mạnh nhất Hệ Mặt Trời, vận tốc lên tới 2,100 km/h.", wiki: "https://vi.wikipedia.org/wiki/Sao_H%E1%BA%A3i_V%C6%B0%C6%A1ng" },
+            { id: 9, category: "Hệ Mặt Trời", text: "Vành đai Kuiper nằm ở rìa ngoài Hệ Mặt Trời chứa hàng triệu vật thể băng giá nguyên thủy.", wiki: "https://vi.wikipedia.org/wiki/V%C3%A0nh_%C4%91ai_Kuiper" },
+            { id: 10, category: "Hệ Mặt Trời", text: "Mặt Trời chiếm tới 99.86% tổng khối lượng của toàn bộ Hệ Mặt Trời.", wiki: "https://vi.wikipedia.org/wiki/M%E1%BA%B7t_Tr%E1%BB%9Di" },
+            { id: 11, category: "Hệ Mặt Trời", text: "Một ngày trên Sao Kim (243 ngày Trái Đất) dài hơn cả một năm của chính nó (225 ngày Trái Đất).", wiki: "https://vi.wikipedia.org/wiki/Sao_Kim" },
+            { id: 12, category: "Hệ Mặt Trời", text: "Sao Kim và Sao Thiên Vương là hai hành tinh duy nhất tự quay quanh trục theo chiều ngược lại (từ Đông sang Tây).", wiki: "https://vi.wikipedia.org/wiki/Chuy%E1%BB%83n_%C4%91%E1%BB%99ng_ngh%E1%BB%8Bch_h%C3%A0nh_v%C3%A0_thu%E1%BA%ADn_h%C3%A0nh" },
+            { id: 13, category: "Hệ Mặt Trời", text: "Hẻm núi Valles Marineris trên Sao Hỏa dài hơn 4,000 km, lớn gấp 10 lần hẻm núi Grand Canyon trên Trái Đất.", wiki: "https://vi.wikipedia.org/wiki/Valles_Marineris" },
+            { id: 14, category: "Hệ Mặt Trời", text: "Mật độ trung bình của Sao Thổ nhỏ hơn cả nước, nghĩa là nó có thể nổi nếu đặt vào một đại dương khổng lồ.", wiki: "https://vi.wikipedia.org/wiki/Sao_Th%E1%BB%95" },
+            { id: 15, category: "Hệ Mặt Trời", text: "Cực Bắc của Sao Thổ có một dòng xoáy khí quyển hình lục giác khổng lồ kỳ lạ được tàu Cassini chụp lại.", wiki: "https://vi.wikipedia.org/wiki/H%C3%ACnh_l%E1%BB%A5c_gi%C3%A1c_c%E1%BB%A7a_Sao_Th%E1%BB%95" },
+            { id: 16, category: "Hệ Mặt Trời", text: "Sao Mộc quay nhanh nhất Hệ Mặt Trời, một ngày trên Sao Mộc chỉ kéo dài khoảng 9 giờ 55 phút.", wiki: "https://vi.wikipedia.org/wiki/Sao_M%E1%BB%99c" },
+            { id: 17, category: "Hệ Mặt Trời", text: "Ánh sáng từ Mặt Trời mất khoảng 8 phút 20 giây để đi hết quãng đường 150 triệu km tới Trái Đất.", wiki: "https://vi.wikipedia.org/wiki/%C4%90%C6%A1n_v%E1%BB%8B_thi%C3%AAn_v%C4%83n" },
+            { id: 18, category: "Hệ Mặt Trời", text: "Sao Thủy có lõi sắt khổng lồ chiếm tới khoảng 85% bán kính của toàn bộ hành tinh.", wiki: "https://vi.wikipedia.org/wiki/Sao_Th%E1%BB%A7y" },
+            { id: 19, category: "Hệ Mặt Trời", text: "Đám mây Oort là lớp vỏ cầu băng giá bao bọc tận cùng ngoài rìa Hệ Mặt Trời, cách Mặt Trời tới 1 năm ánh sáng.", wiki: "https://vi.wikipedia.org/wiki/%C4%90%C3%A1m_m%C3%A2y_Oort" },
+            { id: 20, category: "Hệ Mặt Trời", text: "Khí methane trong tầng thượng quyển hấp thụ ánh sáng đỏ khiến Sao Thiên Vương và Sao Hải Vương có màu xanh lam.", wiki: "https://vi.wikipedia.org/wiki/Sao_H%E1%BA%A3i_V%C6%B0%C6%A1ng" },
 
-            { id: 11, category: "Mặt Trăng & Vệ Tinh", text: "Mặt Trăng là vệ tinh tự nhiên lớn thứ năm trong Hệ Mặt Trời.", wiki: "https://vi.wikipedia.org/wiki/Mặt_Trăng" },
-            { id: 12, category: "Mặt Trăng & Vệ Tinh", text: "Khoảng cách trung bình từ Trái Đất đến Mặt Trăng là khoảng 384,400 km.", wiki: "https://vi.wikipedia.org/wiki/Khoảng_cách_Trái_Đất–Mặt_Trăng" },
-            { id: 13, category: "Mặt Trăng & Vệ Tinh", text: "Mặt Trăng luôn hướng một mặt về phía Trái Đất do hiện tượng khóa thủy triều (tidal locking).", wiki: "https://vi.wikipedia.org/wiki/Khóa_thủy_triều" },
-            { id: 14, category: "Mặt Trăng & Vệ Tinh", text: "Vết chân của các phi hành gia Apollo trên Mặt Trăng có thể tồn tại hàng triệu năm vì không có gió hay nước xói mòn.", wiki: "https://vi.wikipedia.org/wiki/Chương_trình_Apollo" },
-            { id: 15, category: "Mặt Trăng & Vệ Tinh", text: "Europa (vệ tinh của Sao Mộc) có lớp vỏ băng dày và đại dương ngầm chứa lượng nước lớn gấp đôi Trái Đất.", wiki: "https://vi.wikipedia.org/wiki/Europa_(vệ_tinh)" },
-            { id: 16, category: "Mặt Trăng & Vệ Tinh", text: "Titan (vệ tinh của Sao Thổ) là thiên thể duy nhất ngoài Trái Đất có chất lỏng dạng methane/ethane trên bề mặt.", wiki: "https://vi.wikipedia.org/wiki/Titan_(vệ_tinh)" },
-            { id: 17, category: "Mặt Trăng & Vệ Tinh", text: "Enceladus (vệ tinh Sao Thổ) phun các mạch nước ngầm giàu hợp chất hữu cơ qua các khe nứt ở cực nam.", wiki: "https://vi.wikipedia.org/wiki/Enceladus_(vệ_tinh)" },
-            { id: 18, category: "Mặt Trăng & Vệ Tinh", text: "Io (vệ tinh Sao Mộc) là thiên thể hoạt động núi lửa mạnh mẽ nhất Hệ Mặt Trời.", wiki: "https://vi.wikipedia.org/wiki/Io_(vệ_tinh)" },
-            { id: 19, category: "Mặt Trăng & Vệ Tinh", text: "Ganymede là vệ tinh lớn nhất Hệ Mặt Trời, thậm chí lớn hơn cả hành tinh Sao Thủy.", wiki: "https://vi.wikipedia.org/wiki/Ganymede_(vệ_tinh)" },
-            { id: 20, category: "Mặt Trăng & Vệ Tinh", text: "Phobos và Deimos là hai vệ tinh nhỏ hình dáng bất định của Sao Hỏa, được cho là tiểu hành tinh bị bắt giữ.", wiki: "https://vi.wikipedia.org/wiki/Phobos_(vệ_tinh)" },
+            { id: 21, category: "Mặt Trăng & Vệ Tinh", text: "Mặt Trăng là vệ tinh tự nhiên lớn thứ năm trong Hệ Mặt Trời và lớn nhất xét theo tỷ lệ so với hành tinh mẹ.", wiki: "https://vi.wikipedia.org/wiki/M%E1%BA%B7t_Tr%C4%83ng" },
+            { id: 22, category: "Mặt Trăng & Vệ Tinh", text: "Khoảng cách trung bình từ Trái Đất đến Mặt Trăng là 384,400 km và mỗi năm Mặt Trăng rời xa chúng ta thêm 3.8 cm.", wiki: "https://vi.wikipedia.org/wiki/Kho%E1%BA%A3ng_c%C3%A1ch_M%E1%BA%B7t_Tr%C4%83ng" },
+            { id: 23, category: "Mặt Trăng & Vệ Tinh", text: "Mặt Trăng luôn hướng một mặt về phía Trái Đất do hiện tượng khóa thủy triều (tidal locking).", wiki: "https://vi.wikipedia.org/wiki/Kh%C3%B3a_th%E1%BB%A7y_tri%E1%BB%81u" },
+            { id: 24, category: "Mặt Trăng & Vệ Tinh", text: "Vết chân của các phi hành gia Apollo trên Mặt Trăng có thể tồn tại hàng triệu năm vì không có gió hay nước xói mòn.", wiki: "https://vi.wikipedia.org/wiki/Ch%C6%B0%C6%A1ng_tr%C3%ACnh_Apollo" },
+            { id: 25, category: "Mặt Trăng & Vệ Tinh", text: "Europa (vệ tinh Sao Mộc) có lớp vỏ băng dày và đại dương ngầm chứa lượng nước lớn gấp đôi tất cả đại dương Trái Đất.", wiki: "https://vi.wikipedia.org/wiki/Europa_(v%E1%BB%87_tinh)" },
+            { id: 26, category: "Mặt Trăng & Vệ Tinh", text: "Titan (vệ tinh Sao Thổ) là thiên thể duy nhất ngoài Trái Đất có các hồ và biển chất lỏng (methane/ethane) trên bề mặt.", wiki: "https://vi.wikipedia.org/wiki/Titan_(v%E1%BB%87_tinh)" },
+            { id: 27, category: "Mặt Trăng & Vệ Tinh", text: "Enceladus (vệ tinh Sao Thổ) phun các mạch nước ngầm giàu hợp chất hữu cơ qua các khe nứt ở cực nam.", wiki: "https://vi.wikipedia.org/wiki/Enceladus" },
+            { id: 28, category: "Mặt Trăng & Vệ Tinh", text: "Io (vệ tinh Sao Mộc) là thiên thể hoạt động núi lửa mạnh mẽ nhất Hệ Mặt Trời với hơn 400 ngọn núi lửa.", wiki: "https://vi.wikipedia.org/wiki/Io_(v%E1%BB%87_tinh)" },
+            { id: 29, category: "Mặt Trăng & Vệ Tinh", text: "Ganymede (vệ tinh Sao Mộc) là vệ tinh lớn nhất Hệ Mặt Trời, thậm chí lớn hơn cả hành tinh Sao Thủy.", wiki: "https://vi.wikipedia.org/wiki/Ganymede_(v%E1%BB%87_tinh)" },
+            { id: 30, category: "Mặt Trăng & Vệ Tinh", text: "Phobos và Deimos là hai vệ tinh nhỏ của Sao Hỏa; Phobos đang dần tiến gần Sao Hỏa và sẽ vỡ thành vành đai sau 50 triệu năm.", wiki: "https://vi.wikipedia.org/wiki/V%E1%BB%87_tinh_t%E1%BB%B1_nhi%C3%AAn_c%E1%BB%A7a_Sao_H%E1%BB%8Fa" },
+            { id: 31, category: "Mặt Trăng & Vệ Tinh", text: "Triton là vệ tinh lớn nhất của Sao Hải Vương và quay ngược chiều tự quay của hành tinh mẹ.", wiki: "https://vi.wikipedia.org/wiki/Triton_(v%E1%BB%87_tinh)" },
+            { id: 32, category: "Mặt Trăng & Vệ Tinh", text: "Callisto là vệ tinh có bề mặt nhiều hố va chạm thiên thạch dày đặc và cổ xưa nhất trong Hệ Mặt Trời.", wiki: "https://vi.wikipedia.org/wiki/Callisto_(v%E1%BB%87_tinh)" },
+            { id: 33, category: "Mặt Trăng & Vệ Tinh", text: "Bốn vệ tinh lớn nhất của Sao Mộc (Io, Europa, Ganymede, Callisto) được gọi là các vệ tinh Galileo vì do Galileo Galilei phát hiện năm 1610.", wiki: "https://vi.wikipedia.org/wiki/V%E1%BB%87_tinh_Galileo" },
+            { id: 34, category: "Mặt Trăng & Vệ Tinh", text: "Charon lớn bằng một nửa Pluto, khiến hai thiên thể này quay quanh một khối tâm chung nằm ngoài bề mặt Pluto.", wiki: "https://vi.wikipedia.org/wiki/Charon_(v%E1%BB%87_tinh)" },
+            { id: 35, category: "Mặt Trăng & Vệ Tinh", text: "Mimas (vệ tinh Sao Thổ) có hố va chạm khổng lồ Herschel khiến nó trông giống hệt trạm vũ trụ Death Star trong Star Wars.", wiki: "https://vi.wikipedia.org/wiki/Mimas_(v%E1%BB%87_tinh)" },
+            { id: 36, category: "Mặt Trăng & Vệ Tinh", text: "Iapetus (vệ tinh Sao Thổ) có một bán cầu sáng trắng như tuyết và một bán cầu tối đen như than.", wiki: "https://vi.wikipedia.org/wiki/Iapetus_(v%E1%BB%87_tinh)" },
+            { id: 37, category: "Mặt Trăng & Vệ Tinh", text: "Miranda (vệ tinh Sao Thiên Vương) có vách đá cao nhất Hệ Mặt Trời (Verona Rupes), cao tới 20 km.", wiki: "https://vi.wikipedia.org/wiki/Miranda_(v%E1%BB%87_tinh)" },
+            { id: 38, category: "Mặt Trăng & Vệ Tinh", text: "Trọng lực trên bề mặt Mặt Trăng chỉ bằng khoảng 1/6 (16.5%) so với trọng lực trên Trái Đất.", wiki: "https://vi.wikipedia.org/wiki/M%E1%BA%B7t_Tr%C4%83ng" },
+            { id: 39, category: "Mặt Trăng & Vệ Tinh", text: "Hiện tượng 'Mặt Trăng Máu' xảy ra khi Trái Đất đi vào giữa Mặt Trời và Mặt Trăng, làm ánh sáng đỏ khúc xạ qua khí quyển chiếu lên Mặt Trăng.", wiki: "https://vi.wikipedia.org/wiki/Nguy%E1%BB%87t_th%E1%BB%B1c" },
+            { id: 40, category: "Mặt Trăng & Vệ Tinh", text: "Sao Thổ và Sao Mộc mỗi hành tinh đều có hơn 90 vệ tinh tự nhiên đã được các nhà thiên văn xác nhận.", wiki: "https://vi.wikipedia.org/wiki/V%E1%BB%87_tinh_t%E1%BB%B1_nhi%C3%AAn_c%E1%BB%A7a_Sao_Th%E1%BB%95" },
 
-            { id: 21, category: "Sao Chổi & Tiểu Hành Tinh", text: "Sao chổi cấu thành từ đá, bụi và băng dễ bay hơi, thường có quỹ đạo hình elip rất dẹt.", wiki: "https://vi.wikipedia.org/wiki/Sao_chổi" },
-            { id: 22, category: "Sao Chổi & Tiểu Hành Tinh", text: "Đuôi ion của sao chổi luôn hướng thẳng ra xa Mặt Trời do tác động của gió mặt trời.", wiki: "https://vi.wikipedia.org/wiki/Sao_chổi" },
-            { id: 23, category: "Sao Chổi & Tiểu Hành Tinh", text: "Tiểu hành tinh Ceres nằm trong vành đai chính và được công nhận là một hành tinh lùn.", wiki: "https://vi.wikipedia.org/wiki/1_Ceres" },
-            { id: 24, category: "Sao Chổi & Tiểu Hành Tinh", text: "Vành đai chính giữa Sao Hỏa và Sao Mộc chứa hàng triệu mảnh vỡ từ thuở sơ khai hình thành Hệ Mặt Trời.", wiki: "https://vi.wikipedia.org/wiki/Vành_đai_tiểu_hành_tinh" },
-            { id: 25, category: "Sao Chổi & Tiểu Hành Tinh", text: "Sứ mệnh OSIRIS-REx của NASA đã lấy mẫu thành công từ tiểu hành tinh Bennu mang về Trái Đất.", wiki: "https://vi.wikipedia.org/wiki/OSIRIS-REx" },
-            { id: 26, category: "Sao Chổi & Tiểu Hành Tinh", text: "Thiên thạch lao vào bầu khí quyển Trái Đất bốc cháy tạo ra hiện tượng sao băng nhờ ma sát lớn.", wiki: "https://vi.wikipedia.org/wiki/Sao_băng" },
-            { id: 27, category: "Sao Chổi & Tiểu Hành Tinh", text: "Pluto (Diêm Vương Tỉnh) từng là hành tinh thứ 9 nhưng đã được xếp vào nhóm hành tinh lùn từ năm 2006.", wiki: "https://vi.wikipedia.org/wiki/Diêm_Vương_Tinh" },
-            { id: 28, category: "Sao Chổi & Tiểu Hành Tinh", text: "Haumea là một hành tinh lùn hình bầu dục đặc biệt quay vòng cực kỳ nhanh ở vành đai Kuiper.", wiki: "https://vi.wikipedia.org/wiki/136108_Haumea" },
-            { id: 29, category: "Sao Chổi & Tiểu Hành Tinh", text: "Eris là hành tinh lùn có khối lượng lớn hơn cả Pluto, nằm ở vùng ngoài xa của Hệ Mặt Trời.", wiki: "https://vi.wikipedia.org/wiki/136199_Eris" },
-            { id: 30, category: "Sao Chổi & Tiểu Hành Tinh", text: "Các thiên thể NEO (Near-Earth Objects) được NASA theo dõi sát sao để phòng ngừa nguy cơ va chạm.", wiki: "https://vi.wikipedia.org/wiki/Thiên_thể_gần_Trái_Đất" },
+            { id: 41, category: "Sao Chổi & Tiểu Hành Tinh", text: "Sao chổi cấu thành từ đá, bụi và băng dễ bay hơi, thường có quỹ đạo hình elip rất dẹt quanh Mặt Trời.", wiki: "https://vi.wikipedia.org/wiki/Sao_ch%E1%BB%95i" },
+            { id: 42, category: "Sao Chổi & Tiểu Hành Tinh", text: "Đuôi của sao chổi luôn hướng thẳng ra xa Mặt Trời do tác động của gió mặt trời và áp suất bức xạ.", wiki: "https://vi.wikipedia.org/wiki/Sao_ch%E1%BB%95i" },
+            { id: 43, category: "Sao Chổi & Tiểu Hành Tinh", text: "Ceres là thiên thể lớn nhất trong vành đai tiểu hành tinh chính và được công nhận là một hành tinh lùn.", wiki: "https://vi.wikipedia.org/wiki/Ceres_(h%C3%A0nh_tinh_l%C3%B9n)" },
+            { id: 44, category: "Sao Chổi & Tiểu Hành Tinh", text: "Vành đai tiểu hành tinh chính nằm giữa quỹ đạo của Sao Hỏa và Sao Mộc.", wiki: "https://vi.wikipedia.org/wiki/V%C3%A0nh_%C4%91ai_ti%E1%BB%83u_h%C3%A0nh_tinh" },
+            { id: 45, category: "Sao Chổi & Tiểu Hành Tinh", text: "Sứ mệnh OSIRIS-REx của NASA đã lấy mẫu đất đá thành công từ tiểu hành tinh Bennu mang về Trái Đất năm 2023.", wiki: "https://vi.wikipedia.org/wiki/OSIRIS-REx" },
+            { id: 46, category: "Sao Chổi & Tiểu Hành Tinh", text: "Thiên thạch lao vào bầu khí quyển Trái Đất bốc cháy tạo ra hiện tượng sao băng nhờ ma sát nén khí cực lớn.", wiki: "https://vi.wikipedia.org/wiki/Sao_b%C4%83ng" },
+            { id: 47, category: "Sao Chổi & Tiểu Hành Tinh", text: "Pluto (Diêm Vương Tỉnh) từng là hành tinh thứ 9 nhưng đã được xếp vào nhóm hành tinh lùn từ năm 2006.", wiki: "https://vi.wikipedia.org/wiki/Sao_Di%C3%AAm_V%C6%B0%C6%A1ng" },
+            { id: 48, category: "Sao Chổi & Tiểu Hành Tinh", text: "Haumea là hành tinh lùn hình bầu dục dẹt vì tốc độ tự quay cực nhanh (chỉ mất chưa đầy 4 giờ một vòng).", wiki: "https://vi.wikipedia.org/wiki/Haumea" },
+            { id: 49, category: "Sao Chổi & Tiểu Hành Tinh", text: "Eris là hành tinh lùn có khối lượng lớn hơn cả Pluto, nằm ở vùng đĩa phân tán xa xôi.", wiki: "https://vi.wikipedia.org/wiki/Eris_(h%C3%A0nh_tinh_l%C3%B9n)" },
+            { id: 50, category: "Sao Chổi & Tiểu Hành Tinh", text: "Sao chổi Halley nổi tiếng xuất hiện gần Trái Đất theo chu kỳ khoảng 75 - 76 năm một lần.", wiki: "https://vi.wikipedia.org/wiki/Sao_ch%E1%BB%95i_Halley" },
+            { id: 51, category: "Sao Chổi & Tiểu Hành Tinh", text: "Tiểu hành tinh 16 Psyche chứa hàm lượng kim loại sắt và niken khổng lồ, đang được tàu Psyche của NASA bay tới khảo sát.", wiki: "https://vi.wikipedia.org/wiki/16_Psyche" },
+            { id: 52, category: "Sao Chổi & Tiểu Hành Tinh", text: "Vesta là tiểu hành tinh sáng nhất có thể quan sát được từ Trái Đất và có một ngọn núi cao gấp đôi đỉnh Everest.", wiki: "https://vi.wikipedia.org/wiki/4_Vesta" },
+            { id: 53, category: "Sao Chổi & Tiểu Hành Tinh", text: "Các trận mưa sao băng hàng năm như Perseids hay Geminids xảy ra khi Trái Đất đi qua đám mây bụi do sao chổi để lại.", wiki: "https://vi.wikipedia.org/wiki/M%C6%B0a_sao_b%C4%83ng" },
+            { id: 54, category: "Sao Chổi & Tiểu Hành Tinh", text: "Thiên thạch Chicxulub rộng khoảng 10 km va vào bán đảo Yucatán 66 triệu năm trước đã gây ra sự tuyệt chủng của loài khủng long.", wiki: "https://vi.wikipedia.org/wiki/H%E1%BB%91_va_ch%E1%BA%A1m_Chicxulub" },
+            { id: 55, category: "Sao Chổi & Tiểu Hành Tinh", text: "Oumuamua (2017) là vật thể liên sao đầu tiên từ bên ngoài Hệ Mặt Trời được phát hiện bay ngang qua chúng ta.", wiki: "https://vi.wikipedia.org/wiki/1I/%CA%BBOumuamua" },
 
-            { id: 31, category: "Lịch Sử & Sứ Mệnh", text: "Yuri Gagarin (Liên Xô) là người đầu tiên bay vào không gian ngày 12/04/1961 trên tàu Vostok 1.", wiki: "https://vi.wikipedia.org/wiki/Yuri_Gagarin" },
-            { id: 32, category: "Lịch Sử & Sứ Mệnh", text: "Neil Armstrong và Buzz Aldrin là hai phi hành gia đầu tiên đặt chân lên Mặt Trăng ngày 20/07/1969.", wiki: "https://vi.wikipedia.org/wiki/Neil_Armstrong" },
-            { id: 33, category: "Lịch Sử & Sứ Mệnh", text: "Chương trình Apollo của NASA đã thực hiện 6 lần hạ cánh thành công con người xuống Mặt Trăng.", wiki: "https://vi.wikipedia.org/wiki/Chương_trình_Apollo" },
-            { id: 34, category: "Lịch Sử & Sứ Mệnh", text: "Tàu Voyager 1 của NASA phóng năm 1977 hiện là vật thể nhân tạo bay xa nhất, đã vươn tới không gian liên sao.", wiki: "https://vi.wikipedia.org/wiki/Voyager_1" },
-            { id: 35, category: "Lịch Sử & Sứ Mệnh", text: "Tàu Voyager 2 là sứ mệnh duy nhất ghé thăm cả 4 hành tinh khí khổng lồ ngoài cùng của Hệ Mặt Trời.", wiki: "https://vi.wikipedia.org/wiki/Voyager_2" },
-            { id: 36, category: "Lịch Sử & Sứ Mệnh", text: "Chương trình Artemis của NASA đặt mục tiêu đưa phụ nữ và người da màu đầu tiên lên bề mặt Mặt Trăng.", wiki: "https://vi.wikipedia.org/wiki/Chương_trình_Artemis" },
-            { id: 37, category: "Lịch Sử & Sứ Mệnh", text: "Xe tự hành Perseverance của NASA đang tìm kiếm dấu hiệu sự sống cổ đại trên bề mặt Sao Hỏa tại hố chẻ Jezero.", wiki: "https://vi.wikipedia.org/wiki/Perseverance" },
-            { id: 38, category: "Lịch Sử & Sứ Mệnh", text: "Trực thăng Ingenuity đã thực hiện thành công chuyến bay cơ giới đầu tiên trên một hành tinh khác (Sao Hỏa).", wiki: "https://vi.wikipedia.org/wiki/Ingenuity" },
-            { id: 39, category: "Lịch Sử & Sứ Mệnh", text: "Trạm Không Gian Quốc Tế (ISS) bay quanh Trái Đất ở độ cao khoảng 400 km với vận tốc 28,000 km/h.", wiki: "https://vi.wikipedia.org/wiki/Trạm_Không_gian_Quốc_tế" },
-            { id: 40, category: "Lịch Sử & Sứ Mệnh", text: "Sứ mệnh DART của NASA đã thử nghiệm thành công kỹ thuật va chạm động học để làm lệch quỹ đạo tiểu hành tinh.", wiki: "https://vi.wikipedia.org/wiki/DART_(sứ_mệnh_không_gian)" },
+            { id: 56, category: "Lịch Sử & Sứ Mệnh", text: "Yuri Gagarin (Liên Xô) là người đầu tiên bay vào không gian ngày 12/04/1961 trên tàu Vostok 1.", wiki: "https://vi.wikipedia.org/wiki/Yuri_Alekseyevich_Gagarin" },
+            { id: 57, category: "Lịch Sử & Sứ Mệnh", text: "Neil Armstrong và Buzz Aldrin là hai phi hành gia đầu tiên đặt chân lên Mặt Trăng ngày 20/07/1969 (Apollo 11).", wiki: "https://vi.wikipedia.org/wiki/Apollo_11" },
+            { id: 58, category: "Lịch Sử & Sứ Mệnh", text: "Chương trình Apollo của NASA đã thực hiện 6 lần hạ cánh thành công, đưa tổng cộng 12 phi hành gia đi bộ trên Mặt Trăng.", wiki: "https://vi.wikipedia.org/wiki/Ch%C6%B0%C6%A1ng_tr%C3%ACnh_Apollo" },
+            { id: 59, category: "Lịch Sử & Sứ Mệnh", text: "Tàu Voyager 1 của NASA phóng năm 1977 hiện là vật thể nhân tạo bay xa nhất, đã tiến vào không gian liên sao.", wiki: "https://vi.wikipedia.org/wiki/Voyager_1" },
+            { id: 60, category: "Lịch Sử & Sứ Mệnh", text: "Tàu Voyager 2 là sứ mệnh duy nhất trong lịch sử từng bay ngang qua cả 4 hành tinh khổng lồ: Mộc, Thổ, Thiên Vương và Hải Vương.", wiki: "https://vi.wikipedia.org/wiki/Voyager_2" },
+            { id: 61, category: "Lịch Sử & Sứ Mệnh", text: "Chương trình Artemis của NASA hướng tới mục tiêu đưa con người trở lại Mặt Trăng và xây dựng căn cứ bền vững.", wiki: "https://vi.wikipedia.org/wiki/Ch%C6%B0%C6%A1ng_tr%C3%ACnh_Artemis" },
+            { id: 62, category: "Lịch Sử & Sứ Mệnh", text: "Xe tự hành Perseverance của NASA đang tìm kiếm dấu hiệu sự sống vi sinh cổ đại tại hố va chạm Jezero trên Sao Hỏa.", wiki: "https://vi.wikipedia.org/wiki/Perseverance_(xe_t%E1%BB%B1_h%C3%A0nh)" },
+            { id: 63, category: "Lịch Sử & Sứ Mệnh", text: "Trực thăng Ingenuity của NASA đã thực hiện 72 chuyến bay cơ giới thành công trong bầu khí quyển cực loãng của Sao Hỏa.", wiki: "https://vi.wikipedia.org/wiki/Ingenuity_(tr%E1%BB%B1c_th%C4%83ng)" },
+            { id: 64, category: "Lịch Sử & Sứ Mệnh", text: "Trạm Không Gian Quốc Tế (ISS) bay quanh Trái Đất ở độ cao khoảng 400 km với vận tốc 28,000 km/h (16 lần mặt trời mọc mỗi ngày).", wiki: "https://vi.wikipedia.org/wiki/Tr%E1%BA%A1m_v%C5%A9_tr%E1%BB%A5_Qu%E1%BB%91c_t%E1%BA%BF" },
+            { id: 65, category: "Lịch Sử & Sứ Mệnh", text: "Sứ mệnh DART của NASA năm 2022 đã đâm thành công vào tiểu hành tinh Dimorphos để thử nghiệm phòng thủ hành tinh.", wiki: "https://vi.wikipedia.org/wiki/Th%E1%BB%AD_nghi%E1%BB%87m_Chuy%E1%BB%83n_h%C6%B0%E1%BB%9Bng_Ti%E1%BB%83u_h%C3%A0nh_tinh_K%C3%A9p" },
+            { id: 66, category: "Lịch Sử & Sứ Mệnh", text: "Sputnik 1 do Liên Xô phóng ngày 04/10/1957 là vệ tinh nhân tạo đầu tiên của loài người bay quanh Trái Đất.", wiki: "https://vi.wikipedia.org/wiki/Sputnik_1" },
+            { id: 67, category: "Lịch Sử & Sứ Mệnh", text: "Valentina Tereshkova là người phụ nữ đầu tiên bay vào vũ trụ vào năm 1963 trên tàu Vostok 6.", wiki: "https://vi.wikipedia.org/wiki/Valentina_Tereshkova" },
+            { id: 68, category: "Lịch Sử & Sứ Mệnh", text: "Alexei Leonov thực hiện chuyến đi bộ ngoài không gian (EVA) đầu tiên trong lịch sử vào tháng 3 năm 1965.", wiki: "https://vi.wikipedia.org/wiki/Alexei_Leonov" },
+            { id: 69, category: "Lịch Sử & Sứ Mệnh", text: "Tàu thăm dò New Horizons của NASA đã bay ngang qua Pluto năm 2015, gửi về những bức ảnh độ phân giải cao đầu tiên.", wiki: "https://vi.wikipedia.org/wiki/New_Horizons" },
+            { id: 70, category: "Lịch Sử & Sứ Mệnh", text: "Tàu Cassini-Huygens đã khám phá Sao Thổ suốt 13 năm và thả tàu đổ bộ Huygens xuống bề mặt vệ tinh Titan.", wiki: "https://vi.wikipedia.org/wiki/Cassini%E2%80%93Huygens" },
+            { id: 71, category: "Lịch Sử & Sứ Mệnh", text: "Tàu thăm dò Parker Solar Probe của NASA là vật thể nhân tạo di chuyển nhanh nhất lịch sử và bay gần Mặt Trời nhất.", wiki: "https://vi.wikipedia.org/wiki/T%C3%A0u_th%C4%83m_d%C3%B2_M%E1%BA%B7t_Tr%E1%BB%9Di_Parker" },
+            { id: 72, category: "Lịch Sử & Sứ Mệnh", text: "Xe tự hành Curiosity của NASA hoạt động bằng pin hạt nhân RTG đã khám phá núi Sharp trên Sao Hỏa từ năm 2012.", wiki: "https://vi.wikipedia.org/wiki/Curiosity_(xe_t%E1%BB%B1_h%C3%A0nh)" },
+            { id: 73, category: "Lịch Sử & Sứ Mệnh", text: "Sứ mệnh Apollo 13 nổi tiếng với câu nói 'Houston, we've had a problem' đã đưa 3 phi hành gia trở về an toàn sau vụ nổ bình oxy.", wiki: "https://vi.wikipedia.org/wiki/Apollo_13" },
+            { id: 74, category: "Lịch Sử & Sứ Mệnh", text: "Trên tàu Voyager 1 và 2 có gắn Đĩa Ghi Vàng (Voyager Golden Record) chứa âm thanh, âm nhạc và hình ảnh về Trái Đất.", wiki: "https://vi.wikipedia.org/wiki/%C4%90%C4%A9a_ghi_v%C3%A0ng_c%E1%BB%A7a_Voyager" },
+            { id: 75, category: "Lịch Sử & Sứ Mệnh", text: "Tàu Juno của NASA đang bay trên quỹ đạo cực của Sao Mộc để nghiên cứu từ trường, cực quang và cấu trúc lõi bên trong.", wiki: "https://vi.wikipedia.org/wiki/Juno_(t%C3%A0u_v%C5%A9_tr%E1%BB%A5)" },
+            { id: 76, category: "Lịch Sử & Sứ Mệnh", text: "Tàu Europa Clipper của NASA được thiết kế để bay ngang qua vệ tinh Europa hàng chục lần nhằm tìm kiếm khả năng tồn tại sự sống.", wiki: "https://vi.wikipedia.org/wiki/Europa_Clipper" },
+            { id: 77, category: "Lịch Sử & Sứ Mệnh", text: "Tàu Dragonfly của NASA sẽ là một thiết bị bay dạng drone chạy bằng năng lượng hạt nhân khám phá bầu khí quyển dày đặc của Titan.", wiki: "https://vi.wikipedia.org/wiki/Dragonfly_(t%C3%A0u_v%C5%A9_tr%E1%BB%A5)" },
+            { id: 78, category: "Lịch Sử & Sứ Mệnh", text: "Tàu Con Thoi (Space Shuttle) của NASA là hệ thống tàu vũ trụ tái sử dụng đầu tiên trên thế giới, hoạt động từ 1981 đến 2011.", wiki: "https://vi.wikipedia.org/wiki/Ch%C6%B0%C6%A1ng_tr%C3%ACnh_T%C3%A0u_con_thoi" },
+            { id: 79, category: "Lịch Sử & Sứ Mệnh", text: "Alan Shepard là người Mỹ đầu tiên bay vào không gian năm 1961 và sau đó chơi golf trên Mặt Trăng trong sứ mệnh Apollo 14.", wiki: "https://vi.wikipedia.org/wiki/Alan_Shepard" },
+            { id: 80, category: "Lịch Sử & Sứ Mệnh", text: "NASA (Cơ quan Hàng không và Vũ trụ Hoa Kỳ) được thành lập chính thức vào ngày 29 tháng 7 năm 1958.", wiki: "https://vi.wikipedia.org/wiki/NASA" },
 
-            { id: 41, category: "Kính Viễn Vọng", text: "Kính viễn vọng không gian Hubble phóng năm 1990 đã cách mạng hóa hiểu biết của nhân loại về vũ trụ.", wiki: "https://vi.wikipedia.org/wiki/Kính_viễn_vọng_không_gian_Hubble" },
-            { id: 42, category: "Kính Viễn Vọng", text: "Kính viễn vọng James Webb (JWST) hoạt động chủ yếu ở dải sóng hồng ngoại để xuyên qua các đám mây bụi vũ trụ.", wiki: "https://vi.wikipedia.org/wiki/Kính_viễn_vọng_không_gian_James_Webb" },
-            { id: 43, category: "Kính Viễn Vọng", text: "Kính Kepler của NASA đã phát hiện hàng ngàn hành tinh ngoài hệ mặt trời (exoplanet) bằng phương pháp quá cảnh.", wiki: "https://vi.wikipedia.org/wiki/Kính_viễn_vọng_không_gian_Kepler" },
-            { id: 44, category: "Kính Viễn Vọng", text: "Vùng Hubble Ultra Deep Field ghi lại hình ảnh hàng ngàn thiên hà cổ đại cách xa hàng tỷ năm ánh sáng.", wiki: "https://vi.wikipedia.org/wiki/Hubble_Ultra-Deep_Field" },
-            { id: 45, category: "Kính Viễn Vọng", text: "Tia gamma và tia X từ các vụ nổ siêu tân tinh chỉ có thể được quan sát bằng kính thiên văn ngoài không gian.", wiki: "https://vi.wikipedia.org/wiki/Thiên_văn_học_tia_gamma" },
-            { id: 46, category: "Kính Viễn Vọng", text: "Hiện tượng quang sai từng khiến Hubble mờ ảo lúc đầu trước khi được các phi hành gia sửa chữa thành công năm 1993.", wiki: "https://vi.wikipedia.org/wiki/Quang_sai" },
-            { id: 47, category: "Kính Viễn Vọng", text: "Điểm Lagrange L2 (nơi đặt kính James Webb) nằm cách Trái Đất 1.5 triệu km về phía đối diện Mặt Trời.", wiki: "https://vi.wikipedia.org/wiki/Điểm_Lagrange" },
-            { id: 48, category: "Kính Viễn Vọng", text: "Kính thiên văn vô tuyến khổng lồ giúp các nhà khoa học thu tín hiệu từ những ẩn tinh (pulsar) trong vũ trụ.", wiki: "https://vi.wikipedia.org/wiki/Kính_viễn_vọng_vô_tuyến" },
-            { id: 49, category: "Kính Viễn Vọng", text: "Sóng hấp dẫn được dự đoán bởi Einstein và lần đầu ghi nhận trực tiếp vào năm 2015 mở ra kỷ nguyên thiên văn mới.", wiki: "https://vi.wikipedia.org/wiki/Sóng_hấp_dẫn" },
-            { id: 50, category: "Kính Viễn Vọng", text: "Hình ảnh trực tiếp đầu tiên của siêu hố đen M87* được công bố bởi dự án Kính Chân Trời Sự Kiện (EHT) năm 2019.", wiki: "https://vi.wikipedia.org/wiki/M87*" },
+            { id: 81, category: "Kính Viễn Vọng", text: "Kính viễn vọng không gian Hubble phóng năm 1990 đã hoạt động hơn 3 thập kỷ, cung cấp hơn 1.5 triệu quan sát vũ trụ.", wiki: "https://vi.wikipedia.org/wiki/K%C3%ADnh_vi%E1%BB%85n_v%E1%BB%8Dng_kh%C3%B4ng_gian_Hubble" },
+            { id: 82, category: "Kính Viễn Vọng", text: "Kính viễn vọng James Webb (JWST) có gương chính đường kính 6.5m mạ vàng và quan sát chủ yếu ở dải sóng hồng ngoại.", wiki: "https://vi.wikipedia.org/wiki/K%C3%ADnh_vi%E1%BB%85n_v%E1%BB%8Dng_kh%C3%B4ng_gian_James_Webb" },
+            { id: 83, category: "Kính Viễn Vọng", text: "Kính Kepler của NASA đã phát hiện hơn 2,700 ngoại hành tinh bằng cách đo độ giảm độ sáng khi hành tinh đi ngang qua sao mẹ.", wiki: "https://vi.wikipedia.org/wiki/K%C3%ADnh_vi%E1%BB%85n_v%E1%BB%8Dng_kh%C3%B4ng_gian_Kepler" },
+            { id: 84, category: "Kính Viễn Vọng", text: "Bức ảnh Hubble Ultra Deep Field ghi lại khoảng 10,000 thiên hà cổ đại trong một vùng trời nhỏ bằng đầu ngón tay.", wiki: "https://vi.wikipedia.org/wiki/Hubble_Ultra_Deep_Field" },
+            { id: 85, category: "Kính Viễn Vọng", text: "Đài quan sát tia X Chandra của NASA chuyên chụp ảnh các vùng khí siêu nóng quanh tàn dư siêu tân tinh và hố đen.", wiki: "https://vi.wikipedia.org/wiki/%C4%90%C3%A0i_quan_s%C3%A1t_tia_X_Chandra" },
+            { id: 86, category: "Kính Viễn Vọng", text: "Điểm Lagrange L2 (nơi đặt kính James Webb) nằm cách Trái Đất 1.5 triệu km, giúp tấm chắn nắng luôn che được cả Trái Đất và Mặt Trời.", wiki: "https://vi.wikipedia.org/wiki/%C4%90i%E1%BB%83m_Lagrange" },
+            { id: 87, category: "Kính Viễn Vọng", text: "Kính viễn vọng TESS của NASA đang quét toàn bộ bầu trời để tìm kiếm các ngoại hành tinh quay quanh những ngôi sao sáng gần Trái Đất.", wiki: "https://vi.wikipedia.org/wiki/TESS" },
+            { id: 88, category: "Kính Viễn Vọng", text: "Bức ảnh nổi tiếng 'Những cột trụ của sự sáng tạo' (Pillars of Creation) chụp tinh vân Đại Bàng là kiệt tác của Hubble và James Webb.", wiki: "https://vi.wikipedia.org/wiki/Nh%E1%BB%AFng_c%E1%BB%99t_tr%E1%BB%A5_c%E1%BB%A7a_s%E1%BB%B1_s%C3%A1ng_t%E1%BA%A1o" },
+            { id: 89, category: "Kính Viễn Vọng", text: "Kính thiên văn Nancy Grace Roman sắp phóng của NASA sẽ có trường nhìn rộng gấp 100 lần kính Hubble.", wiki: "https://vi.wikipedia.org/wiki/K%C3%ADnh_vi%E1%BB%85n_v%E1%BB%8Dng_kh%C3%B4ng_gian_Nancy_Grace_Roman" },
+            { id: 90, category: "Kính Viễn Vọng", text: "Hình ảnh trực tiếp đầu tiên của siêu hố đen M87* được công bố bởi dự án Kính Chân Trời Sự Kiện (EHT) năm 2019.", wiki: "https://vi.wikipedia.org/wiki/K%C3%ADnh_vi%E1%BB%85n_v%E1%BB%8Dng_Ch%C3%A2n_tr%E1%BB%9Di_S%E1%BB%B1_ki%E1%BB%87n" },
+            { id: 91, category: "Kính Viễn Vọng", text: "Dự án EHT cũng đã chụp được hình ảnh trực tiếp của Sagittarius A* – siêu hố đen nằm ngay trung tâm dải Ngân Hà của chúng ta.", wiki: "https://vi.wikipedia.org/wiki/Sagittarius_A*" },
+            { id: 92, category: "Kính Viễn Vọng", text: "Đài quan sát LIGO đã lần đầu tiên phát hiện trực tiếp sóng hấp dẫn từ vụ va chạm của hai hố đen vào năm 2015.", wiki: "https://vi.wikipedia.org/wiki/LIGO" },
+            { id: 93, category: "Kính Viễn Vọng", text: "Kính thiên văn vô tuyến ALMA tại sa mạc Atacama (Chile) gồm 66 ăng-ten phối hợp để quan sát sự hình thành các hành tinh.", wiki: "https://vi.wikipedia.org/wiki/Atacama_Large_Millimeter_Array" },
+            { id: 94, category: "Kính Viễn Vọng", text: "Kính viễn vọng không gian Spitzer (nghỉ hưu năm 2020) từng phát hiện vòng đai khổng lồ vô hình quanh Sao Thổ.", wiki: "https://vi.wikipedia.org/wiki/K%C3%ADnh_vi%E1%BB%85n_v%E1%BB%8Dng_kh%C3%B4ng_gian_Spitzer" },
+            { id: 95, category: "Kính Viễn Vọng", text: "Các kính thiên văn đặt ngoài không gian tránh được hiện tượng nhiễu loạn khí quyển khiến hình ảnh không bị nhòe.", wiki: "https://vi.wikipedia.org/wiki/K%C3%ADnh_vi%E1%BB%85n_v%E1%BB%8Dng_kh%C3%B4ng_gian" },
 
-            { id: 51, category: "Vật Lý & Hố Đen", text: "Delta-V (Δv) là đại lượng đo tổng xung lực đổi vận tốc cần thiết để thực hiện một cơ động quỹ đạo.", wiki: "https://vi.wikipedia.org/wiki/Delta-v" },
-            { id: 52, category: "Vật Lý & Hố Đen", text: "Tốc độ ánh sáng trong chân không là hằng số vật lý cơ bản, xấp xỉ 299,792 km/s.", wiki: "https://vi.wikipedia.org/wiki/Tốc_độ_ánh_sáng" },
-            { id: 53, category: "Vật Lý & Hố Đen", text: "Chân trời sự kiện (Event Horizon) là biên giới quanh hố đen nơi vận tốc thoát vượt quá tốc độ ánh sáng.", wiki: "https://vi.wikipedia.org/wiki/Chân_trời_sự_kiện" },
-            { id: 54, category: "Vật Lý & Hố Đen", text: "Điểm kỳ dị (Singularity) ở tâm hố đen là nơi mật độ vật chất vô hạn và các định luật vật lý thông thường sụp đổ.", wiki: "https://vi.wikipedia.org/wiki/Điểm_kỳ_dị_gravitational" },
-            { id: 55, category: "Vật Lý & Hố Đen", text: "Hiệu ứng giãn nở thời gian theo thuyết tương đối hẹp xảy ra khi vật thể di chuyển gần tốc độ ánh sáng.", wiki: "https://vi.wikipedia.org/wiki/Giãn_nở_thời_gian" },
-            { id: 56, category: "Vật Lý & Hố Đen", text: "Trọng lực cực mạnh của hố đen có thể bẻ cong ánh sáng từ các thiên thể ở phía sau nó (hiện tượng thấu kính hấp dẫn).", wiki: "https://vi.wikipedia.org/wiki/Thấu_kính_hấp_dẫn" },
-            { id: 57, category: "Vật Lý & Hố Đen", text: "Vực thẳm không gian liên sao chứa đựng plasma loãng và bức xạ phông vi sóng vũ trụ (CMB).", wiki: "https://vi.wikipedia.org/wiki/Môi_trường_liên_sao" },
-            { id: 58, category: "Vật Lý & Hố Đen", text: "Định luật vạn vật hấp dẫn của Newton mô tả lực hút giữa các vật thể có khối lượng trong vũ trụ.", wiki: "https://vi.wikipedia.org/wiki/Định_luật_vạn_vật_hấp_dẫn_của_Newton" },
-            { id: 59, category: "Vật Lý & Hố Đen", text: "Lực hướng tâm và lực ly tâm cân bằng giúp các vệ tinh duy trì quỹ đạo ổn định quanh hành tinh.", wiki: "https://vi.wikipedia.org/wiki/Lực_hướng_tâm" },
-            { id: 60, category: "Vật Lý & Hố Đen", text: "Phản ứng tổng hợp hạt nhân hydro thành heli tại lõi là nguồn năng lượng khổng lồ giúp Mặt Trời tỏa sáng.", wiki: "https://vi.wikipedia.org/wiki/Phản_ứng_tổng_hợp_hạt_nhân" }
+            { id: 96, category: "Vật Lý & Hố Đen", text: "Delta-V (Δv) là đại lượng đo tổng xung lực đổi vận tốc cần thiết để thực hiện một cơ động quỹ đạo của tàu vũ trụ.", wiki: "https://vi.wikipedia.org/wiki/Delta-v" },
+            { id: 97, category: "Vật Lý & Hố Đen", text: "Tốc độ ánh sáng trong chân không là giới hạn tốc độ tối đa của vũ trụ, xấp xỉ 299,792 km/s.", wiki: "https://vi.wikipedia.org/wiki/T%E1%BB%91c_%C4%91%E1%BB%99_%C3%A1nh_s%C3%A1ng" },
+            { id: 98, category: "Vật Lý & Hố Đen", text: "Chân trời sự kiện (Event Horizon) là ranh giới quanh hố đen nơi lực hấp dẫn mạnh đến mức ánh sáng cũng không thể thoát ra.", wiki: "https://vi.wikipedia.org/wiki/Ch%C3%A2n_tr%E1%BB%9Di_s%E1%BB%B1_ki%E1%BB%87n" },
+            { id: 99, category: "Vật Lý & Hố Đen", text: "Điểm kỳ dị (Singularity) ở tâm hố đen là nơi vật chất bị nén tới mật độ vô hạn và độ cong không-thời gian đạt cực đại.", wiki: "https://vi.wikipedia.org/wiki/%C4%90i%E1%BB%83m_k%E1%BB%B3_d%E1%BB%8B_h%E1%BA%A5p_d%E1%BA%ABn" },
+            { id: 100, category: "Vật Lý & Hố Đen", text: "Hiệu ứng giãn nở thời gian xảy ra khi vật thể di chuyển gần tốc độ ánh sáng hoặc nằm trong trường hấp dẫn cực mạnh.", wiki: "https://vi.wikipedia.org/wiki/Gi%C3%A3n_n%E1%BB%9F_th%E1%BB%9Di_gian" },
+            { id: 101, category: "Vật Lý & Hố Đen", text: "Thấu kính hấp dẫn xảy ra khi khối lượng khổng lồ của thiên hà hoặc hố đen bẻ cong đường đi của ánh sáng từ phía sau nó.", wiki: "https://vi.wikipedia.org/wiki/Th%E1%BA%A5u_k%C3%ADnh_h%E1%BA%A5p_d%E1%BA%ABn" },
+            { id: 102, category: "Vật Lý & Hố Đen", text: "Bức xạ Hawking là bức xạ nhiệt lý thuyết phát ra gần chân trời sự kiện của hố đen do hiệu ứng lượng tử.", wiki: "https://vi.wikipedia.org/wiki/B%E1%BB%A9c_x%E1%BA%A1_Hawking" },
+            { id: 103, category: "Vật Lý & Hố Đen", text: "Sao neutron đặc đến mức chỉ một thìa cà phê vật chất của nó cũng nặng tới hàng tỷ tấn trên Trái Đất.", wiki: "https://vi.wikipedia.org/wiki/Sao_neutron" },
+            { id: 104, category: "Vật Lý & Hố Đen", text: "Pulsar (Ẩn tinh) là sao neutron quay cực nhanh phát ra các chùm bức xạ điện từ quét qua vũ trụ như ngọn hải đăng.", wiki: "https://vi.wikipedia.org/wiki/Pulsar" },
+            { id: 105, category: "Vật Lý & Hố Đen", text: "Siêu tân tinh (Supernova) là vụ nổ dữ dội kết thúc vòng đời của một ngôi sao khối lượng lớn, tạo ra các nguyên tố nặng như vàng và sắt.", wiki: "https://vi.wikipedia.org/wiki/Si%C3%AAu_t%C3%A2n_tinh" },
+            { id: 106, category: "Vật Lý & Hố Đen", text: "Phản ứng tổng hợp hạt nhân biến đổi hydro thành heli tại lõi là nguồn năng lượng giúp Mặt Trời và các ngôi sao tỏa sáng.", wiki: "https://vi.wikipedia.org/wiki/Ph%E1%BA%A3n_%E1%BB%A9ng_t%E1%BB%95ng_h%E1%BB%A3p_h%E1%BA%A1t_nh%C3%A2n" },
+            { id: 107, category: "Vật Lý & Hố Đen", text: "Vận tốc vũ trụ cấp 1 (khoảng 7.9 km/s) là tốc độ tối thiểu để vệ tinh bay quanh Trái Đất theo quỹ đạo tròn.", wiki: "https://vi.wikipedia.org/wiki/V%E1%BA%ADn_t%E1%BB%91c_v%C5%A9_tr%E1%BB%A5" },
+            { id: 108, category: "Vật Lý & Hố Đen", text: "Vận tốc vũ trụ cấp 2 (khoảng 11.2 km/s) là tốc độ thoát khỏi trường hấp dẫn của Trái Đất để bay tới các hành tinh khác.", wiki: "https://vi.wikipedia.org/wiki/V%E1%BA%ADn_t%E1%BB%91c_tho%C3%A1t" },
+            { id: 109, category: "Vật Lý & Hố Đen", text: "Vật chất tối (Dark Matter) chiếm khoảng 27% vũ trụ; nó không phát sáng nhưng giữ các thiên hà không bị văng tung tóe.", wiki: "https://vi.wikipedia.org/wiki/V%E1%BA%ADt_ch%E1%BA%A5t_t%E1%BB%91i" },
+            { id: 110, category: "Vật Lý & Hố Đen", text: "Năng lượng tối (Dark Energy) chiếm khoảng 68% vũ trụ và là nguyên nhân khiến vũ trụ giãn nở ngày càng nhanh.", wiki: "https://vi.wikipedia.org/wiki/N%C4%83ng_l%C6%B0%E1%BB%A3ng_t%E1%BB%91i" },
+            { id: 111, category: "Vật Lý & Hố Đen", text: "Bức xạ phông vi sóng vũ trụ (CMB) là ánh sáng tàn dư còn sót lại từ vụ nổ Big Bang cách đây 13.8 tỷ năm.", wiki: "https://vi.wikipedia.org/wiki/B%E1%BB%A9c_x%E1%BA%A1_ph%C3%B4ng_vi_s%C3%B3ng_v%C5%A9_tr%E1%BB%A5" },
+            { id: 112, category: "Vật Lý & Hố Đen", text: "Hiệu ứng 'Mỳ Ý hóa' (Spaghettification) xảy ra khi lực thủy triều cực mạnh gần hố đen kéo dãn vật thể theo chiều dọc.", wiki: "https://vi.wikipedia.org/wiki/Hi%E1%BB%87u_%E1%BB%A9ng_m%C3%AC_%E1%BB%91ng" },
+            { id: 113, category: "Vật Lý & Hố Đen", text: "Quỹ đạo chuyển tiếp Hohmann là đường bay hình elip tiết kiệm nhiên liệu nhất để đưa tàu vũ trụ giữa hai quỹ đạo tròn.", wiki: "https://vi.wikipedia.org/wiki/Qu%E1%BB%B9_%C4%91%E1%BA%A1o_chuy%E1%BB%83n_ti%E1%BA%BFp_Hohmann" },
+            { id: 114, category: "Vật Lý & Hố Đen", text: "Kỹ thuật hỗ trợ hấp dẫn (Gravity Assist) dùng lực hút của hành tinh để tăng tốc và đổi hướng tàu vũ trụ mà không tốn nhiên liệu.", wiki: "https://vi.wikipedia.org/wiki/H%E1%BB%97_tr%E1%BB%A3_h%E1%BA%A5p_d%E1%BA%ABn" },
+            { id: 115, category: "Vật Lý & Hố Đen", text: "Trong môi trường chân không vũ trụ không có không khí nên sóng âm không thể truyền đi (không gian hoàn toàn im lặng).", wiki: "https://vi.wikipedia.org/wiki/Ch%C3%A2n_kh%C3%B4ng" },
+
+            { id: 116, category: "Ngoại Hành Tinh & Vũ Trụ Sâu", text: "Proxima Centauri là ngôi sao gần Hệ Mặt Trời nhất, nằm cách chúng ta khoảng 4.24 năm ánh sáng.", wiki: "https://vi.wikipedia.org/wiki/Proxima_Centauri" },
+            { id: 117, category: "Ngoại Hành Tinh & Vũ Trụ Sâu", text: "Hệ sao TRAPPIST-1 cách Trái Đất 40 năm ánh sáng có tới 7 hành tinh đất đá kích thước tương đương Trái Đất.", wiki: "https://vi.wikipedia.org/wiki/TRAPPIST-1" },
+            { id: 118, category: "Ngoại Hành Tinh & Vũ Trụ Sâu", text: "Vùng ở được (Habitable Zone / Goldilocks Zone) là khoảng cách quanh ngôi sao nơi nhiệt độ vừa đủ để nước lỏng tồn tại.", wiki: "https://vi.wikipedia.org/wiki/V%C3%B9ng_%E1%BB%9F_%C4%91%C6%B0%E1%BB%A3c_quanh_sao" },
+            { id: 119, category: "Ngoại Hành Tinh & Vũ Trụ Sâu", text: "Thiên hà Tiên Nữ (Andromeda) là thiên hà xoắn ốc lớn gần Ngân Hà nhất và sẽ va chạm hợp nhất với Ngân Hà sau 4.5 tỷ năm.", wiki: "https://vi.wikipedia.org/wiki/Thi%C3%AAn_h%C3%A0_Ti%C3%AAn_N%E1%BB%AF" },
+            { id: 120, category: "Ngoại Hành Tinh & Vũ Trụ Sâu", text: "Dải Ngân Hà (Milky Way) của chúng ta chứa khoảng 100 đến 400 tỷ ngôi sao và có đường kính khoảng 100,000 năm ánh sáng.", wiki: "https://vi.wikipedia.org/wiki/Ng%C3%A2n_H%C3%A0" },
+            { id: 121, category: "Ngoại Hành Tinh & Vũ Trụ Sâu", text: "51 Pegasi b là ngoại hành tinh đầu tiên quay quanh một ngôi sao giống Mặt Trời được phát hiện vào năm 1995.", wiki: "https://vi.wikipedia.org/wiki/51_Pegasi_b" },
+            { id: 122, category: "Ngoại Hành Tinh & Vũ Trụ Sâu", text: "Hành tinh HD 189733b có bầu khí quyển màu xanh coban nhưng có những cơn mưa thủy tinh nóng chảy thổi ngang ở tốc độ 8,700 km/h.", wiki: "https://vi.wikipedia.org/wiki/HD_189733_b" },
+            { id: 123, category: "Ngoại Hành Tinh & Vũ Trụ Sâu", text: "Quasar (Chuẩn tinh) là nhân thiên hà hoạt động cực sáng, được cung cấp năng lượng bởi siêu hố đen nuốt chửng vật chất.", wiki: "https://vi.wikipedia.org/wiki/Chu%E1%BA%A9n_tinh" },
+            { id: 124, category: "Ngoại Hành Tinh & Vũ Trụ Sâu", text: "Tinh vân (Nebula) là những đám mây bụi và khí khổng lồ trong không gian – nơi khai sinh ra các ngôi sao mới.", wiki: "https://vi.wikipedia.org/wiki/Tinh_v%C3%A2n" },
+            { id: 125, category: "Ngoại Hành Tinh & Vũ Trụ Sâu", text: "Siêu hố đen TON 618 là một trong những hố đen lớn nhất từng được biết đến, với khối lượng gấp 66 tỷ lần Mặt Trời.", wiki: "https://vi.wikipedia.org/wiki/TON_618" },
+            { id: 126, category: "Ngoại Hành Tinh & Vũ Trụ Sâu", text: "Vũ trụ quan sát được có đường kính khoảng 93 tỷ năm ánh sáng và chứa hàng nghìn tỷ thiên hà.", wiki: "https://vi.wikipedia.org/wiki/V%C5%A9_tr%E1%BB%A5_quan_s%C3%A1t_%C4%91%C6%B0%E1%BB%A3c" },
+            { id: 127, category: "Ngoại Hành Tinh & Vũ Trụ Sâu", text: "Sao lùn trắng là lõi tàn dư đặc chắc còn lại sau khi các ngôi sao có khối lượng trung bình như Mặt Trời kết thúc vòng đời.", wiki: "https://vi.wikipedia.org/wiki/Sao_l%C3%B9n_tr%E1%BA%AFng" },
+            { id: 128, category: "Ngoại Hành Tinh & Vũ Trụ Sâu", text: "Siêu đám thiên hà Laniakea là cấu trúc khổng lồ chứa hàng trăm nghìn thiên hà, bao gồm cả dải Ngân Hà của chúng ta.", wiki: "https://vi.wikipedia.org/wiki/Si%C3%AAu_%C4%91%C3%A1m_thi%C3%AAn_h%C3%A0_Laniakea" },
+
+            { id: 129, category: "Công Nghệ Tên Lửa & Phi Hành Gia", text: "Tên lửa Saturn V của NASA cao 110 mét (cao hơn tượng Nữ thần Tự do) là tên lửa đưa con người lên Mặt Trăng trong chương trình Apollo.", wiki: "https://vi.wikipedia.org/wiki/Saturn_V" },
+            { id: 130, category: "Công Nghệ Tên Lửa & Phi Hành Gia", text: "Phương trình tên lửa Tsiolkovsky mô tả mối quan hệ giữa vận tốc tên lửa, vận tốc khí phụt và tỷ lệ khối lượng nhiên liệu.", wiki: "https://vi.wikipedia.org/wiki/Ph%C6%B0%C6%A1ng_tr%C3%ACnh_t%C3%AAn_l%E1%BB%ADa_Tsiolkovsky" },
+            { id: 131, category: "Công Nghệ Tên Lửa & Phi Hành Gia", text: "Tách tầng tên lửa (Staging) giúp loại bỏ các bồn chứa nhiên liệu đã cạn, giảm trọng lượng để tên lửa tăng tốc hiệu quả hơn.", wiki: "https://vi.wikipedia.org/wiki/T%C3%AAn_l%E1%BB%ADa_nhi%E1%BB%81u_t%E1%BA%A7ng" },
+            { id: 132, category: "Công Nghệ Tên Lửa & Phi Hành Gia", text: "Động cơ Ion tăng tốc các ion khí xenon bằng điện trường; lực đẩy nhỏ nhưng có thể hoạt động liên tục hàng năm trời.", wiki: "https://vi.wikipedia.org/wiki/%C4%90%E1%BB%99ng_c%C6%A1_ion" },
+            { id: 133, category: "Công Nghệ Tên Lửa & Phi Hành Gia", text: "Bộ đồ phi hành gia (EMU) thực chất là một tàu vũ trụ thu nhỏ, cung cấp oxy, điều hòa nhiệt độ và chống bức xạ vi thiên thạch.", wiki: "https://vi.wikipedia.org/wiki/B%E1%BB%99_%C4%91%E1%BB%93_du_h%C3%A0nh_v%C5%A9_tr%E1%BB%A5" },
+            { id: 134, category: "Công Nghệ Tên Lửa & Phi Hành Gia", text: "Trong môi trường vi trọng lực trên ISS, các phi hành gia có thể cao thêm khoảng 3 - 5 cm do cột sống được giãn ra.", wiki: "https://vi.wikipedia.org/wiki/T%C3%A1c_%C4%91%E1%BB%99ng_c%E1%BB%A7a_du_h%C3%A0nh_v%C5%A9_tr%E1%BB%A5_%C4%91%E1%BB%91i_v%E1%BB%9Bi_c%C6%A1_th%E1%BB%83_con_ng%C6%B0%E1%BB%9Di" },
+            { id: 135, category: "Công Nghệ Tên Lửa & Phi Hành Gia", text: "Khi tàu vũ trụ quay trở lại khí quyển Trái Đất, ma sát nén không khí tạo ra nhiệt độ lên tới hơn 1,600°C trên tấm khiên nhiệt.", wiki: "https://vi.wikipedia.org/wiki/Khi%C3%AAn_nhi%E1%BB%87t" },
+            { id: 136, category: "Công Nghệ Tên Lửa & Phi Hành Gia", text: "Tấm chắn nhiệt của kính James Webb gồm 5 lớp màng Kapton mỏng như sợi tóc giúp giữ các thiết bị ở mức lạnh -233°C.", wiki: "https://vi.wikipedia.org/wiki/K%C3%ADnh_vi%E1%BB%85n_v%E1%BB%8Dng_kh%C3%B4ng_gian_James_Webb" },
+            { id: 137, category: "Công Nghệ Tên Lửa & Phi Hành Gia", text: "Đường Kármán nằm ở độ cao 100 km so với mực nước biển được quốc tế công nhận là ranh giới giữa khí quyển Trái Đất và không gian.", wiki: "https://vi.wikipedia.org/wiki/%C4%90%C6%B0%E1%BB%9Dng_K%C3%A1rm%C3%A1n" },
+            { id: 138, category: "Công Nghệ Tên Lửa & Phi Hành Gia", text: "Quỹ đạo địa tĩnh (GEO) nằm ở độ cao 35,786 km, nơi vệ tinh quay cùng tốc độ tự quay của Trái Đất nên luôn đứng yên trên một điểm.", wiki: "https://vi.wikipedia.org/wiki/Qu%E1%BB%B9_%C4%91%E1%BA%A1o_%C4%91%E1%BB%8Ba_t%C4%A9nh" },
+            { id: 139, category: "Công Nghệ Tên Lửa & Phi Hành Gia", text: "Mạng lưới Không gian Sâu (Deep Space Network - DSN) của NASA gồm 3 trạm ăng-ten khổng lồ tại Mỹ, Tây Ban Nha và Úc để liên lạc với tàu vũ trụ.", wiki: "https://vi.wikipedia.org/wiki/Deep_Space_Network" },
+            { id: 140, category: "Công Nghệ Tên Lửa & Phi Hành Gia", text: "Hệ thống phóng không gian SLS (Space Launch System) là tên lửa siêu nặng thế hệ mới của NASA phục vụ chương trình Artemis.", wiki: "https://vi.wikipedia.org/wiki/Space_Launch_System" }
         ];
 
-        // 20 CÂU HỎI TRẮC NGHIỆM GẮN LIỀN VỚI factId
         const SPACE_QUESTIONS = [
             { difficulty: 'rookie', category: 'HỆ MẶT TRỜI CƠ BẢN', factId: 5, q: 'Hành tinh nào lớn nhất trong Hệ Mặt Trời của chúng ta?', options: ['Sao Thổ (Saturn)', 'Sao Mộc (Jupiter)', 'Sao Hải Vương (Neptune)', 'Sao Thiên Vương (Uranus)'], answer: 1, explanation: 'Sao Mộc là hành tinh khí khổng lồ lớn nhất Hệ Mặt Trời.' },
             { difficulty: 'rookie', category: 'HỆ MẶT TRỜI CƠ BẢN', factId: 1, q: 'Hành tinh nào nằm ở quỹ đạo gần Mặt Trời nhất?', options: ['Sao Thủy (Mercury)', 'Sao Kim (Venus)', 'Sao Hỏa (Mars)', 'Trái Đất (Earth)'], answer: 0, explanation: 'Sao Thủy là hành tinh nhỏ nhất và ở vị trí gần Mặt Trời nhất.' },
-            { difficulty: 'rookie', category: 'HỆ MẶT TRỜI CƠ BẢN', factId: 4, q: 'Vì sao Sao Hỏa thường được gọi là "Hành tinh Đỏ"?', options: ['Do dung nham núi lửa bao phủ', 'Do phản chiếu ánh sáng hoàng hôn', 'Do bề mặt phủ nhiều bụi sắt oxit (gỉ sắt)', 'Do nhiệt độ bề mặt cực nóng'], answer: 2, explanation: 'Sắt oxit (gỉ sắt) chiếm đa phần tạo nên màu đỏ đặc trưng của Sao Hỏa.' },
-            { difficulty: 'rookie', category: 'HỆ MẶT TRỜI CƠ BẢN', factId: 10, q: 'Thiên thể nào chiếm tới khoảng 99.8% tổng khối lượng của toàn bộ Hệ Mặt Trời?', options: ['Mặt Trời', 'Sao Mộc', 'Sao Thổ', 'Lỗ đen trung tâm'], answer: 0, explanation: 'Mặt Trời nắm giữ gần như toàn bộ khối lượng của cả hệ thống.' },
-            { difficulty: 'apprentice', category: 'VỆ TINH & THIÊN THỂ', factId: 11, q: 'Vệ tinh tự nhiên duy nhất của Trái Đất là gì?', options: ['Europa', 'Titan', 'Mặt Trăng', 'Phobos'], answer: 2, explanation: 'Mặt Trăng là vệ tinh tự nhiên quay quanh Trái Đất.' },
-            { difficulty: 'apprentice', category: 'VỆ TINH & THIÊN THỂ', factId: 24, q: 'Vành đai tiểu hành tinh chính nằm giữa quỹ đạo của hai hành tinh nào?', options: ['Sao Kim và Trái Đất', 'Sao Hỏa và Sao Mộc', 'Sao Mộc và Sao Thổ', 'Trái Đất và Sao Hỏa'], answer: 1, explanation: 'Vành đai tiểu hành tinh nằm ở khoảng không gian giữa Sao Hỏa và Sao Mộc.' },
-            { difficulty: 'apprentice', category: 'VỆ TINH & THIÊN THỂ', factId: 16, q: 'Thiên thể nào ngoài Trái Đất được xác nhận có chất lỏng dạng methane/ethane trên bề mặt?', options: ['Titan (vệ tinh Sao Thổ)', 'Io (vệ tinh Sao Mộc)', 'Ganymede', 'Deimos'], answer: 0, explanation: 'Titan là vệ tinh độc đáo của Sao Thổ có ao hồ và mưa chất lỏng dạng hydrocacbon.' },
-            { difficulty: 'apprentice', category: 'VỆ TINH & THIÊN THỂ', factId: 27, q: 'Hành tinh lùn nổi tiếng nào từng được tính là hành tinh thứ 9 trước khi bị phân loại lại năm 2006?', options: ['Ceres', 'Pluto (Diêm Vương Tỉnh)', 'Eris', 'Haumea'], answer: 1, explanation: 'Pluto đã được Hiệp hội Thiên văn Quốc tế xếp vào nhóm hành tinh lùn từ năm 2006.' },
-            { difficulty: 'intermediate', category: 'LỊCH SỬ & CÔNG NGHỆ', factId: 31, q: 'Ai là nhà du hành vũ trụ đầu tiên trên thế giới bay vào không gian năm 1961?', options: ['Neil Armstrong', 'Yuri Gagarin', 'Buzz Aldrin', 'John Glenn'], answer: 1, explanation: 'Yuri Gagarin (Liên Xô) thực hiện chuyến bay lịch sử trên tàu Vostok 1.' },
-            { difficulty: 'intermediate', category: 'LỊCH SỬ & CÔNG NGHỆ', factId: 42, q: 'Kính viễn vọng không gian nào chuyên quan sát vũ trụ sâu ở dải sóng hồng ngoại hiện nay?', options: ['Kính Hubble', 'Kính James Webb (JWST)', 'Kính Kepler', 'Kính Spitzer'], answer: 1, explanation: 'James Webb (JWST) là kính thiên văn hồng ngoại tối tân nhất của NASA.' },
-            { difficulty: 'intermediate', category: 'LỊCH SỬ & CÔNG NGHỆ', factId: 32, q: 'Chương trình thám hiểm nào của NASA đã đưa con người đặt chân lên Mặt Trăng lần đầu tiên năm 1969?', options: ['Chương trình Apollo', 'Chương trình Artemis', 'Chương trình Gemini', 'Chương trình Voyager'], answer: 0, explanation: 'Chương trình Apollo với sứ mệnh Apollo 11 lịch sử.' },
-            { difficulty: 'intermediate', category: 'LỊCH SỬ & CÔNG NGHỆ', factId: 34, q: 'Tàu thăm dò nào của NASA hiện giữ kỷ lục bay xa nhất và đã vươn tới không gian liên sao?', options: ['Voyager 1', 'Voyager 2', 'New Horizons', 'Pioneer 10'], answer: 0, explanation: 'Voyager 1 phóng năm 1977 là vật thể nhân tạo bay xa nhất nhân loại.' },
-            { difficulty: 'advanced', category: 'CƠ HỌC QUỸ ĐẠO & VẬT LÝ', factId: 51, q: 'Đại lượng "Delta-V" (Δv) trong thiết kế sứ mệnh biểu thị điều gì?', options: ['Khả năng thay đổi vận tốc của tàu vũ trụ', 'Trọng lượng tối đa của tên lửa', 'Nhiệt độ chịu đựng của khiên nhiệt', 'Sức chứa nhiên liệu bồn chứa'], answer: 0, explanation: 'Delta-V đo tổng xung lực đổi vận tốc cần thiết để thực hiện quỹ đạo.' },
-            { difficulty: 'advanced', category: 'CƠ HỌC QUỸ ĐẠO & VẬT LÝ', factId: 52, q: 'Vận tốc di chuyển của ánh sáng trong chân không có giá trị xấp xỉ bao nhiêu?', options: ['300,000 km/s', '150,000 km/s', '1,080,000 km/s', '3,000,000 km/s'], answer: 0, explanation: 'Ánh sáng truyền đi trong chân không với tốc độ xấp xỉ 299,792 km/s.' },
-            { difficulty: 'advanced', category: 'CƠ HỌC QUỸ ĐẠO & VẬT LÝ', factId: 47, q: 'Điểm cân bằng hấp dẫn trong hệ hai thiên thể giúp tàu vũ trụ tiết kiệm nhiên liệu gọi là gì?', options: ['Điểm kỳ dị', 'Điểm Lagrange', 'Vùng nhật quyển', 'Chân trời sự kiện'], answer: 1, explanation: 'Điểm Lagrange là các vị trí cân bằng hấp dẫn quan trọng trong cơ học quỹ đạo.' },
-            { difficulty: 'advanced', category: 'CƠ HỌC QUỸ ĐẠO & VẬT LÝ', factId: 55, q: 'Hiện tượng giãn nở thời gian theo thuyết tương đối hẹp xảy ra khi nào?', options: ['Khi vật thể di chuyển gần bằng tốc độ ánh sáng', 'Khi tàu vũ trụ đứng yên ở trạm', 'Khi bay qua vành đai tiểu hành tinh', 'Khi đi qua khí quyển Trái Đất'], answer: 0, explanation: 'Vật thể di chuyển với vận tốc cực cao tiệm cận tốc độ ánh sáng sẽ trải qua hiệu ứng giãn nở thời gian.' },
-            { difficulty: 'commander', category: 'VẬT LÝ THIÊN VĂN CỰC HẠN', factId: 53, q: 'Ranh giới quanh hố đen mà tại đó vận tốc thoát vượt quá tốc độ ánh sáng gọi là gì?', options: ['Điểm kỳ dị (Singularity)', 'Chân trời sự kiện (Event Horizon)', 'Đĩa bồi tụ (Accretion Disk)', 'Vùng bức xạ Hawking'], answer: 1, explanation: 'Chân trời sự kiện là biên giới tuyệt đối không gì có thể quay đầu thoát ra.' },
-            { difficulty: 'commander', category: 'VẬT LÝ THIÊN VĂN CỰC HẠN', factId: 60, q: 'Bức xạ phát ra từ hố đen do hiệu ứng lượng tử tại chân trời sự kiện được đặt theo tên nhà vật lý nào?', options: ['Stephen Hawking', 'Albert Einstein', 'Isaac Newton', 'Niels Bohr'], answer: 0, explanation: 'Bức xạ Hawking do nhà vật lý thiên tài Stephen Hawking lý thuyết hóa.' },
-            { difficulty: 'commander', category: 'VẬT LÝ THIÊN VĂN CỰC HẠN', factId: 56, q: 'Hiện tượng trọng lực cực mạnh của hố đen bẻ cong ánh sáng từ các thiên thể phía sau được gọi là gì?', options: ['Thấu kính hấp dẫn', 'Khúc xạ ánh sáng', 'Hiệu ứng Doppler', 'Phản xạ toàn phần'], answer: 0, explanation: 'Thấu kính hấp dẫn giúp phóng đại và bẻ cong đường đi của ánh sáng qua các vùng khối lượng khổng lồ.' },
-            { difficulty: 'commander', category: 'VẬT LÝ THIÊN VĂN CỰC HẠN', factId: 4, q: 'Tên của ngọn núi lửa cao nhất Hệ Mặt Trời nằm trên bề mặt Sao Hỏa là gì?', options: ['Olympus Mons', 'Mauna Kea', 'Maxwell Montes', 'Elysium Mons'], answer: 0, explanation: 'Olympus Mons là siêu núi lửa trên Sao Hỏa có chiều cao gấp khoảng 3 lần đỉnh Everest.' }
+            { difficulty: 'rookie', category: 'HỆ MẶT TRỜI CƠ BẢN', factId: 2, q: 'Hành tinh nào có nhiệt độ bề mặt nóng nhất trong Hệ Mặt Trời do hiệu ứng nhà kính?', options: ['Sao Thủy', 'Sao Kim', 'Sao Hỏa', 'Sao Mộc'], answer: 1, explanation: 'Khí quyển đặc quánh CO2 giữ nhiệt khiến bề mặt Sao Kim nóng tới 465°C.' },
+            { difficulty: 'rookie', category: 'HỆ MẶT TRỜI CƠ BẢN', factId: 10, q: 'Thiên thể nào chiếm tới khoảng 99.86% tổng khối lượng của toàn bộ Hệ Mặt Trời?', options: ['Mặt Trời', 'Sao Mộc', 'Sao Thổ', 'Vành đai Kuiper'], answer: 0, explanation: 'Mặt Trời nắm giữ gần như toàn bộ khối lượng của cả hệ thống.' },
+            { difficulty: 'apprentice', category: 'VỆ TINH & THIÊN THỂ', factId: 21, q: 'Vệ tinh tự nhiên duy nhất của Trái Đất là gì?', options: ['Europa', 'Titan', 'Mặt Trăng', 'Phobos'], answer: 2, explanation: 'Mặt Trăng là vệ tinh tự nhiên quay quanh Trái Đất.' },
+            { difficulty: 'apprentice', category: 'VỆ TINH & THIÊN THỂ', factId: 44, q: 'Vành đai tiểu hành tinh chính nằm giữa quỹ đạo của hai hành tinh nào?', options: ['Sao Kim và Trái Đất', 'Sao Hỏa và Sao Mộc', 'Sao Mộc và Sao Thổ', 'Trái Đất và Sao Hỏa'], answer: 1, explanation: 'Vành đai tiểu hành tinh nằm ở khoảng không gian giữa Sao Hỏa và Sao Mộc.' },
+            { difficulty: 'apprentice', category: 'VỆ TINH & THIÊN THỂ', factId: 26, q: 'Thiên thể nào ngoài Trái Đất được xác nhận có hồ chất lỏng methane/ethane trên bề mặt?', options: ['Titan (vệ tinh Sao Thổ)', 'Io (vệ tinh Sao Mộc)', 'Ganymede', 'Deimos'], answer: 0, explanation: 'Titan là vệ tinh độc đáo của Sao Thổ có hồ và mưa chất lỏng hydrocacbon.' },
+            { difficulty: 'apprentice', category: 'VỆ TINH & THIÊN THỂ', factId: 47, q: 'Hành tinh lùn nổi tiếng nào từng được tính là hành tinh thứ 9 trước khi bị phân loại lại năm 2006?', options: ['Ceres', 'Pluto (Diêm Vương Tỉnh)', 'Eris', 'Haumea'], answer: 1, explanation: 'Pluto đã được xếp vào nhóm hành tinh lùn từ năm 2006.' },
+            { difficulty: 'intermediate', category: 'LỊCH SỬ & SỨ MỆNH', factId: 56, q: 'Ai là nhà du hành vũ trụ đầu tiên trên thế giới bay vào không gian năm 1961?', options: ['Neil Armstrong', 'Yuri Gagarin', 'Buzz Aldrin', 'Alan Shepard'], answer: 1, explanation: 'Yuri Gagarin thực hiện chuyến bay lịch sử trên tàu Vostok 1 ngày 12/04/1961.' },
+            { difficulty: 'intermediate', category: 'LỊCH SỬ & SỨ MỆNH', factId: 82, q: 'Kính viễn vọng không gian nào chuyên quan sát vũ trụ sâu ở dải sóng hồng ngoại hiện nay?', options: ['Kính Hubble', 'Kính James Webb (JWST)', 'Kính Kepler', 'Kính Spitzer'], answer: 1, explanation: 'James Webb (JWST) là kính thiên văn hồng ngoại tối tân nhất của NASA.' },
+            { difficulty: 'intermediate', category: 'LỊCH SỬ & SỨ MỆNH', factId: 58, q: 'Chương trình thám hiểm nào của NASA đã đưa con người đặt chân lên Mặt Trăng lần đầu tiên năm 1969?', options: ['Chương trình Apollo', 'Chương trình Artemis', 'Chương trình Gemini', 'Chương trình Voyager'], answer: 0, explanation: 'Chương trình Apollo với sứ mệnh Apollo 11 lịch sử.' },
+            { difficulty: 'intermediate', category: 'LỊCH SỬ & SỨ MỆNH', factId: 59, q: 'Tàu thăm dò nào của NASA hiện giữ kỷ lục bay xa nhất và đã vươn tới không gian liên sao?', options: ['Voyager 1', 'Voyager 2', 'New Horizons', 'Parker Solar Probe'], answer: 0, explanation: 'Voyager 1 phóng năm 1977 là vật thể nhân tạo bay xa nhất nhân loại.' },
+            { difficulty: 'advanced', category: 'CƠ HỌC QUỸ ĐẠO & VẬT LÝ', factId: 96, q: 'Đại lượng "Delta-V" (Δv) trong thiết kế sứ mệnh biểu thị điều gì?', options: ['Khả năng thay đổi vận tốc của tàu vũ trụ', 'Trọng lượng tối đa của tên lửa', 'Nhiệt độ chịu đựng của khiên nhiệt', 'Sức chứa nhiên liệu bồn chứa'], answer: 0, explanation: 'Delta-V đo tổng xung lực đổi vận tốc cần thiết để thực hiện cơ động quỹ đạo.' },
+            { difficulty: 'advanced', category: 'CƠ HỌC QUỸ ĐẠO & VẬT LÝ', factId: 97, q: 'Vận tốc di chuyển của ánh sáng trong chân không có giá trị xấp xỉ bao nhiêu?', options: ['299,792 km/s', '150,000 km/s', '1,080,000 km/s', '3,000,000 km/s'], answer: 0, explanation: 'Ánh sáng truyền đi trong chân không với tốc độ xấp xỉ 299,792 km/s.' },
+            { difficulty: 'advanced', category: 'CƠ HỌC QUỸ ĐẠO & VẬT LÝ', factId: 86, q: 'Điểm cân bằng hấp dẫn trong hệ hai thiên thể giúp tàu vũ trụ tiết kiệm nhiên liệu gọi là gì?', options: ['Điểm kỳ dị', 'Điểm Lagrange', 'Đường Kármán', 'Chân trời sự kiện'], answer: 1, explanation: 'Điểm Lagrange là các vị trí cân bằng hấp dẫn quan trọng trong cơ học quỹ đạo.' },
+            { difficulty: 'advanced', category: 'CƠ HỌC QUỸ ĐẠO & VẬT LÝ', factId: 137, q: 'Ranh giới quốc tế phân định giữa khí quyển Trái Đất và không gian vũ trụ (ở độ cao 100 km) gọi là gì?', options: ['Đường Kármán', 'Quỹ đạo địa tĩnh', 'Chân trời sự kiện', 'Vành đai Kuiper'], answer: 0, explanation: 'Đường Kármán ở độ cao 100 km là ranh giới không gian được công nhận.' },
+            { difficulty: 'commander', category: 'VẬT LÝ THIÊN VĂN CỰC HẠN', factId: 98, q: 'Ranh giới quanh hố đen mà tại đó vận tốc thoát vượt quá tốc độ ánh sáng gọi là gì?', options: ['Điểm kỳ dị (Singularity)', 'Chân trời sự kiện (Event Horizon)', 'Đĩa bồi tụ (Accretion Disk)', 'Vùng bức xạ Hawking'], answer: 1, explanation: 'Chân trời sự kiện là biên giới tuyệt đối không gì có thể quay đầu thoát ra.' },
+            { difficulty: 'commander', category: 'VẬT LÝ THIÊN VĂN CỰC HẠN', factId: 102, q: 'Bức xạ lý thuyết phát ra từ hố đen do hiệu ứng lượng tử tại chân trời sự kiện gọi là gì?', options: ['Bức xạ Hawking', 'Bức xạ nền CMB', 'Thấu kính hấp dẫn', 'Sóng hấp dẫn'], answer: 0, explanation: 'Bức xạ Hawking do nhà vật lý Stephen Hawking lý thuyết hóa.' },
+            { difficulty: 'commander', category: 'VẬT LÝ THIÊN VĂN CỰC HẠN', factId: 101, q: 'Hiện tượng trọng lực cực mạnh của hố đen bẻ cong ánh sáng từ các thiên thể phía sau được gọi là gì?', options: ['Thấu kính hấp dẫn', 'Khúc xạ ánh sáng', 'Hiệu ứng Doppler', 'Phản xạ toàn phần'], answer: 0, explanation: 'Thấu kính hấp dẫn bẻ cong và phóng đại đường đi của ánh sáng qua vùng khối lượng lớn.' },
+            { difficulty: 'commander', category: 'VẬT LÝ THIÊN VĂN CỰC HẠN', factId: 4, q: 'Tên của ngọn núi lửa cao nhất Hệ Mặt Trời nằm trên bề mặt Sao Hỏa là gì?', options: ['Olympus Mons', 'Valles Marineris', 'Verona Rupes', 'Herschel'], answer: 0, explanation: 'Olympus Mons trên Sao Hỏa cao gần 22 km, gấp gần 3 lần đỉnh Everest.' }
         ];
 
-        // CÂU HỎI TRẠM KIỂM TRA TRÊN QUỸ ĐẠO (IN-FLIGHT CHECKPOINTS)
         const IN_FLIGHT_QUESTIONS = [
             {
                 title: "TRẠM KIỂM TRA #1 (33% CHẶNG ĐƯỜNG)",
-                factId: 51,
-                q: "Khi tên lửa tiến vào không gian ngoài khí quyển, lực cản không khí thay đổi thế nào?",
-                options: ["Tăng lên cực đại", "Giảm dần về 0 (chân không)", "Không thay đổi", "Biến đổi liên tục"],
+                factId: 115,
+                q: "Khi tên lửa tiến vào môi trường chân không ngoài khí quyển, sóng âm và lực cản không khí thay đổi thế nào?",
+                options: ["Tăng lên cực đại", "Giảm dần về 0 (không truyền âm & không lực cản)", "Không thay đổi", "Biến đổi liên tục"],
                 answer: 1,
-                explanation: "Chính xác! Lực cản không khí giảm dần và biến mất khi ra khỏi tầng khí quyển."
+                explanation: "Trong môi trường chân không vũ trụ không có không khí nên lực cản và sóng âm đều bằng 0."
             },
             {
                 title: "TRẠM KIỂM TRA #2 (66% CHẶNG ĐƯỜNG)",
-                factId: 59,
-                q: "Lực nào giúp tàu vũ trụ duy trì quỹ đạo quanh hành tinh mà không cần động cơ liên tục?",
-                options: ["Lực hấp dẫn cân bằng với lực ly tâm", "Lực ma sát bề mặt", "Lực đẩy ion", "Áp suất ánh sáng"],
+                factId: 107,
+                q: "Vận tốc vũ trụ cấp 1 cần thiết để vệ tinh duy trì quỹ đạo tròn quanh Trái Đất là khoảng bao nhiêu?",
+                options: ["7.9 km/s", "1.5 km/s", "45.0 km/s", "300,000 km/s"],
                 answer: 0,
-                explanation: "Chính xác! Sự cân bằng giữa lực hấp dẫn và lực ly tâm giữ cho quỹ đạo ổn định."
+                explanation: "Vận tốc vũ trụ cấp 1 xấp xỉ 7.9 km/s giúp cân bằng lực hấp dẫn để bay quanh Trái Đất."
             }
         ];
 
@@ -674,6 +1041,9 @@
 
         let gameState = {
             activeMode: 'mission',
+            canvasView: 'trajectory', // 'trajectory' hoặc 'solarsystem'
+            solarOrbitPaused: false,
+            selectedPlanetId: null,
             phase: 'design',
             selectedDest: DESTINATIONS[0],
             selectedComponents: {
@@ -697,6 +1067,7 @@
             checkpoint33Triggered: false,
             checkpoint66Triggered: false,
             inFlightQuizActive: false,
+            pausedForLibraryReading: false,
             fqTimer: null,
             fqTimeLeft: 15,
             logs: [],
@@ -713,27 +1084,146 @@
         window.onload = function() {
             renderDestinations();
             renderComponents();
-            renderLibraryFacts();
+            renderLibraryFacts(NASA_FACTS);
             recalculateStats();
             initCanvas();
             animate();
         };
 
-        function renderLibraryFacts() {
+        // CHUYỂN CHẾ ĐỘ XEM TRONG MỤC LẮP RÁP & MÔ PHỎNG
+        function setCanvasView(view) {
+            gameState.canvasView = view;
+            const btnTraj = document.getElementById('view-btn-trajectory');
+            const btnSolar = document.getElementById('view-btn-solarsystem');
+            const solarControls = document.getElementById('solar-controls');
+            const hint = document.getElementById('space-hint');
+
+            if (view === 'trajectory') {
+                btnTraj.className = "px-3.5 py-2 rounded-xl bg-cyan-500/25 text-cyan-300 border border-cyan-400/60 font-bold transition flex items-center gap-1.5";
+                btnSolar.className = "px-3.5 py-2 rounded-xl text-slate-300 hover:text-amber-300 transition flex items-center gap-1.5";
+                solarControls.classList.add('hidden');
+                hint.innerHTML = '<i class="fa-solid fa-hand-pointer text-cyan-400 mr-1.5"></i> Kéo chuột để di chuyển • Lăn chuột để thu phóng • Bấm vào hành tinh để xem chi tiết';
+            } else {
+                btnSolar.className = "px-3.5 py-2 rounded-xl bg-amber-500/25 text-amber-300 border border-amber-400/60 font-bold transition flex items-center gap-1.5";
+                btnTraj.className = "px-3.5 py-2 rounded-xl text-slate-300 hover:text-cyan-300 transition flex items-center gap-1.5";
+                solarControls.classList.remove('hidden');
+                hint.innerHTML = '<i class="fa-solid fa-earth-asia text-amber-400 mr-1.5"></i> Bấm trực tiếp vào Mặt Trời hoặc bất kỳ hành tinh nào để đọc thông tin chi tiết!';
+                resetCameraView();
+            }
+        }
+
+        function toggleSolarOrbitPause() {
+            gameState.solarOrbitPaused = !gameState.solarOrbitPaused;
+            const btn = document.getElementById('solar-orbit-btn');
+            btn.innerHTML = gameState.solarOrbitPaused
+                ? '<i class="fa-solid fa-play"></i> Tiếp Tục Quay Quỹ Đạo'
+                : '<i class="fa-solid fa-pause"></i> Dừng Quỹ Đạo Để Dễ Bấm';
+        }
+
+        function resetCameraView() {
+            camX = 0;
+            camY = 0;
+            zoom = 0.85;
+        }
+
+        function openPlanetInfo(planetId) {
+            const body = SOLAR_SYSTEM_BODIES.find(b => b.id === planetId);
+            if (!body) return;
+            gameState.selectedPlanetId = planetId;
+
+            const card = document.getElementById('planet-info-card');
+            card.classList.remove('hidden');
+
+            document.getElementById('pi-badge-color').style.background = `radial-gradient(circle at 30% 30%, #ffffff, ${body.color}, #03050c)`;
+            document.getElementById('pi-name').innerText = body.name;
+            document.getElementById('pi-type').innerText = body.type;
+            document.getElementById('pi-distance').innerText = body.distance;
+            document.getElementById('pi-temp').innerText = body.temp;
+            document.getElementById('pi-day').innerText = body.day;
+            document.getElementById('pi-year').innerText = body.year;
+            document.getElementById('pi-gravity').innerText = body.gravity;
+            document.getElementById('pi-moons').innerText = body.moons;
+            document.getElementById('pi-overview').innerText = body.overview;
+            document.getElementById('pi-nasa').innerText = body.nasa;
+
+            document.getElementById('pi-highlights').innerHTML = body.highlights.map(h => `<li>${h}</li>`).join('');
+        }
+
+        function closePlanetInfo() {
+            gameState.selectedPlanetId = null;
+            document.getElementById('planet-info-card').classList.add('hidden');
+        }
+
+        function removeVietnameseTones(str) {
+            return str.normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/đ/g, 'd').replace(/Đ/g, 'D').toLowerCase();
+        }
+
+        function filterLibraryFacts() {
+            const searchInput = document.getElementById('lib-search-input');
+            const categorySelect = document.getElementById('lib-category-filter');
+            const clearBtn = document.getElementById('lib-clear-btn');
+
+            const rawQuery = searchInput ? searchInput.value.trim() : '';
+            const selectedCat = categorySelect ? categorySelect.value : 'ALL';
+
+            if (clearBtn) clearBtn.classList.toggle('hidden', rawQuery.length === 0);
+
+            const normalizedQuery = removeVietnameseTones(rawQuery);
+
+            const filtered = NASA_FACTS.filter(fact => {
+                const matchCat = selectedCat === 'ALL' || fact.category === selectedCat;
+                if (!matchCat) return false;
+                if (!normalizedQuery) return true;
+
+                const idStr = `#${fact.id}`;
+                const haystack = removeVietnameseTones(`${idStr} ${fact.id} ${fact.category} ${fact.text}`);
+                return haystack.includes(normalizedQuery);
+            });
+
+            renderLibraryFacts(filtered);
+        }
+
+        function clearLibrarySearch() {
+            const searchInput = document.getElementById('lib-search-input');
+            if (searchInput) searchInput.value = '';
+            filterLibraryFacts();
+        }
+
+        function renderLibraryFacts(factsList) {
             const container = document.getElementById('library-facts-container');
+            const countLabel = document.getElementById('lib-result-count');
             if (!container) return;
-            container.innerHTML = NASA_FACTS.map(fact => `
+
+            if (countLabel) {
+                countLabel.innerText = `Hiển thị ${factsList.length} / ${NASA_FACTS.length} thông tin`;
+            }
+
+            if (factsList.length === 0) {
+                container.innerHTML = `
+                    <div class="col-span-full text-center py-10 bg-space-900/60 rounded-xl border border-slate-800 space-y-2">
+                        <i class="fa-solid fa-satellite-dish text-3xl text-slate-500"></i>
+                        <p class="text-sm font-orbitron text-slate-300">Không tìm thấy thông tin NASA nào khớp với từ khóa!</p>
+                        <button onclick="clearLibrarySearch(); document.getElementById('lib-category-filter').value='ALL'; filterLibraryFacts();" 
+                            class="px-4 py-1.5 rounded-lg bg-cyan-600/30 border border-cyan-500/50 text-cyan-300 font-mono text-xs mt-2">
+                            Hiển thị lại tất cả 140 thông tin
+                        </button>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = factsList.map(fact => `
                 <div id="fact-card-${fact.id}" class="bg-space-900/90 border border-slate-800 hover:border-cyan-500/40 p-3.5 rounded-xl transition flex flex-col justify-between gap-2 relative">
                     <div class="flex items-start gap-3">
-                        <span class="w-7 h-7 rounded-lg bg-space-950 border border-cyan-500/30 text-cyan-400 font-orbitron font-bold text-xs flex items-center justify-center shrink-0">#${fact.id}</span>
+                        <span class="w-8 h-8 rounded-lg bg-space-950 border border-cyan-500/30 text-cyan-400 font-orbitron font-bold text-xs flex items-center justify-center shrink-0">#${fact.id}</span>
                         <div class="space-y-1">
                             <span class="text-[10px] font-mono text-purple-400 uppercase tracking-wider block">${fact.category}</span>
                             <p class="text-xs md:text-sm text-slate-200 leading-relaxed">${fact.text}</p>
                         </div>
                     </div>
-                    <div class="flex justify-end pt-1 border-t border-slate-800/60 mt-1">
-                        <a href="${fact.wiki}" target="_blank" class="text-[11px] text-cyan-400 hover:text-cyan-300 font-mono flex items-center gap-1 transition">
-                            <i class="fa-solid fa-book-open"></i> Xem Wikipedia <i class="fa-solid fa-arrow-up-right-from-square text-[9px]"></i>
+                    <div class="flex justify-end pt-1.5 border-t border-slate-800/60 mt-1">
+                        <a href="${fact.wiki}" target="_blank" rel="noopener noreferrer" class="text-[11px] text-cyan-400 hover:text-cyan-300 font-mono flex items-center gap-1.5 transition">
+                            <i class="fa-brands fa-wikipedia-w"></i> Đọc thêm trên Wikipedia <i class="fa-solid fa-arrow-up-right-from-square text-[9px]"></i>
                         </a>
                     </div>
                 </div>
@@ -741,10 +1231,16 @@
         }
 
         function goToFactCard(factId) {
+            const searchInput = document.getElementById('lib-search-input');
+            const categorySelect = document.getElementById('lib-category-filter');
+            if (searchInput) searchInput.value = '';
+            if (categorySelect) categorySelect.value = 'ALL';
+            filterLibraryFacts();
+
             switchQuizSubTab('library');
             setTimeout(() => {
                 document.querySelectorAll('.library-highlight').forEach(el => {
-                    el.classList.remove('neon-border', 'scale-[1.02]');
+                    el.classList.remove('neon-border', 'scale-[1.01]', 'library-highlight');
                     const oldIndicator = el.querySelector('.target-arrow');
                     if (oldIndicator) oldIndicator.remove();
                 });
@@ -752,26 +1248,40 @@
                 const targetCard = document.getElementById(`fact-card-${factId}`);
                 if (targetCard) {
                     targetCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                    targetCard.classList.add('neon-border', 'scale-[1.02]', 'library-highlight');
+                    targetCard.classList.add('neon-border', 'scale-[1.01]', 'library-highlight');
                     
                     let indicator = targetCard.querySelector('.target-arrow');
                     if (!indicator) {
                         indicator = document.createElement('div');
-                        indicator.className = 'target-arrow text-amber-400 font-orbitron font-bold text-xs animate-bounce flex items-center gap-1.5 mt-2 bg-amber-950/40 border border-amber-500/50 p-2 rounded-lg';
-                        indicator.innerHTML = '<i class="fa-solid fa-hand-point-right text-base"></i><span>👉 Thông tin chính xác cho câu hỏi của bạn!</span>';
+                        indicator.className = 'target-arrow text-amber-400 font-orbitron font-bold text-xs flex items-center gap-1.5 mt-2 bg-amber-950/50 border border-amber-500/60 p-2 rounded-lg';
+                        indicator.innerHTML = '<i class="fa-solid fa-hand-point-right text-base"></i><span>Đây là thông tin NASA giải thích cho câu hỏi vừa rồi!</span>';
                         targetCard.appendChild(indicator);
                     }
                 }
-            }, 100);
+            }, 120);
         }
 
         function goToFactFromFlight(factId) {
             document.getElementById('flight-quiz-modal').classList.add('hidden');
             gameState.inFlightQuizActive = false;
-            gameState.isPaused = false;
+            gameState.pausedForLibraryReading = true;
+            gameState.isPaused = true;
+            document.getElementById('return-flight-banner').classList.remove('hidden');
             switchGameMode('quiz');
-            switchQuizSubTab('library');
-            setTimeout(() => { goToFactCard(factId); }, 200);
+            goToFactCard(factId);
+        }
+
+        function returnToPausedFlight() {
+            gameState.pausedForLibraryReading = false;
+            document.getElementById('return-flight-banner').classList.add('hidden');
+            switchGameMode('mission');
+            gameState.isPaused = false;
+        }
+
+        function resumeFlightManually() {
+            document.getElementById('flight-quiz-modal').classList.add('hidden');
+            gameState.inFlightQuizActive = false;
+            gameState.isPaused = false;
         }
 
         function switchTab(tab) {
@@ -882,6 +1392,16 @@
             `).join('');
         }
 
+        function showUnlockToast(msg, isSuccess) {
+            const toast = document.getElementById('unlock-toast');
+            if (!toast) return;
+            toast.classList.remove('hidden');
+            toast.className = isSuccess
+                ? "text-xs font-mono p-2.5 rounded-lg border border-emerald-500/50 bg-emerald-950/40 text-emerald-300"
+                : "text-xs font-mono p-2.5 rounded-lg border border-amber-500/50 bg-amber-950/40 text-amber-300";
+            toast.innerHTML = msg;
+        }
+
         function unlockComponent(catId, itemId) {
             const cat = COMPONENT_CATEGORIES.find(c => c.id === catId);
             if (!cat) return;
@@ -895,9 +1415,9 @@
                 renderComponents();
                 recalculateStats();
                 document.getElementById('header-science').innerText = `${gameState.accumulatedScience}`;
-                alert(`🎉 Chúc mừng! Bạn đã mở khóa thành công linh kiện: ${item.name}`);
+                showUnlockToast(`<i class="fa-solid fa-circle-check mr-1"></i> Đã mở khóa thành công: <strong>${item.name}</strong>`, true);
             } else {
-                alert(`⚠️ Bạn chưa đủ Điểm Khoa Học! Cần ${item.unlockCost} Điểm KH (Hiện có: ${gameState.accumulatedScience} Điểm KH). Hãy vào Trạm Tri Thức để làm trắc nghiệm!`);
+                showUnlockToast(`<i class="fa-solid fa-triangle-exclamation mr-1"></i> Cần <strong>${item.unlockCost} Điểm KH</strong> để mở khóa (Hiện có: ${gameState.accumulatedScience} KH).`, false);
             }
         }
 
@@ -926,6 +1446,11 @@
                 stopQuizTimer();
                 recalculateStats();
                 renderComponents();
+                if (gameState.pausedForLibraryReading) {
+                    gameState.pausedForLibraryReading = false;
+                    gameState.isPaused = false;
+                    document.getElementById('return-flight-banner').classList.add('hidden');
+                }
             } else {
                 quizBtn.className = "px-3 py-1.5 rounded-lg bg-purple-500/20 text-purple-300 border border-purple-500/50 font-bold transition flex items-center gap-1.5";
                 missionBtn.className = "px-3 py-1.5 rounded-lg text-slate-400 hover:text-cyan-300 transition flex items-center gap-1.5";
@@ -993,6 +1518,7 @@
             const shipInput = document.getElementById('ship-name-input').value;
             if(shipInput.trim()) gameState.shipName = shipInput.trim();
 
+            setCanvasView('trajectory');
             gameState.phase = 'flying';
             gameState.flightProgress = 0;
             gameState.fuel = 100;
@@ -1000,6 +1526,7 @@
             gameState.checkpoint33Triggered = false;
             gameState.checkpoint66Triggered = false;
             gameState.inFlightQuizActive = false;
+            gameState.pausedForLibraryReading = false;
             gameState.logs = [`Khởi hành tàu ${gameState.shipName} hướng tới ${gameState.selectedDest.name}.`];
 
             document.getElementById('design-panel').classList.add('hidden', 'lg:flex');
@@ -1046,13 +1573,14 @@
 
         function resetToDesign() {
             gameState.phase = 'design';
+            gameState.pausedForLibraryReading = false;
+            document.getElementById('return-flight-banner').classList.add('hidden');
             document.getElementById('debrief-modal').classList.add('hidden');
             document.getElementById('flight-hud').classList.add('opacity-0', '-translate-y-4');
             document.getElementById('design-panel').classList.remove('hidden');
             recalculateStats();
         }
 
-        // TRẠM KIỂM TRA TRÊN QUỸ ĐẠO (IN-FLIGHT QUIZ)
         function triggerInFlightQuiz(checkpointIndex) {
             gameState.inFlightQuizActive = true;
             gameState.isPaused = true;
@@ -1100,21 +1628,22 @@
             const feedbackBox = document.getElementById('fq-feedback');
             feedbackBox.classList.remove('hidden');
             
+            document.querySelectorAll('#fq-options-grid button').forEach(btn => btn.disabled = true);
+
             if(isCorrect) {
-                feedbackBox.className = "text-xs font-mono p-3 rounded-xl border border-emerald-500/50 bg-emerald-950/40 text-emerald-300";
-                feedbackBox.innerHTML = `<i class="fa-solid fa-circle-check mr-1 text-emerald-400"></i> <strong class="text-emerald-400">ĐÚNG!</strong> +250 Điểm Khoa Học.<br>${explanation}`;
+                feedbackBox.className = "text-xs font-mono p-3.5 rounded-xl border border-emerald-500/50 bg-emerald-950/40 text-emerald-300 space-y-3";
+                feedbackBox.innerHTML = `
+                    <div><i class="fa-solid fa-circle-check mr-1 text-emerald-400"></i> <strong class="text-emerald-400">ĐÚNG!</strong> +250 Điểm Khoa Học.<br><span class="text-slate-200 mt-1 block">${explanation}</span></div>
+                    <button onclick="resumeFlightManually()" class="w-full py-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-orbitron font-bold text-xs transition">
+                        Đã Hiểu, Tiếp Tục Bay <i class="fa-solid fa-play ml-1"></i>
+                    </button>
+                `;
                 gameState.accumulatedScience += 250;
                 gameState.logs.push(`Vượt qua trạm kiểm tra quỹ đạo: +250 KH`);
                 document.getElementById('fq-hint-prompt').classList.add('hidden');
-
-                setTimeout(() => {
-                    document.getElementById('flight-quiz-modal').classList.add('hidden');
-                    gameState.inFlightQuizActive = false;
-                    gameState.isPaused = false;
-                }, 3000);
             } else {
                 feedbackBox.className = "text-xs font-mono p-3 rounded-xl border border-red-500/50 bg-red-950/40 text-red-300";
-                feedbackBox.innerHTML = `<i class="fa-solid fa-triangle-exclamation mr-1 text-red-400"></i> <strong class="text-red-400">CHƯA CHÍNH XÁC!</strong> Vỏ tàu giảm 15%.<br>${explanation}`;
+                feedbackBox.innerHTML = `<i class="fa-solid fa-triangle-exclamation mr-1 text-red-400"></i> <strong class="text-red-400">CHƯA CHÍNH XÁC!</strong> Vỏ tàu giảm 15%.<br><span class="text-slate-200 mt-1 block">${explanation}</span>`;
                 gameState.hull = Math.max(0, gameState.hull - 15);
                 gameState.logs.push(`Va chạm bụi vũ trụ tại trạm kiểm tra: Vỏ tàu còn ${gameState.hull}%`);
                 
@@ -1254,7 +1783,10 @@
             updateQuizHeaderStats();
         }
 
-        let canvas, ctx, stars = [], camX = 0, camY = 0, zoom = 1, isDragging = false, dragStart = { x: 0, y: 0 };
+        // ================= CANVAS ENGINE: HÀNH TINH CHÂN THỰC & HỆ MẶT TRỜI TƯƠNG TÁC =================
+        let canvas, ctx, stars = [], asteroidBelt = [], camX = 0, camY = 0, zoom = 1;
+        let isDragging = false, hasMovedDuringDrag = false, dragStart = { x: 0, y: 0 };
+        let renderedHitboxes = []; // Lưu tọa độ màn hình các hành tinh để bấm chọn
 
         function initCanvas() {
             canvas = document.getElementById('spaceCanvas');
@@ -1262,14 +1794,65 @@
             resizeCanvas();
             window.addEventListener('resize', resizeCanvas);
 
-            for(let i = 0; i < 350; i++) {
-                stars.push({ x: (Math.random() - 0.5) * 3200, y: (Math.random() - 0.5) * 3200, size: Math.random() * 1.8 + 0.3, alpha: Math.random() * 0.8 + 0.2 });
+            for(let i = 0; i < 420; i++) {
+                stars.push({
+                    x: (Math.random() - 0.5) * 3400,
+                    y: (Math.random() - 0.5) * 3400,
+                    size: Math.random() * 1.9 + 0.3,
+                    alpha: Math.random() * 0.85 + 0.15,
+                    tint: Math.random() > 0.8 ? '#bae6fd' : (Math.random() > 0.85 ? '#fef08a' : '#ffffff')
+                });
             }
 
-            canvas.addEventListener('mousedown', e => { isDragging = true; dragStart = { x: e.clientX - camX, y: e.clientY - camY }; });
-            window.addEventListener('mousemove', e => { if(isDragging) { camX = e.clientX - dragStart.x; camY = e.clientY - dragStart.y; } });
-            window.addEventListener('mouseup', () => isDragging = false);
-            canvas.addEventListener('wheel', e => { e.preventDefault(); zoom = Math.max(0.4, Math.min(2.5, zoom * (e.deltaY < 0 ? 1.1 : 0.9))); });
+            for(let i = 0; i < 140; i++) {
+                asteroidBelt.push({
+                    angle: Math.random() * Math.PI * 2,
+                    dist: 238 + (Math.random() - 0.5) * 18,
+                    size: Math.random() * 2.2 + 0.8,
+                    speed: 0.002 + Math.random() * 0.0015
+                });
+            }
+
+            canvas.addEventListener('mousedown', e => {
+                isDragging = true;
+                hasMovedDuringDrag = false;
+                dragStart = { x: e.clientX - camX, y: e.clientY - camY };
+            });
+
+            window.addEventListener('mousemove', e => {
+                if(isDragging) {
+                    const dx = (e.clientX - dragStart.x) - camX;
+                    const dy = (e.clientY - dragStart.y) - camY;
+                    if (Math.abs(dx) > 3 || Math.abs(dy) > 3) hasMovedDuringDrag = true;
+                    camX = e.clientX - dragStart.x;
+                    camY = e.clientY - dragStart.y;
+                } else {
+                    // Đổi con trỏ chuột thành bàn tay khi rê qua hành tinh
+                    const rect = canvas.getBoundingClientRect();
+                    const mx = e.clientX - rect.left;
+                    const my = e.clientY - rect.top;
+                    const hit = renderedHitboxes.find(hb => Math.hypot(mx - hb.sx, my - hb.sy) <= hb.sr + 6);
+                    canvas.style.cursor = hit ? 'pointer' : 'grab';
+                }
+            });
+
+            window.addEventListener('mouseup', e => {
+                if (isDragging && !hasMovedDuringDrag) {
+                    const rect = canvas.getBoundingClientRect();
+                    const mx = e.clientX - rect.left;
+                    const my = e.clientY - rect.top;
+                    const hit = renderedHitboxes.find(hb => Math.hypot(mx - hb.sx, my - hb.sy) <= hb.sr + 8);
+                    if (hit && hit.planetId) {
+                        openPlanetInfo(hit.planetId);
+                    }
+                }
+                isDragging = false;
+            });
+
+            canvas.addEventListener('wheel', e => {
+                e.preventDefault();
+                zoom = Math.max(0.45, Math.min(2.6, zoom * (e.deltaY < 0 ? 1.1 : 0.9)));
+            });
         }
 
         function resizeCanvas() {
@@ -1279,6 +1862,17 @@
 
         function animate() {
             requestAnimationFrame(animate);
+
+            // Cập nhật góc quay hành tinh trong Hệ Mặt Trời
+            if (!gameState.solarOrbitPaused) {
+                SOLAR_SYSTEM_BODIES.forEach(body => {
+                    body.angle += body.speed;
+                });
+                asteroidBelt.forEach(a => {
+                    a.angle += a.speed;
+                });
+            }
+
             renderCanvas();
 
             if (gameState.phase === 'flying' && !gameState.isPaused && !gameState.inFlightQuizActive) {
@@ -1303,47 +1897,83 @@
             }
         }
 
+        function worldToScreen(wx, wy) {
+            return {
+                sx: canvas.width / 2 + camX + wx * zoom,
+                sy: canvas.height / 2 + camY + wy * zoom
+            };
+        }
+
         function renderCanvas() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
+            renderedHitboxes = [];
+
             ctx.save();
             ctx.translate(canvas.width / 2 + camX, canvas.height / 2 + camY);
             ctx.scale(zoom, zoom);
 
-            ctx.strokeStyle = 'rgba(0, 243, 255, 0.04)';
-            ctx.lineWidth = 1;
-            const gridSize = 40;
-            for (let x = -1600; x < 1600; x += gridSize) {
-                ctx.beginPath(); ctx.moveTo(x, -1600); ctx.lineTo(x, 1600); ctx.stroke();
-            }
-            for (let y = -1600; y < 1600; y += gridSize) {
-                ctx.beginPath(); ctx.moveTo(-1600, y); ctx.lineTo(1600, y); ctx.stroke();
-            }
-
+            // Nền sao nhiều tầng lung linh
             stars.forEach(s => {
-                ctx.fillStyle = `rgba(255, 255, 255, ${s.alpha})`;
+                ctx.fillStyle = s.tint;
+                ctx.globalAlpha = s.alpha;
                 ctx.beginPath();
                 ctx.arc(s.x, s.y, s.size, 0, Math.PI * 2);
                 ctx.fill();
             });
+            ctx.globalAlpha = 1;
 
-            const startPos = { x: -380, y: 0 };
-            const endPos = { x: 380, y: 0 };
+            if (gameState.canvasView === 'solarsystem') {
+                renderSolarSystemView();
+            } else {
+                renderTrajectoryView();
+            }
 
-            drawPlanet(startPos.x, startPos.y, 45, '#3b82f6', 'Trái Đất');
+            ctx.restore();
+        }
+
+        // CHẾ ĐỘ 1: QUỸ ĐẠO SỨ MỆNH VỚI HÀNH TINH ĐỒ HỌA CHÂN THỰC
+        function renderTrajectoryView() {
+            // Lưới tọa độ mờ
+            ctx.strokeStyle = 'rgba(0, 243, 255, 0.04)';
+            ctx.lineWidth = 1;
+            for (let x = -1600; x < 1600; x += 40) {
+                ctx.beginPath(); ctx.moveTo(x, -1600); ctx.lineTo(x, 1600); ctx.stroke();
+            }
+            for (let y = -1600; y < 1600; y += 40) {
+                ctx.beginPath(); ctx.moveTo(-1600, y); ctx.lineTo(1600, y); ctx.stroke();
+            }
+
+            const startPos = { x: -340, y: 20 };
+            const endPos = { x: 340, y: 20 };
+
+            // Vẽ Trái Đất chân thực + đăng ký vùng bấm xem thông tin
+            drawRealisticPlanet(startPos.x, startPos.y, 54, 'earth', 'Trái Đất');
+            const sEarth = worldToScreen(startPos.x, startPos.y);
+            renderedHitboxes.push({ planetId: 'earth', sx: sEarth.sx, sy: sEarth.sy, sr: 54 * zoom });
+
+            // Vẽ điểm đến chân thực
             const dest = gameState.selectedDest;
-            drawPlanet(endPos.x, endPos.y, dest.size, dest.color, dest.name);
+            const destRadius = Math.max(36, dest.size * 1.35);
+            drawRealisticPlanet(endPos.x, endPos.y, destRadius, dest.id, dest.name);
+            
+            const mappedPlanetId = ['moon', 'mars', 'jupiter'].includes(dest.id) ? dest.id : null;
+            if (mappedPlanetId) {
+                const sDest = worldToScreen(endPos.x, endPos.y);
+                renderedHitboxes.push({ planetId: mappedPlanetId, sx: sDest.sx, sy: sDest.sy, sr: destRadius * zoom });
+            }
 
+            // Đường quỹ đạo bay
             ctx.beginPath();
             ctx.moveTo(startPos.x, startPos.y);
-            const ctrlY = -140;
+            const ctrlY = -150;
             ctx.quadraticCurveTo(0, ctrlY, endPos.x, endPos.y);
-            ctx.strokeStyle = 'rgba(0, 243, 255, 0.35)';
+            ctx.strokeStyle = 'rgba(0, 243, 255, 0.45)';
             ctx.setLineDash([8, 8]);
             ctx.lineWidth = 2.5;
             ctx.stroke();
             ctx.setLineDash([]);
 
-            let t = gameState.phase === 'flying' ? gameState.flightProgress : 0.05;
+            let t = gameState.phase === 'flying' ? gameState.flightProgress : 0.08;
             const shipX = (1-t)*(1-t)*startPos.x + 2*(1-t)*t*0 + t*t*endPos.x;
             const shipY = (1-t)*(1-t)*startPos.y + 2*(1-t)*t*ctrlY + t*t*endPos.y;
             const dx = 2*(1-t)*(0 - startPos.x) + 2*t*(endPos.x - 0);
@@ -1351,37 +1981,245 @@
             const angle = Math.atan2(dy, dx);
 
             drawSpaceship(shipX, shipY, angle);
-            ctx.restore();
         }
 
-        function drawPlanet(x, y, radius, color, label) {
+        // CHẾ ĐỘ 2: HỆ MẶT TRỜI TOÀN CẢNH CÓ THỂ BẤM VÀO TỪNG HÀNH TINH
+        function renderSolarSystemView() {
+            // Vẽ các đường quỹ đạo tròn
+            SOLAR_SYSTEM_BODIES.forEach(body => {
+                if (body.orbitRadius > 0) {
+                    ctx.beginPath();
+                    ctx.arc(0, 0, body.orbitRadius, 0, Math.PI * 2);
+                    ctx.strokeStyle = body.id === gameState.selectedPlanetId
+                        ? 'rgba(0, 243, 255, 0.65)'
+                        : 'rgba(148, 163, 184, 0.16)';
+                    ctx.lineWidth = body.id === gameState.selectedPlanetId ? 2 : 1;
+                    ctx.stroke();
+                }
+            });
+
+            // Vẽ vành đai tiểu hành tinh giữa Sao Hỏa và Sao Mộc
+            ctx.fillStyle = 'rgba(161, 161, 170, 0.55)';
+            asteroidBelt.forEach(a => {
+                const ax = Math.cos(a.angle) * a.dist;
+                const ay = Math.sin(a.angle) * a.dist;
+                ctx.beginPath();
+                ctx.arc(ax, ay, a.size, 0, Math.PI * 2);
+                ctx.fill();
+            });
+
+            // Vẽ từng hành tinh
+            SOLAR_SYSTEM_BODIES.forEach(body => {
+                const px = Math.cos(body.angle) * body.orbitRadius;
+                const py = Math.sin(body.angle) * body.orbitRadius;
+
+                // Vòng sáng chọn nếu đang xem thông tin hành tinh này
+                if (gameState.selectedPlanetId === body.id) {
+                    ctx.beginPath();
+                    ctx.arc(px, py, body.radius + 9, 0, Math.PI * 2);
+                    ctx.strokeStyle = '#00f3ff';
+                    ctx.lineWidth = 2;
+                    ctx.setLineDash([4, 4]);
+                    ctx.stroke();
+                    ctx.setLineDash([]);
+                }
+
+                const shortName = body.name.split(' (')[0];
+                drawRealisticPlanet(px, py, body.radius, body.id, shortName);
+
+                const screenPos = worldToScreen(px, py);
+                renderedHitboxes.push({
+                    planetId: body.id,
+                    sx: screenPos.sx,
+                    sy: screenPos.sy,
+                    sr: Math.max(14, body.radius * zoom)
+                });
+            });
+        }
+
+        // HÀM VẼ CHI TIẾT TỪNG HÀNH TINH CHÂN THỰC 3D
+        function drawRealisticPlanet(x, y, radius, type, label) {
             ctx.save();
             ctx.translate(x, y);
-            const glow = ctx.createRadialGradient(0, 0, radius * 0.8, 0, 0, radius * 1.5);
-            glow.addColorStop(0, color);
-            glow.addColorStop(1, 'transparent');
-            ctx.fillStyle = glow;
+
+            // 1. Vẽ vành đai phía sau cho Sao Thổ / Sao Thiên Vương
+            if (type === 'saturn') {
+                ctx.save();
+                ctx.rotate(-0.35);
+                const ringGrad = ctx.createRadialGradient(0, 0, radius * 1.25, 0, 0, radius * 2.35);
+                ringGrad.addColorStop(0, 'rgba(214, 188, 130, 0.15)');
+                ringGrad.addColorStop(0.25, 'rgba(234, 210, 155, 0.78)');
+                ringGrad.addColorStop(0.55, 'rgba(180, 155, 105, 0.35)');
+                ringGrad.addColorStop(0.75, 'rgba(245, 226, 178, 0.85)');
+                ringGrad.addColorStop(1, 'rgba(214, 188, 130, 0.05)');
+                ctx.fillStyle = ringGrad;
+                ctx.beginPath();
+                ctx.ellipse(0, 0, radius * 2.35, radius * 0.65, 0, Math.PI, Math.PI * 2);
+                ctx.fill();
+                ctx.restore();
+            }
+
+            // 2. Quầng hào quang khí quyển / nhật hoa
+            let glowColor = 'rgba(56, 189, 248, 0.35)';
+            if (type === 'sun') glowColor = 'rgba(251, 191, 36, 0.65)';
+            else if (type === 'mars') glowColor = 'rgba(239, 68, 68, 0.35)';
+            else if (type === 'jupiter') glowColor = 'rgba(249, 115, 22, 0.3)';
+            else if (type === 'venus') glowColor = 'rgba(252, 211, 77, 0.35)';
+            else if (type === 'uranus') glowColor = 'rgba(34, 211, 238, 0.35)';
+            else if (type === 'neptune') glowColor = 'rgba(99, 102, 241, 0.4)';
+            else if (type === 'deepspace') glowColor = 'rgba(168, 85, 247, 0.45)';
+            else if (type === 'moon' || type === 'mercury') glowColor = 'rgba(203, 213, 225, 0.2)';
+
+            const atmo = ctx.createRadialGradient(0, 0, radius * 0.85, 0, 0, radius * (type === 'sun' ? 2.1 : 1.45));
+            atmo.addColorStop(0, glowColor);
+            atmo.addColorStop(1, 'transparent');
+            ctx.fillStyle = atmo;
             ctx.beginPath();
-            ctx.arc(0, 0, radius * 1.5, 0, Math.PI * 2);
+            ctx.arc(0, 0, radius * (type === 'sun' ? 2.1 : 1.45), 0, Math.PI * 2);
             ctx.fill();
 
-            const grad = ctx.createRadialGradient(-radius*0.3, -radius*0.3, radius*0.1, 0, 0, radius);
-            grad.addColorStop(0, '#ffffff');
-            grad.addColorStop(0.4, color);
-            grad.addColorStop(1, '#03050c');
-            ctx.fillStyle = grad;
+            // 3. Cắt hình tròn hành tinh để vẽ bề mặt chi tiết bên trong
+            ctx.save();
             ctx.beginPath();
             ctx.arc(0, 0, radius, 0, Math.PI * 2);
-            ctx.fill();
+            ctx.clip();
 
-            ctx.font = '11px Orbitron, sans-serif';
-            ctx.fillStyle = '#94a3b8';
+            if (type === 'sun') {
+                const sunGrad = ctx.createRadialGradient(-radius*0.2, -radius*0.2, radius*0.1, 0, 0, radius);
+                sunGrad.addColorStop(0, '#ffffff');
+                sunGrad.addColorStop(0.45, '#fde047');
+                sunGrad.addColorStop(0.85, '#f59e0b');
+                sunGrad.addColorStop(1, '#ea580c');
+                ctx.fillStyle = sunGrad;
+                ctx.fillRect(-radius, -radius, radius*2, radius*2);
+            } else if (type === 'earth') {
+                // Đại dương xanh sâu
+                ctx.fillStyle = '#1d4ed8';
+                ctx.fillRect(-radius, -radius, radius*2, radius*2);
+                // Lục địa xanh lục
+                ctx.fillStyle = '#22c55e';
+                ctx.beginPath();
+                ctx.ellipse(-radius*0.25, -radius*0.15, radius*0.42, radius*0.28, 0.4, 0, Math.PI*2);
+                ctx.ellipse(radius*0.32, radius*0.22, radius*0.35, radius*0.4, -0.3, 0, Math.PI*2);
+                ctx.fill();
+                // Mây trắng xoáy
+                ctx.fillStyle = 'rgba(255, 255, 255, 0.55)';
+                ctx.beginPath();
+                ctx.ellipse(-radius*0.1, -radius*0.45, radius*0.55, radius*0.12, 0.2, 0, Math.PI*2);
+                ctx.ellipse(radius*0.15, radius*0.1, radius*0.65, radius*0.14, -0.15, 0, Math.PI*2);
+                ctx.fill();
+                // Chỏm băng Bắc Cực
+                ctx.fillStyle = '#f8fafc';
+                ctx.fillRect(-radius, -radius, radius*2, radius*0.18);
+            } else if (type === 'mars') {
+                ctx.fillStyle = '#dc2626';
+                ctx.fillRect(-radius, -radius, radius*2, radius*2);
+                // Vùng đá bazan sẫm màu & Olympus Mons
+                ctx.fillStyle = '#7f1d1d';
+                ctx.beginPath();
+                ctx.ellipse(-radius*0.2, radius*0.15, radius*0.45, radius*0.25, 0.3, 0, Math.PI*2);
+                ctx.ellipse(radius*0.3, -radius*0.25, radius*0.25, radius*0.2, 0, 0, Math.PI*2);
+                ctx.fill();
+                // Chỏm băng cực
+                ctx.fillStyle = '#f1f5f9';
+                ctx.fillRect(-radius, -radius, radius*2, radius*0.16);
+                ctx.fillRect(-radius, radius*0.85, radius*2, radius*0.16);
+            } else if (type === 'jupiter') {
+                // Các dải mây khí quyển đặc trưng
+                const bands = ['#d97706', '#fef3c7', '#b45309', '#fde68a', '#92400e', '#fef3c7', '#c2410c'];
+                const bh = (radius * 2) / bands.length;
+                bands.forEach((c, idx) => {
+                    ctx.fillStyle = c;
+                    ctx.fillRect(-radius, -radius + idx * bh, radius * 2, bh + 0.5);
+                });
+                // Vết Đỏ Lớn
+                ctx.fillStyle = '#b91c1c';
+                ctx.beginPath();
+                ctx.ellipse(radius*0.22, radius*0.28, radius*0.28, radius*0.16, 0, 0, Math.PI*2);
+                ctx.fill();
+            } else if (type === 'saturn') {
+                const bands = ['#eab308', '#fef08a', '#ca8a04', '#fde047', '#a16207'];
+                const bh = (radius * 2) / bands.length;
+                bands.forEach((c, idx) => {
+                    ctx.fillStyle = c;
+                    ctx.fillRect(-radius, -radius + idx * bh, radius * 2, bh + 0.5);
+                });
+            } else if (type === 'venus') {
+                ctx.fillStyle = '#f59e0b';
+                ctx.fillRect(-radius, -radius, radius*2, radius*2);
+                ctx.fillStyle = 'rgba(254, 243, 199, 0.45)';
+                ctx.beginPath();
+                ctx.ellipse(0, -radius*0.2, radius*0.8, radius*0.22, 0.2, 0, Math.PI*2);
+                ctx.ellipse(0, radius*0.3, radius*0.7, radius*0.2, -0.2, 0, Math.PI*2);
+                ctx.fill();
+            } else if (type === 'uranus') {
+                ctx.fillStyle = '#06b6d4';
+                ctx.fillRect(-radius, -radius, radius*2, radius*2);
+                ctx.fillStyle = 'rgba(165, 243, 252, 0.35)';
+                ctx.fillRect(-radius, -radius*0.2, radius*2, radius*0.4);
+            } else if (type === 'neptune') {
+                ctx.fillStyle = '#1d4ed8';
+                ctx.fillRect(-radius, -radius, radius*2, radius*2);
+                ctx.fillStyle = '#1e1b4b';
+                ctx.beginPath();
+                ctx.ellipse(-radius*0.2, radius*0.15, radius*0.26, radius*0.15, 0, 0, Math.PI*2);
+                ctx.fill();
+            } else if (type === 'moon' || type === 'mercury' || type === 'asteroids') {
+                ctx.fillStyle = type === 'mercury' ? '#78716c' : '#94a3b8';
+                ctx.fillRect(-radius, -radius, radius*2, radius*2);
+                // Các miệng hố va chạm thiên thạch
+                ctx.fillStyle = 'rgba(30, 41, 59, 0.45)';
+                [[-0.3, -0.25, 0.22], [0.28, 0.15, 0.28], [-0.1, 0.38, 0.16], [0.25, -0.35, 0.14]].forEach(cr => {
+                    ctx.beginPath();
+                    ctx.arc(cr[0]*radius, cr[1]*radius, cr[2]*radius, 0, Math.PI*2);
+                    ctx.fill();
+                });
+            } else {
+                // Vũ trụ sâu / Tinh vân xoáy
+                const dsGrad = ctx.createRadialGradient(0, 0, 2, 0, 0, radius);
+                dsGrad.addColorStop(0, '#f3e8ff');
+                dsGrad.addColorStop(0.5, '#9333ea');
+                dsGrad.addColorStop(1, '#3b0764');
+                ctx.fillStyle = dsGrad;
+                ctx.fillRect(-radius, -radius, radius*2, radius*2);
+            }
+
+            // 4. Đổ bóng khối cầu 3D (trừ Mặt Trời tự phát sáng)
+            if (type !== 'sun') {
+                const shadow = ctx.createRadialGradient(-radius*0.35, -radius*0.35, radius*0.15, 0, 0, radius);
+                shadow.addColorStop(0, 'rgba(255, 255, 255, 0.22)');
+                shadow.addColorStop(0.55, 'rgba(0, 0, 0, 0.05)');
+                shadow.addColorStop(1, 'rgba(2, 6, 23, 0.85)');
+                ctx.fillStyle = shadow;
+                ctx.fillRect(-radius, -radius, radius*2, radius*2);
+            }
+            ctx.restore();
+
+            // 5. Vẽ nửa trước của vành đai Sao Thổ đè lên thân hành tinh
+            if (type === 'saturn') {
+                ctx.save();
+                ctx.rotate(-0.35);
+                const ringFront = ctx.createRadialGradient(0, 0, radius * 1.25, 0, 0, radius * 2.35);
+                ringFront.addColorStop(0, 'rgba(214, 188, 130, 0.15)');
+                ringFront.addColorStop(0.25, 'rgba(234, 210, 155, 0.82)');
+                ringFront.addColorStop(0.55, 'rgba(180, 155, 105, 0.38)');
+                ringFront.addColorStop(0.75, 'rgba(245, 226, 178, 0.88)');
+                ringFront.addColorStop(1, 'rgba(214, 188, 130, 0.05)');
+                ctx.fillStyle = ringFront;
+                ctx.beginPath();
+                ctx.ellipse(0, 0, radius * 2.35, radius * 0.65, 0, 0, Math.PI);
+                ctx.fill();
+                ctx.restore();
+            }
+
+            // Nhãn tên hành tinh
+            ctx.font = 'bold 11px Orbitron, sans-serif';
+            ctx.fillStyle = '#e2e8f0';
             ctx.textAlign = 'center';
-            ctx.fillText(label, 0, radius + 18);
+            ctx.fillText(label, 0, radius + 17);
             ctx.restore();
         }
 
-        // HÀM VẼ TÀU VŨ TRỤ SFS CHUẨN MẪU HÌNH ẢNH (CENTRAL CORE + 2 SIDE BOOSTERS + KHOANG TẢI TRỌNG & ĐỘNG CƠ)
         function drawSpaceship(x, y, angle) {
             ctx.save();
             ctx.translate(x, y);
@@ -1392,7 +2230,6 @@
             const eId = comp.engine ? comp.engine.id : 'eng_chem';
             const protId = comp.protection ? comp.protection.id : 'prot_basic';
 
-            // Hiệu ứng lửa phun khi bay
             if (gameState.phase === 'flying' && !gameState.isPaused) {
                 let flameColor = '#00f3ff';
                 let flameLen = 40 + Math.random() * 20;
@@ -1404,7 +2241,6 @@
                 gradFlame.addColorStop(0.3, flameColor);
                 gradFlame.addColorStop(1, 'transparent');
                 
-                // Lửa phun 3 động cơ (giữa và 2 bên boosters)
                 [-28, 0, 28].forEach(fx => {
                     ctx.fillStyle = gradFlame;
                     ctx.beginPath();
@@ -1423,31 +2259,23 @@
             ctx.strokeStyle = outlineColor;
             ctx.lineWidth = 1.5;
 
-            // --- 1. HAI TÊN LỬA ĐẨY PHỤ (SIDE BOOSTERS) 2 BÊN ---
-            // Booster trái
             ctx.fillRect(-36, -15, 14, 65);
             ctx.strokeRect(-36, -15, 14, 65);
-            // Chóp nón booster trái
             ctx.beginPath(); ctx.moveTo(-36, -15); ctx.lineTo(-29, -42); ctx.lineTo(-22, -15); ctx.closePath();
             ctx.fill(); ctx.stroke();
-            // Động cơ booster trái
             ctx.fillStyle = '#334155';
             ctx.fillRect(-34, 50, 10, 8);
             ctx.strokeRect(-34, 50, 10, 8);
 
-            // Booster phải
             ctx.fillStyle = tankColor;
             ctx.fillRect(22, -15, 14, 65);
             ctx.strokeRect(22, -15, 14, 65);
-            // Chóp nón booster phải
             ctx.beginPath(); ctx.moveTo(22, -15); ctx.lineTo(29, -42); ctx.lineTo(36, -15); ctx.closePath();
             ctx.fill(); ctx.stroke();
-            // Động cơ booster phải
             ctx.fillStyle = '#334155';
             ctx.fillRect(24, 50, 10, 8);
             ctx.strokeRect(24, 50, 10, 8);
 
-            // Thanh giằng kết nối (Connector struts) giữa core và boosters
             ctx.strokeStyle = '#94a3b8';
             ctx.lineWidth = 2;
             ctx.beginPath();
@@ -1455,34 +2283,29 @@
             ctx.moveTo(12, 10); ctx.lineTo(22, 10);
             ctx.stroke();
 
-            // --- 2. THÂN TÊN LỬA CHÍNH (CENTRAL CORE) ---
             ctx.fillStyle = tankColor;
             ctx.strokeStyle = outlineColor;
             ctx.lineWidth = 1.5;
             ctx.fillRect(-12, -55, 24, 105);
             ctx.strokeRect(-12, -55, 24, 105);
 
-            // Các đường phân đoạn bồn chứa nhiên liệu
             ctx.strokeStyle = '#64748b';
             ctx.beginPath();
             ctx.moveTo(-12, -25); ctx.lineTo(12, -25);
             ctx.moveTo(-12, 20); ctx.lineTo(12, 20);
             ctx.stroke();
 
-            // --- 3. KHOANG TẢI TRỌNG & CỬA SỔ KÍNH GIỮA THÂN ---
             ctx.fillStyle = '#0f172a';
             ctx.fillRect(-8, -45, 16, 18);
             ctx.strokeStyle = '#00f3ff';
             ctx.strokeRect(-8, -45, 16, 18);
 
-            // Các thanh sọc kính bên trong khoang tải trọng
             ctx.strokeStyle = '#00f3ff';
             ctx.lineWidth = 1;
             for(let ky = -42; ky <= -30; ky += 3) {
                 ctx.beginPath(); ctx.moveTo(-6, ky); ctx.lineTo(6, ky); ctx.stroke();
             }
 
-            // Biểu tượng thiết bị trong khoang
             ctx.fillStyle = '#00f3ff';
             if (pType === 'rover') {
                 ctx.fillRect(-5, -38, 10, 5);
@@ -1496,7 +2319,6 @@
                 ctx.beginPath(); ctx.arc(0, -36, 2.5, 0, Math.PI*2); ctx.fill();
             }
 
-            // --- 4. CHÓP NÓN ĐẦU TÀU CHÍNH (NOSE CONE) ---
             ctx.fillStyle = '#cbd5e1';
             ctx.strokeStyle = outlineColor;
             ctx.beginPath();
@@ -1507,7 +2329,6 @@
             ctx.fill();
             ctx.stroke();
 
-            // Đầu đỉnh chóp chóp đen nhỏ đặc trưng SFS
             ctx.fillStyle = '#1e293b';
             ctx.beginPath();
             ctx.moveTo(-4, -75);
@@ -1516,7 +2337,6 @@
             ctx.closePath();
             ctx.fill();
 
-            // --- 5. ĐỘNG CƠ DƯỚI ĐÁY CHÍNH (MAIN ENGINE NOZZLE) ---
             ctx.fillStyle = '#334155';
             if (eId === 'eng_ion') {
                 ctx.fillRect(-10, 50, 20, 14);
