@@ -187,17 +187,17 @@
             <canvas id="spaceCanvas" class="w-full h-full block cursor-crosshair"></canvas>
 
             <!-- THANH CHUYỂN CHẾ ĐỘ XEM NGAY TRONG MỤC LẮP RÁP & MÔ PHỎNG -->
-            <div id="canvas-view-switcher" onmousedown="event.stopPropagation()" class="absolute top-4 left-1/2 transform -translate-x-1/2 z-30 flex items-center gap-1.5 bg-space-900/90 backdrop-blur-md p-1.5 rounded-2xl border border-cyan-500/40 shadow-xl font-orbitron text-[11px] md:text-xs">
-                <button onclick="setCanvasView('trajectory')" id="view-btn-trajectory" class="px-3.5 py-2 rounded-xl bg-cyan-500/25 text-cyan-300 border border-cyan-400/60 font-bold transition flex items-center gap-1.5">
+            <div id="canvas-view-switcher" onmousedown="event.stopPropagation()" class="absolute top-4 left-1/2 transform -translate-x-1/2 z-30 flex items-center gap-1.5 bg-space-900/90 backdrop-blur-md p-1.5 rounded-2xl border border-cyan-500/40 shadow-xl font-orbitron text-[11px] md:text-xs pointer-events-auto">
+                <button onclick="setCanvasView('trajectory')" id="view-btn-trajectory" class="px-3.5 py-2 rounded-xl bg-cyan-500/25 text-cyan-300 border border-cyan-400/60 font-bold transition flex items-center gap-1.5 cursor-pointer">
                     <i class="fa-solid fa-route"></i> Quỹ Đạo Sứ Mệnh
                 </button>
-                <button onclick="setCanvasView('solarsystem')" id="view-btn-solarsystem" class="px-3.5 py-2 rounded-xl text-slate-300 hover:text-amber-300 transition flex items-center gap-1.5">
+                <button onclick="setCanvasView('solarsystem')" id="view-btn-solarsystem" class="px-3.5 py-2 rounded-xl text-slate-300 hover:text-amber-300 transition flex items-center gap-1.5 cursor-pointer">
                     <i class="fa-solid fa-sun text-amber-400"></i> Hệ Mặt Trời (Bấm Xem Hành Tinh)
                 </button>
             </div>
 
-            <!-- Điều khiển nhỏ cho Hệ Mặt Trời (Đã sửa z-30 & chặn xung đột click/drag) -->
-            <div id="solar-controls" onmousedown="event.stopPropagation()" class="hidden absolute top-20 left-4 z-30 flex flex-col gap-2">
+            <!-- Điều khiển nhỏ cho Hệ Mặt Trời -->
+            <div id="solar-controls" onmousedown="event.stopPropagation()" class="hidden absolute top-20 left-4 z-30 flex flex-col gap-2 pointer-events-auto">
                 <button onclick="toggleSolarOrbitPause()" id="solar-orbit-btn" class="glass-panel px-3.5 py-2 rounded-xl text-xs font-orbitron text-amber-300 border border-amber-500/50 hover:bg-amber-950/60 transition flex items-center gap-2 shadow-lg cursor-pointer">
                     <i class="fa-solid fa-pause"></i> Dừng Quỹ Đạo Để Dễ Bấm
                 </button>
@@ -207,7 +207,7 @@
             </div>
 
             <!-- BẢNG THÔNG TIN CHI TIẾT KHI BẤM VÀO HÀNH TINH TRONG HỆ MẶT TRỜI -->
-            <div id="planet-info-card" onmousedown="event.stopPropagation()" class="hidden absolute top-20 right-4 bottom-16 w-[340px] md:w-[390px] glass-panel neon-border rounded-2xl z-30 flex flex-col overflow-hidden shadow-2xl">
+            <div id="planet-info-card" onmousedown="event.stopPropagation()" class="hidden absolute top-20 right-4 bottom-16 w-[340px] md:w-[390px] glass-panel neon-border rounded-2xl z-30 flex flex-col overflow-hidden shadow-2xl pointer-events-auto">
                 <div class="p-4 border-b border-slate-800 bg-space-900/95 flex items-center justify-between">
                     <div class="flex items-center gap-3">
                         <div id="pi-badge-color" class="w-9 h-9 rounded-full border-2 border-white/40 shadow-lg shrink-0"></div>
@@ -216,13 +216,12 @@
                             <span id="pi-type" class="text-[11px] font-mono text-cyan-400 block">Loại thiên thể</span>
                         </div>
                     </div>
-                    <button onclick="closePlanetInfo()" class="w-8 h-8 rounded-lg bg-space-800 hover:bg-red-500/30 text-slate-300 hover:text-red-300 flex items-center justify-center transition">
+                    <button onclick="closePlanetInfo()" class="w-8 h-8 rounded-lg bg-space-800 hover:bg-red-500/30 text-slate-300 hover:text-red-300 flex items-center justify-center transition cursor-pointer">
                         <i class="fa-solid fa-xmark"></i>
                     </button>
                 </div>
 
                 <div class="flex-1 overflow-y-auto p-4 custom-scrollbar space-y-4 text-xs">
-                    <!-- Bảng thông số kỹ thuật -->
                     <div class="grid grid-cols-2 gap-2 font-mono">
                         <div class="bg-space-950/80 p-2.5 rounded-xl border border-slate-800">
                             <span class="text-[10px] text-slate-400 block">Khoảng cách Mặt Trời</span>
@@ -250,7 +249,6 @@
                         </div>
                     </div>
 
-                    <!-- Giới thiệu dễ hiểu -->
                     <div class="bg-space-900/90 p-3.5 rounded-xl border border-slate-800 space-y-2">
                         <div class="font-orbitron font-bold text-cyan-300 text-xs flex items-center gap-1.5">
                             <i class="fa-solid fa-circle-info"></i> TỔNG QUAN DỄ HIỂU
@@ -258,7 +256,6 @@
                         <p id="pi-overview" class="text-slate-200 leading-relaxed"></p>
                     </div>
 
-                    <!-- Đặc điểm nổi bật -->
                     <div class="bg-space-900/90 p-3.5 rounded-xl border border-slate-800 space-y-2">
                         <div class="font-orbitron font-bold text-amber-300 text-xs flex items-center gap-1.5">
                             <i class="fa-solid fa-star"></i> ĐIỂM ĐẶC BIỆT NHẤT
@@ -266,7 +263,6 @@
                         <ul id="pi-highlights" class="space-y-1.5 text-slate-200 list-disc pl-4 leading-relaxed"></ul>
                     </div>
 
-                    <!-- Khám phá của NASA -->
                     <div class="bg-purple-950/30 p-3.5 rounded-xl border border-purple-500/40 space-y-1.5">
                         <div class="font-orbitron font-bold text-purple-300 text-xs flex items-center gap-1.5">
                             <i class="fa-solid fa-satellite"></i> SỨ MỆNH KHÁM PHÁ CỦA NASA
@@ -276,7 +272,7 @@
                 </div>
             </div>
 
-            <!-- Flight Telemetry HUD (Đã thêm hidden để không che nút khi chưa bay) -->
+            <!-- Flight Telemetry HUD -->
             <div id="flight-hud" onmousedown="event.stopPropagation()" class="hidden absolute top-16 left-4 right-4 flex justify-between items-start pointer-events-none z-20 transition-all duration-500 opacity-0 transform -translate-y-4">
                 <div class="glass-panel p-4 rounded-xl font-mono text-xs space-y-2 pointer-events-auto min-w-[240px]">
                     <div class="text-cyan-400 font-orbitron font-bold border-b border-cyan-900/60 pb-1.5 flex items-center justify-between">
@@ -743,7 +739,7 @@
                 overview: 'Sao Thổ nổi tiếng khắp vũ trụ nhờ hệ thống vành đai tráng lệ gồm hàng tỷ mảnh băng và đá kích thước từ hạt bụi đến tảng nhà quay quanh xích đạo.',
                 highlights: [
                     'Mật độ trung bình của Sao Thổ nhẹ hơn cả nước – nếu có một bể nước khổng lồ đủ lớn, Sao Thổ sẽ nổi lên trên mặt nước.',
-                    'Cực Bắc của Sao Thổ có một cơn bão khí quyển hình lục giác 6 cạnh kỳ lạ rộng gần 30,000 km.',
+                    'Cực Bắc của Sao Thổ có một cơn bão khí quyển hình lục giác 6 cạnh kỳ lạ được tàu Cassini chụp lại.',
                     'Vệ tinh Titan của Sao Thổ có bầu khí quyển dày và những hồ chứa khí methane lỏng.'
                 ],
                 nasa: 'Sứ mệnh Cassini-Huygens đã khám phá Sao Thổ suốt 13 năm và thả tàu đổ bộ xuống bề mặt vệ tinh Titan.'
@@ -1099,13 +1095,13 @@
             const hint = document.getElementById('space-hint');
 
             if (view === 'trajectory') {
-                btnTraj.className = "px-3.5 py-2 rounded-xl bg-cyan-500/25 text-cyan-300 border border-cyan-400/60 font-bold transition flex items-center gap-1.5";
-                btnSolar.className = "px-3.5 py-2 rounded-xl text-slate-300 hover:text-amber-300 transition flex items-center gap-1.5";
+                btnTraj.className = "px-3.5 py-2 rounded-xl bg-cyan-500/25 text-cyan-300 border border-cyan-400/60 font-bold transition flex items-center gap-1.5 cursor-pointer";
+                btnSolar.className = "px-3.5 py-2 rounded-xl text-slate-300 hover:text-amber-300 transition flex items-center gap-1.5 cursor-pointer";
                 solarControls.classList.add('hidden');
                 hint.innerHTML = '<i class="fa-solid fa-hand-pointer text-cyan-400 mr-1.5"></i> Kéo chuột để di chuyển • Lăn chuột để thu phóng • Bấm vào hành tinh để xem chi tiết';
             } else {
-                btnSolar.className = "px-3.5 py-2 rounded-xl bg-amber-500/25 text-amber-300 border border-amber-400/60 font-bold transition flex items-center gap-1.5";
-                btnTraj.className = "px-3.5 py-2 rounded-xl text-slate-300 hover:text-cyan-300 transition flex items-center gap-1.5";
+                btnSolar.className = "px-3.5 py-2 rounded-xl bg-amber-500/25 text-amber-300 border border-amber-400/60 font-bold transition flex items-center gap-1.5 cursor-pointer";
+                btnTraj.className = "px-3.5 py-2 rounded-xl text-slate-300 hover:text-cyan-300 transition flex items-center gap-1.5 cursor-pointer";
                 solarControls.classList.remove('hidden');
                 hint.innerHTML = '<i class="fa-solid fa-earth-asia text-amber-400 mr-1.5"></i> Bấm trực tiếp vào Mặt Trời hoặc bất kỳ hành tinh nào để đọc thông tin chi tiết!';
                 resetCameraView();
