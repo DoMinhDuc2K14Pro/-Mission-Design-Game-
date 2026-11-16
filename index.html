@@ -187,7 +187,7 @@
             <canvas id="spaceCanvas" class="w-full h-full block cursor-crosshair"></canvas>
 
             <!-- THANH CHUYỂN CHẾ ĐỘ XEM NGAY TRONG MỤC LẮP RÁP & MÔ PHỎNG -->
-            <div id="canvas-view-switcher" class="absolute top-4 left-1/2 transform -translate-x-1/2 z-20 flex items-center gap-1.5 bg-space-900/90 backdrop-blur-md p-1.5 rounded-2xl border border-cyan-500/40 shadow-xl font-orbitron text-[11px] md:text-xs">
+            <div id="canvas-view-switcher" onmousedown="event.stopPropagation()" class="absolute top-4 left-1/2 transform -translate-x-1/2 z-30 flex items-center gap-1.5 bg-space-900/90 backdrop-blur-md p-1.5 rounded-2xl border border-cyan-500/40 shadow-xl font-orbitron text-[11px] md:text-xs">
                 <button onclick="setCanvasView('trajectory')" id="view-btn-trajectory" class="px-3.5 py-2 rounded-xl bg-cyan-500/25 text-cyan-300 border border-cyan-400/60 font-bold transition flex items-center gap-1.5">
                     <i class="fa-solid fa-route"></i> Quỹ Đạo Sứ Mệnh
                 </button>
@@ -196,18 +196,18 @@
                 </button>
             </div>
 
-            <!-- Điều khiển nhỏ cho Hệ Mặt Trời -->
-            <div id="solar-controls" class="hidden absolute top-20 left-4 z-20 flex flex-col gap-2">
-                <button onclick="toggleSolarOrbitPause()" id="solar-orbit-btn" class="glass-panel px-3 py-2 rounded-xl text-xs font-orbitron text-amber-300 border border-amber-500/40 hover:bg-amber-950/50 transition flex items-center gap-2">
+            <!-- Điều khiển nhỏ cho Hệ Mặt Trời (Đã sửa z-30 & chặn xung đột click/drag) -->
+            <div id="solar-controls" onmousedown="event.stopPropagation()" class="hidden absolute top-20 left-4 z-30 flex flex-col gap-2">
+                <button onclick="toggleSolarOrbitPause()" id="solar-orbit-btn" class="glass-panel px-3.5 py-2 rounded-xl text-xs font-orbitron text-amber-300 border border-amber-500/50 hover:bg-amber-950/60 transition flex items-center gap-2 shadow-lg cursor-pointer">
                     <i class="fa-solid fa-pause"></i> Dừng Quỹ Đạo Để Dễ Bấm
                 </button>
-                <button onclick="resetCameraView()" class="glass-panel px-3 py-2 rounded-xl text-xs font-orbitron text-cyan-300 border border-cyan-500/40 hover:bg-cyan-950/50 transition flex items-center gap-2">
+                <button onclick="resetCameraView()" class="glass-panel px-3.5 py-2 rounded-xl text-xs font-orbitron text-cyan-300 border border-cyan-500/50 hover:bg-cyan-950/60 transition flex items-center gap-2 shadow-lg cursor-pointer">
                     <i class="fa-solid fa-compress-arrows-alt"></i> Căn Giữa Hệ Mặt Trời
                 </button>
             </div>
 
             <!-- BẢNG THÔNG TIN CHI TIẾT KHI BẤM VÀO HÀNH TINH TRONG HỆ MẶT TRỜI -->
-            <div id="planet-info-card" class="hidden absolute top-20 right-4 bottom-16 w-[340px] md:w-[390px] glass-panel neon-border rounded-2xl z-30 flex flex-col overflow-hidden shadow-2xl">
+            <div id="planet-info-card" onmousedown="event.stopPropagation()" class="hidden absolute top-20 right-4 bottom-16 w-[340px] md:w-[390px] glass-panel neon-border rounded-2xl z-30 flex flex-col overflow-hidden shadow-2xl">
                 <div class="p-4 border-b border-slate-800 bg-space-900/95 flex items-center justify-between">
                     <div class="flex items-center gap-3">
                         <div id="pi-badge-color" class="w-9 h-9 rounded-full border-2 border-white/40 shadow-lg shrink-0"></div>
@@ -276,8 +276,8 @@
                 </div>
             </div>
 
-            <!-- Flight Telemetry HUD -->
-            <div id="flight-hud" class="absolute top-16 left-4 right-4 flex justify-between items-start pointer-events-none z-20 transition-all duration-500 opacity-0 transform -translate-y-4">
+            <!-- Flight Telemetry HUD (Đã thêm hidden để không che nút khi chưa bay) -->
+            <div id="flight-hud" onmousedown="event.stopPropagation()" class="hidden absolute top-16 left-4 right-4 flex justify-between items-start pointer-events-none z-20 transition-all duration-500 opacity-0 transform -translate-y-4">
                 <div class="glass-panel p-4 rounded-xl font-mono text-xs space-y-2 pointer-events-auto min-w-[240px]">
                     <div class="text-cyan-400 font-orbitron font-bold border-b border-cyan-900/60 pb-1.5 flex items-center justify-between">
                         <span>ĐIỀU KHIỂN SỨ MỆNH</span>
@@ -628,7 +628,7 @@
                 overview: 'Sao Kim có kích thước gần bằng Trái Đất nên thường được gọi là "hành tinh chị em", nhưng môi trường của nó lại cực kỳ khắc nghiệt với những đám mây axit sunfuric dày đặc.',
                 highlights: [
                     'Là hành tinh nóng nhất Hệ Mặt Trời (nóng hơn cả Sao Thủy) do hiệu ứng nhà kính mất kiểm soát của khí CO2.',
-                    'Một ngày tự quay của Sao Kim dài hơn cả một năm của nó, và nó quay ngược chiều so với hầu hết các hành tinh khác (Mặt Trời mọc ở hướng Tây).',
+                    'Một ngày tự quay của Sao Kim dài hơn cả một năm của chính nó, và nó quay ngược chiều so với hầu hết các hành tinh khác (Mặt Trời mọc ở hướng Tây).',
                     'Là thiên thể sáng nhất trên bầu trời đêm Trái Đất sau Mặt Trăng (thường gọi là Sao Hôm hoặc Sao Mai).'
                 ],
                 nasa: 'Tàu Magellan của NASA đã dùng radar xuyên qua lớp mây dày để lập bản đồ hàng nghìn ngọn núi lửa trên Sao Kim.'
@@ -1041,7 +1041,7 @@
 
         let gameState = {
             activeMode: 'mission',
-            canvasView: 'trajectory', // 'trajectory' hoặc 'solarsystem'
+            canvasView: 'trajectory',
             solarOrbitPaused: false,
             selectedPlanetId: null,
             phase: 'design',
@@ -1530,7 +1530,7 @@
             gameState.logs = [`Khởi hành tàu ${gameState.shipName} hướng tới ${gameState.selectedDest.name}.`];
 
             document.getElementById('design-panel').classList.add('hidden', 'lg:flex');
-            document.getElementById('flight-hud').classList.remove('opacity-0', '-translate-y-4');
+            document.getElementById('flight-hud').classList.remove('hidden', 'opacity-0', '-translate-y-4');
         }
 
         function togglePauseSimulation() {
@@ -1576,7 +1576,7 @@
             gameState.pausedForLibraryReading = false;
             document.getElementById('return-flight-banner').classList.add('hidden');
             document.getElementById('debrief-modal').classList.add('hidden');
-            document.getElementById('flight-hud').classList.add('opacity-0', '-translate-y-4');
+            document.getElementById('flight-hud').classList.add('hidden', 'opacity-0', '-translate-y-4');
             document.getElementById('design-panel').classList.remove('hidden');
             recalculateStats();
         }
@@ -1786,7 +1786,7 @@
         // ================= CANVAS ENGINE: HÀNH TINH CHÂN THỰC & HỆ MẶT TRỜI TƯƠNG TÁC =================
         let canvas, ctx, stars = [], asteroidBelt = [], camX = 0, camY = 0, zoom = 1;
         let isDragging = false, hasMovedDuringDrag = false, dragStart = { x: 0, y: 0 };
-        let renderedHitboxes = []; // Lưu tọa độ màn hình các hành tinh để bấm chọn
+        let renderedHitboxes = [];
 
         function initCanvas() {
             canvas = document.getElementById('spaceCanvas');
@@ -1827,7 +1827,6 @@
                     camX = e.clientX - dragStart.x;
                     camY = e.clientY - dragStart.y;
                 } else {
-                    // Đổi con trỏ chuột thành bàn tay khi rê qua hành tinh
                     const rect = canvas.getBoundingClientRect();
                     const mx = e.clientX - rect.left;
                     const my = e.clientY - rect.top;
@@ -1836,7 +1835,7 @@
                 }
             });
 
-            window.addEventListener('mouseup', e => {
+            canvas.addEventListener('mouseup', e => {
                 if (isDragging && !hasMovedDuringDrag) {
                     const rect = canvas.getBoundingClientRect();
                     const mx = e.clientX - rect.left;
@@ -1846,6 +1845,10 @@
                         openPlanetInfo(hit.planetId);
                     }
                 }
+                isDragging = false;
+            });
+
+            window.addEventListener('mouseup', () => {
                 isDragging = false;
             });
 
@@ -1863,7 +1866,6 @@
         function animate() {
             requestAnimationFrame(animate);
 
-            // Cập nhật góc quay hành tinh trong Hệ Mặt Trời
             if (!gameState.solarOrbitPaused) {
                 SOLAR_SYSTEM_BODIES.forEach(body => {
                     body.angle += body.speed;
@@ -1912,7 +1914,6 @@
             ctx.translate(canvas.width / 2 + camX, canvas.height / 2 + camY);
             ctx.scale(zoom, zoom);
 
-            // Nền sao nhiều tầng lung linh
             stars.forEach(s => {
                 ctx.fillStyle = s.tint;
                 ctx.globalAlpha = s.alpha;
@@ -1931,9 +1932,7 @@
             ctx.restore();
         }
 
-        // CHẾ ĐỘ 1: QUỸ ĐẠO SỨ MỆNH VỚI HÀNH TINH ĐỒ HỌA CHÂN THỰC
         function renderTrajectoryView() {
-            // Lưới tọa độ mờ
             ctx.strokeStyle = 'rgba(0, 243, 255, 0.04)';
             ctx.lineWidth = 1;
             for (let x = -1600; x < 1600; x += 40) {
@@ -1946,12 +1945,10 @@
             const startPos = { x: -340, y: 20 };
             const endPos = { x: 340, y: 20 };
 
-            // Vẽ Trái Đất chân thực + đăng ký vùng bấm xem thông tin
             drawRealisticPlanet(startPos.x, startPos.y, 54, 'earth', 'Trái Đất');
             const sEarth = worldToScreen(startPos.x, startPos.y);
             renderedHitboxes.push({ planetId: 'earth', sx: sEarth.sx, sy: sEarth.sy, sr: 54 * zoom });
 
-            // Vẽ điểm đến chân thực
             const dest = gameState.selectedDest;
             const destRadius = Math.max(36, dest.size * 1.35);
             drawRealisticPlanet(endPos.x, endPos.y, destRadius, dest.id, dest.name);
@@ -1962,7 +1959,6 @@
                 renderedHitboxes.push({ planetId: mappedPlanetId, sx: sDest.sx, sy: sDest.sy, sr: destRadius * zoom });
             }
 
-            // Đường quỹ đạo bay
             ctx.beginPath();
             ctx.moveTo(startPos.x, startPos.y);
             const ctrlY = -150;
@@ -1983,9 +1979,7 @@
             drawSpaceship(shipX, shipY, angle);
         }
 
-        // CHẾ ĐỘ 2: HỆ MẶT TRỜI TOÀN CẢNH CÓ THỂ BẤM VÀO TỪNG HÀNH TINH
         function renderSolarSystemView() {
-            // Vẽ các đường quỹ đạo tròn
             SOLAR_SYSTEM_BODIES.forEach(body => {
                 if (body.orbitRadius > 0) {
                     ctx.beginPath();
@@ -1998,7 +1992,6 @@
                 }
             });
 
-            // Vẽ vành đai tiểu hành tinh giữa Sao Hỏa và Sao Mộc
             ctx.fillStyle = 'rgba(161, 161, 170, 0.55)';
             asteroidBelt.forEach(a => {
                 const ax = Math.cos(a.angle) * a.dist;
@@ -2008,12 +2001,10 @@
                 ctx.fill();
             });
 
-            // Vẽ từng hành tinh
             SOLAR_SYSTEM_BODIES.forEach(body => {
                 const px = Math.cos(body.angle) * body.orbitRadius;
                 const py = Math.sin(body.angle) * body.orbitRadius;
 
-                // Vòng sáng chọn nếu đang xem thông tin hành tinh này
                 if (gameState.selectedPlanetId === body.id) {
                     ctx.beginPath();
                     ctx.arc(px, py, body.radius + 9, 0, Math.PI * 2);
@@ -2037,12 +2028,10 @@
             });
         }
 
-        // HÀM VẼ CHI TIẾT TỪNG HÀNH TINH CHÂN THỰC 3D
         function drawRealisticPlanet(x, y, radius, type, label) {
             ctx.save();
             ctx.translate(x, y);
 
-            // 1. Vẽ vành đai phía sau cho Sao Thổ / Sao Thiên Vương
             if (type === 'saturn') {
                 ctx.save();
                 ctx.rotate(-0.35);
@@ -2059,7 +2048,6 @@
                 ctx.restore();
             }
 
-            // 2. Quầng hào quang khí quyển / nhật hoa
             let glowColor = 'rgba(56, 189, 248, 0.35)';
             if (type === 'sun') glowColor = 'rgba(251, 191, 36, 0.65)';
             else if (type === 'mars') glowColor = 'rgba(239, 68, 68, 0.35)';
@@ -2078,7 +2066,6 @@
             ctx.arc(0, 0, radius * (type === 'sun' ? 2.1 : 1.45), 0, Math.PI * 2);
             ctx.fill();
 
-            // 3. Cắt hình tròn hành tinh để vẽ bề mặt chi tiết bên trong
             ctx.save();
             ctx.beginPath();
             ctx.arc(0, 0, radius, 0, Math.PI * 2);
@@ -2093,46 +2080,38 @@
                 ctx.fillStyle = sunGrad;
                 ctx.fillRect(-radius, -radius, radius*2, radius*2);
             } else if (type === 'earth') {
-                // Đại dương xanh sâu
                 ctx.fillStyle = '#1d4ed8';
                 ctx.fillRect(-radius, -radius, radius*2, radius*2);
-                // Lục địa xanh lục
                 ctx.fillStyle = '#22c55e';
                 ctx.beginPath();
                 ctx.ellipse(-radius*0.25, -radius*0.15, radius*0.42, radius*0.28, 0.4, 0, Math.PI*2);
                 ctx.ellipse(radius*0.32, radius*0.22, radius*0.35, radius*0.4, -0.3, 0, Math.PI*2);
                 ctx.fill();
-                // Mây trắng xoáy
                 ctx.fillStyle = 'rgba(255, 255, 255, 0.55)';
                 ctx.beginPath();
                 ctx.ellipse(-radius*0.1, -radius*0.45, radius*0.55, radius*0.12, 0.2, 0, Math.PI*2);
                 ctx.ellipse(radius*0.15, radius*0.1, radius*0.65, radius*0.14, -0.15, 0, Math.PI*2);
                 ctx.fill();
-                // Chỏm băng Bắc Cực
                 ctx.fillStyle = '#f8fafc';
                 ctx.fillRect(-radius, -radius, radius*2, radius*0.18);
             } else if (type === 'mars') {
                 ctx.fillStyle = '#dc2626';
                 ctx.fillRect(-radius, -radius, radius*2, radius*2);
-                // Vùng đá bazan sẫm màu & Olympus Mons
                 ctx.fillStyle = '#7f1d1d';
                 ctx.beginPath();
                 ctx.ellipse(-radius*0.2, radius*0.15, radius*0.45, radius*0.25, 0.3, 0, Math.PI*2);
                 ctx.ellipse(radius*0.3, -radius*0.25, radius*0.25, radius*0.2, 0, 0, Math.PI*2);
                 ctx.fill();
-                // Chỏm băng cực
                 ctx.fillStyle = '#f1f5f9';
                 ctx.fillRect(-radius, -radius, radius*2, radius*0.16);
                 ctx.fillRect(-radius, radius*0.85, radius*2, radius*0.16);
             } else if (type === 'jupiter') {
-                // Các dải mây khí quyển đặc trưng
                 const bands = ['#d97706', '#fef3c7', '#b45309', '#fde68a', '#92400e', '#fef3c7', '#c2410c'];
                 const bh = (radius * 2) / bands.length;
                 bands.forEach((c, idx) => {
                     ctx.fillStyle = c;
                     ctx.fillRect(-radius, -radius + idx * bh, radius * 2, bh + 0.5);
                 });
-                // Vết Đỏ Lớn
                 ctx.fillStyle = '#b91c1c';
                 ctx.beginPath();
                 ctx.ellipse(radius*0.22, radius*0.28, radius*0.28, radius*0.16, 0, 0, Math.PI*2);
@@ -2167,7 +2146,6 @@
             } else if (type === 'moon' || type === 'mercury' || type === 'asteroids') {
                 ctx.fillStyle = type === 'mercury' ? '#78716c' : '#94a3b8';
                 ctx.fillRect(-radius, -radius, radius*2, radius*2);
-                // Các miệng hố va chạm thiên thạch
                 ctx.fillStyle = 'rgba(30, 41, 59, 0.45)';
                 [[-0.3, -0.25, 0.22], [0.28, 0.15, 0.28], [-0.1, 0.38, 0.16], [0.25, -0.35, 0.14]].forEach(cr => {
                     ctx.beginPath();
@@ -2175,7 +2153,6 @@
                     ctx.fill();
                 });
             } else {
-                // Vũ trụ sâu / Tinh vân xoáy
                 const dsGrad = ctx.createRadialGradient(0, 0, 2, 0, 0, radius);
                 dsGrad.addColorStop(0, '#f3e8ff');
                 dsGrad.addColorStop(0.5, '#9333ea');
@@ -2184,7 +2161,6 @@
                 ctx.fillRect(-radius, -radius, radius*2, radius*2);
             }
 
-            // 4. Đổ bóng khối cầu 3D (trừ Mặt Trời tự phát sáng)
             if (type !== 'sun') {
                 const shadow = ctx.createRadialGradient(-radius*0.35, -radius*0.35, radius*0.15, 0, 0, radius);
                 shadow.addColorStop(0, 'rgba(255, 255, 255, 0.22)');
@@ -2195,7 +2171,6 @@
             }
             ctx.restore();
 
-            // 5. Vẽ nửa trước của vành đai Sao Thổ đè lên thân hành tinh
             if (type === 'saturn') {
                 ctx.save();
                 ctx.rotate(-0.35);
@@ -2212,7 +2187,6 @@
                 ctx.restore();
             }
 
-            // Nhãn tên hành tinh
             ctx.font = 'bold 11px Orbitron, sans-serif';
             ctx.fillStyle = '#e2e8f0';
             ctx.textAlign = 'center';
