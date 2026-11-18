@@ -31,7 +31,6 @@
         .custom-scrollbar::-webkit-scrollbar-thumb { background: #00f3ff; border-radius: 3px; }
         .blueprint-grid { background-image: linear-gradient(to right, rgba(0, 243, 255, 0.07) 1px, transparent 1px), linear-gradient(to bottom, rgba(0, 243, 255, 0.07) 1px, transparent 1px); background-size: 30px 30px; }
 
-        /* Hiệu ứng chuyển động cho thẻ Mục Tiêu & Icon hành tinh */
         @keyframes planetFloat {
             0%, 100% { transform: translateY(0px) rotate(0deg) scale(1); }
             50% { transform: translateY(-3px) rotate(8deg) scale(1.08); }
@@ -44,22 +43,12 @@
             0% { transform: translateX(-120%); }
             100% { transform: translateX(280%); }
         }
-        .planet-icon-anim {
-            animation: planetFloat 3.2s ease-in-out infinite;
-        }
-        .dest-card-selected {
-            animation: pulseGlow 2.4s ease-in-out infinite;
-            position: relative;
-            overflow: hidden;
-        }
+        .planet-icon-anim { animation: planetFloat 3.2s ease-in-out infinite; }
+        .dest-card-selected { animation: pulseGlow 2.4s ease-in-out infinite; position: relative; overflow: hidden; }
         .dest-card-selected::after {
-            content: '';
-            position: absolute;
-            top: 0; left: 0;
-            width: 45%; height: 100%;
+            content: ''; position: absolute; top: 0; left: 0; width: 45%; height: 100%;
             background: linear-gradient(90deg, transparent, rgba(0, 243, 255, 0.16), transparent);
-            animation: orbitScan 2.8s linear infinite;
-            pointer-events: none;
+            animation: orbitScan 2.8s linear infinite; pointer-events: none;
         }
     </style>
 </head>
@@ -73,7 +62,7 @@
             </div>
             <div>
                 <h1 class="font-orbitron font-bold text-sm md:text-lg text-white tracking-wider flex items-center gap-2">SFS BLUEPRINT BUILDER</h1>
-                <p class="text-[10px] text-cyan-400 font-mono hidden xl:block">Hệ Thống Lắp Ráp SFS • Bản Đồ Hệ Mặt Trời & Kho 140 Thông Tin NASA</p>
+                <p class="text-[10px] text-cyan-400 font-mono hidden xl:block">Hệ Thống Lắp Ráp SFS • Tự Lái Trong Hệ Mặt Trời & Kho 140 Thông Tin NASA</p>
             </div>
         </div>
 
@@ -81,8 +70,8 @@
         <div class="flex items-center bg-space-950/90 p-1 rounded-xl border border-slate-700/80 font-orbitron text-[11px] md:text-xs">
             <button onclick="switchGameMode('mission')" id="mode-btn-mission" class="px-3 py-1.5 rounded-lg bg-cyan-500/20 text-cyan-300 border border-cyan-500/50 font-bold transition flex items-center gap-1.5">
                 <i class="fa-solid fa-rocket"></i>
-                <span class="hidden sm:inline">Lắp Ráp & Mô Phỏng</span>
-                <span class="sm:hidden">Mô Phỏng</span>
+                <span class="hidden sm:inline">Lắp Ráp & Lái Tàu</span>
+                <span class="sm:hidden">Lái Tàu</span>
             </button>
             <button onclick="switchGameMode('quiz')" id="mode-btn-quiz" class="px-3 py-1.5 rounded-lg text-slate-400 hover:text-purple-300 transition flex items-center gap-1.5">
                 <i class="fa-solid fa-brain"></i>
@@ -98,7 +87,7 @@
                 <span class="text-slate-400 hidden md:inline">Ngân Sách:</span>
                 <span id="header-budget" class="text-amber-400 font-bold">$600M</span>
             </div>
-            <div class="flex items-center space-x-1.5 bg-space-900/90 px-2.5 py-1.5 rounded-lg border border-purple-500/30" title="Dùng để mở khóa linh kiện nâng cao">
+            <div class="flex items-center space-x-1.5 bg-space-900/90 px-2.5 py-1.5 rounded-lg border border-purple-500/30">
                 <i class="fa-solid fa-atom text-purple-400"></i>
                 <span class="text-slate-400 hidden md:inline">Điểm KH:</span>
                 <span id="header-science" class="text-purple-400 font-bold">0</span>
@@ -217,10 +206,10 @@
             <div class="absolute inset-0 scanlines z-10 pointer-events-none"></div>
             <canvas id="spaceCanvas" class="w-full h-full block cursor-crosshair"></canvas>
 
-            <!-- THANH CHUYỂN CHẾ ĐỘ XEM NGAY TRONG MỤC LẮP RÁP & MÔ PHỎNG -->
+            <!-- THANH CHUYỂN CHẾ ĐỘ XEM -->
             <div id="canvas-view-switcher" onmousedown="event.stopPropagation()" class="absolute top-4 left-1/2 transform -translate-x-1/2 z-30 flex items-center gap-1.5 bg-space-900/90 backdrop-blur-md p-1.5 rounded-2xl border border-cyan-500/40 shadow-xl font-orbitron text-[11px] md:text-xs pointer-events-auto">
                 <button onclick="setCanvasView('trajectory')" id="view-btn-trajectory" class="px-3.5 py-2 rounded-xl bg-cyan-500/25 text-cyan-300 border border-cyan-400/60 font-bold transition flex items-center gap-1.5 cursor-pointer">
-                    <i class="fa-solid fa-route"></i> Quỹ Đạo Sứ Mệnh
+                    <i class="fa-solid fa-route"></i> Xưởng Lắp Ráp
                 </button>
                 <button onclick="setCanvasView('solarsystem')" id="view-btn-solarsystem" class="px-3.5 py-2 rounded-xl text-slate-300 hover:text-amber-300 transition flex items-center gap-1.5 cursor-pointer">
                     <i class="fa-solid fa-sun text-amber-400"></i> Hệ Mặt Trời (Bấm Xem Hành Tinh)
@@ -230,7 +219,7 @@
             <!-- Điều khiển nhỏ cho Hệ Mặt Trời -->
             <div id="solar-controls" onmousedown="event.stopPropagation()" class="hidden absolute top-20 left-4 z-30 flex flex-col gap-2 pointer-events-auto">
                 <button onclick="toggleSolarOrbitPause()" id="solar-orbit-btn" class="glass-panel px-3.5 py-2 rounded-xl text-xs font-orbitron text-amber-300 border border-amber-500/50 hover:bg-amber-950/60 transition flex items-center gap-2 shadow-lg cursor-pointer">
-                    <i class="fa-solid fa-pause"></i> Dừng Quỹ Đạo Để Dễ Bấm
+                    <i class="fa-solid fa-pause"></i> Dừng Quỹ Đạo
                 </button>
                 <button onclick="resetCameraView()" class="glass-panel px-3.5 py-2 rounded-xl text-xs font-orbitron text-cyan-300 border border-cyan-500/50 hover:bg-cyan-950/60 transition flex items-center gap-2 shadow-lg cursor-pointer">
                     <i class="fa-solid fa-compress-arrows-alt"></i> Căn Giữa Hệ Mặt Trời
@@ -303,19 +292,27 @@
                 </div>
             </div>
 
-            <!-- Flight Telemetry HUD -->
+            <!-- Flight Telemetry HUD (TỰ LÁI TÊN LỬA) -->
             <div id="flight-hud" onmousedown="event.stopPropagation()" class="hidden absolute top-16 left-4 right-4 flex justify-between items-start pointer-events-none z-20 transition-all duration-500 opacity-0 transform -translate-y-4">
-                <div class="glass-panel p-4 rounded-xl font-mono text-xs space-y-2 pointer-events-auto min-w-[240px]">
+                <div class="glass-panel p-4 rounded-xl font-mono text-xs space-y-2 pointer-events-auto min-w-[265px]">
                     <div class="text-cyan-400 font-orbitron font-bold border-b border-cyan-900/60 pb-1.5 flex items-center justify-between">
-                        <span>ĐIỀU KHIỂN HỆ MẶT TRỜI</span>
-                        <span id="hud-status" class="text-[10px] bg-emerald-900/80 text-emerald-300 px-2 py-0.5 rounded">ĐANG BAY</span>
+                        <span>BUỒNG LÁI TỰ DO</span>
+                        <span id="hud-status" class="text-[10px] bg-emerald-900/80 text-emerald-300 px-2 py-0.5 rounded">TỰ ĐIỀU KHIỂN</span>
                     </div>
                     <div class="flex justify-between">
-                        <span class="text-slate-400">Hành Trình Quỹ Đạo:</span>
+                        <span class="text-slate-400">Thu Thập Mục Tiêu:</span>
                         <span id="hud-progress" class="text-cyan-300 font-bold">0%</span>
                     </div>
                     <div class="w-full bg-space-950 h-2 rounded-full overflow-hidden">
-                        <div id="hud-progress-bar" class="h-full bg-cyan-400 transition-all duration-200" style="width:0%"></div>
+                        <div id="hud-progress-bar" class="h-full bg-cyan-400 transition-all duration-150" style="width:0%"></div>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-slate-400">Khoảng Cách Đích:</span>
+                        <span id="hud-distance" class="text-purple-300 font-bold">--</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-slate-400">Vận Tốc Tàu:</span>
+                        <span id="hud-speed" class="text-cyan-300 font-bold">0.0 km/s</span>
                     </div>
                     <div class="flex justify-between">
                         <span class="text-slate-400">Nhiên Liệu:</span>
@@ -327,12 +324,40 @@
                     </div>
                 </div>
 
-                <div class="flex space-x-2 pointer-events-auto">
+                <div class="flex flex-wrap gap-2 pointer-events-auto justify-end">
+                    <button onclick="toggleCameraFollow()" id="cam-follow-btn" class="glass-panel px-3 py-2 rounded-lg text-xs font-orbitron text-emerald-300 border border-emerald-500/40 hover:bg-emerald-950">
+                        <i class="fa-solid fa-crosshairs"></i> Camera Theo Tàu: BẬT
+                    </button>
                     <button onclick="togglePauseSimulation()" id="pause-btn" class="glass-panel px-3 py-2 rounded-lg text-xs font-orbitron text-cyan-300 border border-cyan-500/30 hover:bg-cyan-950">
                         <i class="fa-solid fa-pause"></i> Tạm Dừng
                     </button>
                     <button onclick="requestAbortMission()" class="glass-panel px-3 py-2 rounded-lg text-xs font-orbitron text-red-400 border border-red-500/30 hover:bg-red-950">
                         <i class="fa-solid fa-xmark"></i> Hủy
+                    </button>
+                </div>
+            </div>
+
+            <!-- BẢNG PHÍM LÁI TÀU TRÊN MÀN HÌNH (HỖ TRỢ CẢ CHUỘT & CẢM ỨNG + PHÍM WASD / MŨI TÊN) -->
+            <div id="manual-pilot-pad" onmousedown="event.stopPropagation()" class="hidden absolute bottom-14 right-4 z-30 glass-panel p-3 rounded-2xl border border-cyan-500/40 pointer-events-auto select-none shadow-2xl">
+                <div class="text-[10px] font-orbitron text-cyan-300 text-center mb-2">ĐIỀU KHIỂN: W/A/S/D HOẶC MŨI TÊN</div>
+                <div class="grid grid-cols-3 gap-1.5 w-36 mx-auto">
+                    <div></div>
+                    <button onmousedown="setPilotKey('up', true)" onmouseup="setPilotKey('up', false)" onmouseleave="setPilotKey('up', false)" ontouchstart="event.preventDefault(); setPilotKey('up', true)" ontouchend="setPilotKey('up', false)"
+                        class="h-10 rounded-xl bg-space-800 hover:bg-cyan-600/40 active:bg-cyan-500 border border-cyan-500/40 text-cyan-300 flex items-center justify-center font-bold">
+                        <i class="fa-solid fa-arrow-up"></i>
+                    </button>
+                    <div></div>
+                    <button onmousedown="setPilotKey('left', true)" onmouseup="setPilotKey('left', false)" onmouseleave="setPilotKey('left', false)" ontouchstart="event.preventDefault(); setPilotKey('left', true)" ontouchend="setPilotKey('left', false)"
+                        class="h-10 rounded-xl bg-space-800 hover:bg-cyan-600/40 active:bg-cyan-500 border border-cyan-500/40 text-cyan-300 flex items-center justify-center font-bold">
+                        <i class="fa-solid fa-rotate-left"></i>
+                    </button>
+                    <button onmousedown="setPilotKey('down', true)" onmouseup="setPilotKey('down', false)" onmouseleave="setPilotKey('down', false)" ontouchstart="event.preventDefault(); setPilotKey('down', true)" ontouchend="setPilotKey('down', false)"
+                        class="h-10 rounded-xl bg-space-800 hover:bg-amber-600/40 active:bg-amber-500 border border-amber-500/40 text-amber-300 flex items-center justify-center font-bold" title="Phanh hãm tốc">
+                        <i class="fa-solid fa-arrow-down"></i>
+                    </button>
+                    <button onmousedown="setPilotKey('right', true)" onmouseup="setPilotKey('right', false)" onmouseleave="setPilotKey('right', false)" ontouchstart="event.preventDefault(); setPilotKey('right', true)" ontouchend="setPilotKey('right', false)"
+                        class="h-10 rounded-xl bg-space-800 hover:bg-cyan-600/40 active:bg-cyan-500 border border-cyan-500/40 text-cyan-300 flex items-center justify-center font-bold">
+                        <i class="fa-solid fa-rotate-right"></i>
                     </button>
                 </div>
             </div>
@@ -590,7 +615,7 @@
         const INITIAL_BUDGET = 600;
         const MAX_WEIGHT_LIMIT = 120;
 
-        // DỮ LIỆU CHI TIẾT CÁC THIÊN THỂ TRONG HỆ MẶT TRỜI (BẤM VÀO HÀNH TINH ĐỂ XEM)
+        // DỮ LIỆU CHI TIẾT CÁC THIÊN THỂ TRONG HỆ MẶT TRỜI
         const SOLAR_SYSTEM_BODIES = [
             {
                 id: 'sun',
@@ -620,7 +645,7 @@
                 name: 'Sao Thủy (Mercury)',
                 type: 'Hành tinh đất đá • Gần Mặt Trời nhất',
                 orbitRadius: 68,
-                speed: 0.018,
+                speed: 0.012,
                 angle: 0.4,
                 radius: 7,
                 color: '#9ca3af',
@@ -643,7 +668,7 @@
                 name: 'Sao Kim (Venus)',
                 type: 'Hành tinh đất đá • Nóng nhất Hệ Mặt Trời',
                 orbitRadius: 102,
-                speed: 0.013,
+                speed: 0.009,
                 angle: 2.1,
                 radius: 11,
                 color: '#fcd34d',
@@ -666,7 +691,7 @@
                 name: 'Trái Đất (Earth)',
                 type: 'Hành tinh đất đá • Hành tinh Xanh của sự sống',
                 orbitRadius: 145,
-                speed: 0.010,
+                speed: 0.007,
                 angle: 3.8,
                 radius: 12.5,
                 color: '#3b82f6',
@@ -689,9 +714,9 @@
                 name: 'Mặt Trăng (The Moon)',
                 type: 'Vệ tinh tự nhiên duy nhất của Trái Đất',
                 orbitRadius: 172,
-                speed: 0.009,
+                speed: 0.006,
                 angle: 4.1,
-                radius: 5.5,
+                radius: 6,
                 color: '#e2e8f0',
                 distance: '384,400 km tính từ Trái Đất',
                 temp: '-173°C đến +127°C',
@@ -712,7 +737,7 @@
                 name: 'Sao Hỏa (Mars)',
                 type: 'Hành tinh đất đá • Hành Tinh Đỏ',
                 orbitRadius: 212,
-                speed: 0.0075,
+                speed: 0.005,
                 angle: 5.4,
                 radius: 9.5,
                 color: '#ef4444',
@@ -735,7 +760,7 @@
                 name: 'Sao Mộc (Jupiter)',
                 type: 'Hành tinh khí khổng lồ • Lớn nhất Hệ Mặt Trời',
                 orbitRadius: 278,
-                speed: 0.0045,
+                speed: 0.003,
                 angle: 1.2,
                 radius: 22,
                 color: '#f97316',
@@ -758,7 +783,7 @@
                 name: 'Sao Thổ (Saturn)',
                 type: 'Hành tinh khí khổng lồ • Viên ngọc vành đai',
                 orbitRadius: 348,
-                speed: 0.0032,
+                speed: 0.0022,
                 angle: 2.9,
                 radius: 18.5,
                 color: '#eab308',
@@ -781,7 +806,7 @@
                 name: 'Sao Thiên Vương (Uranus)',
                 type: 'Hành tinh băng khổng lồ • Hành tinh lăn ngang',
                 orbitRadius: 412,
-                speed: 0.0022,
+                speed: 0.0015,
                 angle: 4.7,
                 radius: 14,
                 color: '#22d3ee',
@@ -804,7 +829,7 @@
                 name: 'Sao Hải Vương (Neptune)',
                 type: 'Hành tinh băng khổng lồ • Xa Mặt Trời nhất',
                 orbitRadius: 472,
-                speed: 0.0016,
+                speed: 0.0011,
                 angle: 0.9,
                 radius: 13.5,
                 color: '#6366f1',
@@ -1042,7 +1067,7 @@
 
         const IN_FLIGHT_QUESTIONS = [
             {
-                title: "TRẠM KIỂM TRA #1 (33% CHẶNG ĐƯỜNG)",
+                title: "TRẠM KIỂM TRA #1 (33% DỮ LIỆU)",
                 factId: 115,
                 q: "Khi tên lửa tiến vào môi trường chân không ngoài khí quyển, sóng âm và lực cản không khí thay đổi thế nào?",
                 options: ["Tăng lên cực đại", "Giảm dần về 0 (không truyền âm & không lực cản)", "Không thay đổi", "Biến đổi liên tục"],
@@ -1050,7 +1075,7 @@
                 explanation: "Trong môi trường chân không vũ trụ không có không khí nên lực cản và sóng âm đều bằng 0."
             },
             {
-                title: "TRẠM KIỂM TRA #2 (66% CHẶNG ĐƯỜNG)",
+                title: "TRẠM KIỂM TRA #2 (66% DỮ LIỆU)",
                 factId: 107,
                 q: "Vận tốc vũ trụ cấp 1 cần thiết để vệ tinh duy trì quỹ đạo tròn quanh Trái Đất là khoảng bao nhiêu?",
                 options: ["7.9 km/s", "1.5 km/s", "45.0 km/s", "300,000 km/s"],
@@ -1067,10 +1092,28 @@
             commander: { label: 'Chỉ Huy', time: 10, budgetReward: 200, sciReward: 1200 }
         };
 
+        // TRẠNG THÁI TỰ ĐIỀU KHIỂN TÊN LỬA
+        let pilotShip = {
+            x: 145,
+            y: 0,
+            vx: 0,
+            vy: 0,
+            angle: -Math.PI / 2,
+            thrusting: false
+        };
+
+        let pilotKeys = {
+            up: false,
+            down: false,
+            left: false,
+            right: false
+        };
+
         let gameState = {
             activeMode: 'mission',
             canvasView: 'trajectory',
             solarOrbitPaused: false,
+            cameraFollowShip: true,
             selectedPlanetId: null,
             phase: 'design',
             selectedDest: DESTINATIONS[0],
@@ -1115,10 +1158,46 @@
             renderLibraryFacts(NASA_FACTS);
             recalculateStats();
             initCanvas();
+            setupKeyboardControls();
             animate();
         };
 
-        // CHUYỂN CHẾ ĐỘ XEM TRONG MỤC LẮP RÁP & MÔ PHỎNG
+        // BẮT PHÍM TỰ LÁI (W/A/S/D HOẶC MŨI TÊN)
+        function setupKeyboardControls() {
+            window.addEventListener('keydown', (e) => {
+                if (gameState.phase !== 'flying') return;
+                if (document.activeElement && ['INPUT', 'SELECT', 'TEXTAREA'].includes(document.activeElement.tagName)) return;
+
+                const k = e.key.toLowerCase();
+                if (k === 'w' || e.key === 'ArrowUp') { pilotKeys.up = true; e.preventDefault(); }
+                if (k === 's' || e.key === 'ArrowDown') { pilotKeys.down = true; e.preventDefault(); }
+                if (k === 'a' || e.key === 'ArrowLeft') { pilotKeys.left = true; e.preventDefault(); }
+                if (k === 'd' || e.key === 'ArrowRight') { pilotKeys.right = true; e.preventDefault(); }
+            });
+
+            window.addEventListener('keyup', (e) => {
+                const k = e.key.toLowerCase();
+                if (k === 'w' || e.key === 'ArrowUp') pilotKeys.up = false;
+                if (k === 's' || e.key === 'ArrowDown') pilotKeys.down = false;
+                if (k === 'a' || e.key === 'ArrowLeft') pilotKeys.left = false;
+                if (k === 'd' || e.key === 'ArrowRight') pilotKeys.right = false;
+            });
+        }
+
+        function setPilotKey(dir, state) {
+            pilotKeys[dir] = state;
+        }
+
+        function toggleCameraFollow() {
+            gameState.cameraFollowShip = !gameState.cameraFollowShip;
+            const btn = document.getElementById('cam-follow-btn');
+            if (btn) {
+                btn.innerHTML = gameState.cameraFollowShip
+                    ? '<i class="fa-solid fa-crosshairs"></i> Camera Theo Tàu: BẬT'
+                    : '<i class="fa-solid fa-up-down-left-right"></i> Camera Tự Do: TẮT';
+            }
+        }
+
         function setCanvasView(view) {
             gameState.canvasView = view;
             const btnTraj = document.getElementById('view-btn-trajectory');
@@ -1135,8 +1214,10 @@
                 btnSolar.className = "px-3.5 py-2 rounded-xl bg-amber-500/25 text-amber-300 border border-amber-400/60 font-bold transition flex items-center gap-1.5 cursor-pointer";
                 btnTraj.className = "px-3.5 py-2 rounded-xl text-slate-300 hover:text-cyan-300 transition flex items-center gap-1.5 cursor-pointer";
                 solarControls.classList.remove('hidden');
-                hint.innerHTML = '<i class="fa-solid fa-earth-asia text-amber-400 mr-1.5"></i> Bấm trực tiếp vào Mặt Trời hoặc bất kỳ hành tinh nào để đọc thông tin chi tiết!';
-                resetCameraView();
+                hint.innerHTML = gameState.phase === 'flying'
+                    ? '<i class="fa-solid fa-gamepad text-cyan-400 mr-1.5"></i> Dùng phím W/A/S/D hoặc Mũi Tên để tự lái tên lửa bay tới hành tinh mục tiêu!'
+                    : '<i class="fa-solid fa-earth-asia text-amber-400 mr-1.5"></i> Bấm trực tiếp vào Mặt Trời hoặc bất kỳ hành tinh nào để đọc thông tin chi tiết!';
+                if (gameState.phase !== 'flying') resetCameraView();
             }
         }
 
@@ -1144,8 +1225,8 @@
             gameState.solarOrbitPaused = !gameState.solarOrbitPaused;
             const btn = document.getElementById('solar-orbit-btn');
             btn.innerHTML = gameState.solarOrbitPaused
-                ? '<i class="fa-solid fa-play"></i> Tiếp Tục Quay Quỹ Đạo'
-                : '<i class="fa-solid fa-pause"></i> Dừng Quỹ Đạo Để Dễ Bấm';
+                ? '<i class="fa-solid fa-play"></i> Tiếp Tục Quỹ Đạo'
+                : '<i class="fa-solid fa-pause"></i> Dừng Quỹ Đạo';
         }
 
         function resetCameraView() {
@@ -1336,7 +1417,6 @@
             document.getElementById('subtab-lib-content').classList.toggle('hidden', isQuiz);
         }
 
-        // BƯỚC 1: DANH SÁCH MỤC TIÊU CÓ CHUYỂN ĐỘNG
         function renderDestinations() {
             const container = document.getElementById('destination-list');
             if (!container) return;
@@ -1547,15 +1627,10 @@
             document.getElementById('launch-btn').disabled = !(validCost && validWeight);
         }
 
-        // KÍCH HOẠT PHÓNG TÊN LỬA -> CHUYỂN NGAY SANG HỆ MẶT TRỜI ĐỂ BAY QUANH HỆ MẶT TRỜI
+        // KÍCH HOẠT PHÓNG TÊN LỬA -> CHUYỂN SANG HỆ MẶT TRỜI ĐỂ BẠN TỰ LÁI
         function startMissionLaunch() {
             const shipInput = document.getElementById('ship-name-input').value;
             if(shipInput.trim()) gameState.shipName = shipInput.trim();
-
-            setCanvasView('solarsystem');
-            gameState.solarOrbitPaused = false;
-            const orbitBtn = document.getElementById('solar-orbit-btn');
-            if (orbitBtn) orbitBtn.innerHTML = '<i class="fa-solid fa-pause"></i> Dừng Quỹ Đạo Để Dễ Bấm';
 
             gameState.phase = 'flying';
             gameState.flightProgress = 0;
@@ -1565,10 +1640,26 @@
             gameState.checkpoint66Triggered = false;
             gameState.inFlightQuizActive = false;
             gameState.pausedForLibraryReading = false;
-            gameState.logs = [`Khởi hành tàu ${gameState.shipName} rời Trái Đất tiến vào Hệ Mặt Trời hướng tới ${gameState.selectedDest.name}.`];
+            gameState.cameraFollowShip = true;
 
-            document.getElementById('design-panel').classList.add('hidden', 'lg:flex');
+            // Đặt tàu xuất phát ngay tại vị trí hiện tại của Trái Đất trong Hệ Mặt Trời
+            const earth = SOLAR_SYSTEM_BODIES.find(b => b.id === 'earth') || { angle: 0, orbitRadius: 145 };
+            pilotShip.x = Math.cos(earth.angle) * earth.orbitRadius;
+            pilotShip.y = Math.sin(earth.angle) * earth.orbitRadius - 22;
+            pilotShip.vx = 0;
+            pilotShip.vy = 0;
+            pilotShip.angle = -Math.PI / 2;
+            pilotShip.thrusting = false;
+            pilotKeys = { up: false, down: false, left: false, right: false };
+
+            setCanvasView('solarsystem');
+            zoom = 1.25;
+
+            gameState.logs = [`Phi công tự lái tàu ${gameState.shipName} rời Trái Đất vào Hệ Mặt Trời hướng tới ${gameState.selectedDest.name}.`];
+
+            document.getElementById('design-panel').classList.add('hidden');
             document.getElementById('flight-hud').classList.remove('hidden', 'opacity-0', '-translate-y-4');
+            document.getElementById('manual-pilot-pad').classList.remove('hidden');
         }
 
         function togglePauseSimulation() {
@@ -1593,8 +1684,11 @@
 
         function finishMission() {
             gameState.phase = 'debrief';
+            pilotKeys = { up: false, down: false, left: false, right: false };
+            document.getElementById('manual-pilot-pad').classList.add('hidden');
+
             const dest = gameState.selectedDest;
-            let success = (gameState.fuel > 0 && gameState.hull > 20 && gameState.deltaV >= dest.reqDeltaV);
+            let success = (gameState.hull > 20 && gameState.flightProgress >= 1.0);
             const earnedSci = success ? (dest.baseScience + gameState.scienceScore) : Math.round(gameState.scienceScore * 0.3);
             gameState.accumulatedScience += earnedSci;
             document.getElementById('header-science').innerText = `${gameState.accumulatedScience}`;
@@ -1603,7 +1697,7 @@
             document.getElementById('debrief-subtitle').innerText = `TÀU ${gameState.shipName.toUpperCase()} ĐÃ ${success ? 'HOÀN THÀNH KHÁM PHÁ QUỸ ĐẠO' : 'GẶP SỰ CỐ'}`;
             document.getElementById('debrief-science').innerText = `+${earnedSci}`;
             document.getElementById('debrief-samples').innerText = `${success ? 3 : 0} Mẫu`;
-            document.getElementById('debrief-badge').innerText = success ? 'Chuyên Gia Vũ Trụ' : 'Tập Sự';
+            document.getElementById('debrief-badge').innerText = success ? 'Phi Công Vũ Trụ' : 'Tập Sự';
 
             document.getElementById('debrief-logs').innerHTML = gameState.logs.map(l => `<div class="text-slate-300"><i class="fa-solid fa-angle-right text-cyan-400 mr-1.5"></i> ${l}</div>`).join('');
             document.getElementById('debrief-modal').classList.remove('hidden');
@@ -1612,16 +1706,21 @@
         function resetToDesign() {
             gameState.phase = 'design';
             gameState.pausedForLibraryReading = false;
+            pilotKeys = { up: false, down: false, left: false, right: false };
             document.getElementById('return-flight-banner').classList.add('hidden');
             document.getElementById('debrief-modal').classList.add('hidden');
             document.getElementById('flight-hud').classList.add('hidden', 'opacity-0', '-translate-y-4');
+            document.getElementById('manual-pilot-pad').classList.add('hidden');
             document.getElementById('design-panel').classList.remove('hidden');
+            setCanvasView('trajectory');
+            resetCameraView();
             recalculateStats();
         }
 
         function triggerInFlightQuiz(checkpointIndex) {
             gameState.inFlightQuizActive = true;
             gameState.isPaused = true;
+            pilotKeys = { up: false, down: false, left: false, right: false };
             
             const qData = IN_FLIGHT_QUESTIONS[checkpointIndex];
             document.getElementById('fq-checkpoint-title').innerHTML = `<i class="fa-solid fa-satellite mr-1"></i> ${qData.title}`;
@@ -1673,7 +1772,7 @@
                 feedbackBox.innerHTML = `
                     <div><i class="fa-solid fa-circle-check mr-1 text-emerald-400"></i> <strong class="text-emerald-400">ĐÚNG!</strong> +250 Điểm Khoa Học.<br><span class="text-slate-200 mt-1 block">${explanation}</span></div>
                     <button onclick="resumeFlightManually()" class="w-full py-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-orbitron font-bold text-xs transition">
-                        Đã Hiểu, Tiếp Tục Bay <i class="fa-solid fa-play ml-1"></i>
+                        Đã Hiểu, Tiếp Tục Lái Tàu <i class="fa-solid fa-play ml-1"></i>
                     </button>
                 `;
                 gameState.accumulatedScience += 250;
@@ -1766,7 +1865,6 @@
             if (gameState.quizTimer) { clearInterval(gameState.quizTimer); gameState.quizTimer = null; }
         }
 
-        // TRẢ LỜI CÂU HỎI TRẠM TRI THỨC: SAI BỊ TRỪ 1000 KH VÀ $500M NGÂN SÁCH
         function submitQuizAnswer(selectedIdx) {
             if (gameState.quizAnswered) return;
             gameState.quizAnswered = true;
@@ -1825,7 +1923,7 @@
             updateQuizHeaderStats();
         }
 
-        // ================= CANVAS ENGINE: HÀNH TINH CHUYỂN ĐỘNG & BAY QUANH HỆ MẶT TRỜI =================
+        // ================= CANVAS ENGINE: TỰ LÁI TÊN LỬA TRONG HỆ MẶT TRỜI =================
         let canvas, ctx, stars = [], asteroidBelt = [], camX = 0, camY = 0, zoom = 1;
         let isDragging = false, hasMovedDuringDrag = false, dragStart = { x: 0, y: 0 };
         let renderedHitboxes = [];
@@ -1852,7 +1950,7 @@
                     angle: Math.random() * Math.PI * 2,
                     dist: 238 + (Math.random() - 0.5) * 18,
                     size: Math.random() * 2.2 + 0.8,
-                    speed: 0.002 + Math.random() * 0.0015
+                    speed: 0.0015 + Math.random() * 0.001
                 });
             }
 
@@ -1867,6 +1965,11 @@
                     const dx = (e.clientX - dragStart.x) - camX;
                     const dy = (e.clientY - dragStart.y) - camY;
                     if (Math.abs(dx) > 3 || Math.abs(dy) > 3) hasMovedDuringDrag = true;
+                    if (gameState.phase === 'flying' && gameState.cameraFollowShip) {
+                        gameState.cameraFollowShip = false;
+                        const btn = document.getElementById('cam-follow-btn');
+                        if (btn) btn.innerHTML = '<i class="fa-solid fa-up-down-left-right"></i> Camera Tự Do: TẮT';
+                    }
                     camX = e.clientX - dragStart.x;
                     camY = e.clientY - dragStart.y;
                 } else {
@@ -1906,6 +2009,105 @@
             canvas.height = canvas.parentElement.clientHeight;
         }
 
+        function getTargetCoordinates() {
+            if (gameState.selectedDest.id === 'asteroids') {
+                const aAngle = trajAnimTick * 0.15;
+                return { x: Math.cos(aAngle) * 238, y: Math.sin(aAngle) * 238, radius: 34 };
+            }
+            if (gameState.selectedDest.id === 'deepspace') {
+                const dsAngle = -0.65;
+                return { x: Math.cos(dsAngle) * 540, y: Math.sin(dsAngle) * 540, radius: 36 };
+            }
+            const body = SOLAR_SYSTEM_BODIES.find(b => b.id === gameState.selectedDest.id);
+            if (body) {
+                return {
+                    x: Math.cos(body.angle) * body.orbitRadius,
+                    y: Math.sin(body.angle) * body.orbitRadius,
+                    radius: Math.max(28, body.radius + 18)
+                };
+            }
+            return { x: 212, y: 0, radius: 30 };
+        }
+
+        function updateManualPilotPhysics() {
+            const turnSpeed = 0.055;
+            if (pilotKeys.left) pilotShip.angle -= turnSpeed;
+            if (pilotKeys.right) pilotShip.angle += turnSpeed;
+
+            const thrustPower = 0.075 + (gameState.deltaV * 0.0022);
+            pilotShip.thrusting = false;
+
+            if (pilotKeys.up && gameState.fuel > 0) {
+                pilotShip.vx += Math.cos(pilotShip.angle) * thrustPower;
+                pilotShip.vy += Math.sin(pilotShip.angle) * thrustPower;
+                pilotShip.thrusting = true;
+                gameState.fuel = Math.max(0, gameState.fuel - 0.045);
+            }
+
+            if (pilotKeys.down) {
+                pilotShip.vx *= 0.95;
+                pilotShip.vy *= 0.95;
+            } else {
+                // Giảm tốc nhẹ trong không gian để dễ điều khiển chính xác quanh hành tinh
+                pilotShip.vx *= 0.992;
+                pilotShip.vy *= 0.992;
+            }
+
+            const maxSpeed = 4.6;
+            const currentSpeed = Math.hypot(pilotShip.vx, pilotShip.vy);
+            if (currentSpeed > maxSpeed) {
+                pilotShip.vx = (pilotShip.vx / currentSpeed) * maxSpeed;
+                pilotShip.vy = (pilotShip.vy / currentSpeed) * maxSpeed;
+            }
+
+            pilotShip.x += pilotShip.vx;
+            pilotShip.y += pilotShip.vy;
+
+            // Giới hạn vùng bay trong Hệ Mặt Trời (bán kính 720)
+            const distFromSun = Math.hypot(pilotShip.x, pilotShip.y);
+            if (distFromSun > 720) {
+                const pullAngle = Math.atan2(-pilotShip.y, -pilotShip.x);
+                pilotShip.vx += Math.cos(pullAngle) * 0.12;
+                pilotShip.vy += Math.sin(pullAngle) * 0.12;
+            }
+
+            if (gameState.cameraFollowShip) {
+                camX += (-pilotShip.x * zoom - camX) * 0.12;
+                camY += (-pilotShip.y * zoom - camY) * 0.12;
+            }
+
+            // Kiểm tra khoảng cách tới mục tiêu để thu thập dữ liệu
+            const target = getTargetCoordinates();
+            const distToTarget = Math.hypot(pilotShip.x - target.x, pilotShip.y - target.y);
+
+            if (distToTarget <= target.radius + 24) {
+                gameState.flightProgress = Math.min(1.0, gameState.flightProgress + 0.0065);
+            }
+
+            if (gameState.flightProgress >= 0.33 && !gameState.checkpoint33Triggered) {
+                gameState.checkpoint33Triggered = true;
+                triggerInFlightQuiz(0);
+            } else if (gameState.flightProgress >= 0.66 && !gameState.checkpoint66Triggered) {
+                gameState.checkpoint66Triggered = true;
+                triggerInFlightQuiz(1);
+            }
+
+            const pct = Math.min(100, Math.round(gameState.flightProgress * 100));
+            document.getElementById('hud-progress').innerText = `${pct}%`;
+            document.getElementById('hud-progress-bar').style.width = `${pct}%`;
+            document.getElementById('hud-distance').innerText = distToTarget <= target.radius + 24
+                ? 'ĐANG QUÉT MỤC TIÊU!'
+                : `${Math.round(distToTarget * 1.5)} Triệu km`;
+            document.getElementById('hud-speed').innerText = `${(currentSpeed * 6.5).toFixed(1)} km/s`;
+            document.getElementById('hud-fuel').innerText = `${Math.round(gameState.fuel)}%`;
+            document.getElementById('hud-hull').innerText = `${Math.round(gameState.hull)}%`;
+
+            if (gameState.flightProgress >= 1.0) {
+                gameState.logs.push(`Hoàn thành thu thập dữ liệu tại quỹ đạo ${gameState.selectedDest.name}!`);
+                finishMission();
+            }
+        }
+
         function animate() {
             requestAnimationFrame(animate);
             trajAnimTick += 0.02;
@@ -1919,28 +2121,11 @@
                 });
             }
 
-            renderCanvas();
-
             if (gameState.phase === 'flying' && !gameState.isPaused && !gameState.inFlightQuizActive) {
-                gameState.flightProgress += 0.0012;
-                gameState.fuel = Math.max(0, gameState.fuel - 0.03);
-
-                if (gameState.flightProgress >= 0.33 && !gameState.checkpoint33Triggered) {
-                    gameState.checkpoint33Triggered = true;
-                    triggerInFlightQuiz(0);
-                } else if (gameState.flightProgress >= 0.66 && !gameState.checkpoint66Triggered) {
-                    gameState.checkpoint66Triggered = true;
-                    triggerInFlightQuiz(1);
-                }
-
-                const pct = Math.min(100, Math.round(gameState.flightProgress * 100));
-                document.getElementById('hud-progress').innerText = `${pct}%`;
-                document.getElementById('hud-progress-bar').style.width = `${pct}%`;
-                document.getElementById('hud-fuel').innerText = `${Math.round(gameState.fuel)}%`;
-                document.getElementById('hud-hull').innerText = `${Math.round(gameState.hull)}%`;
-
-                if (gameState.flightProgress >= 1.0) finishMission();
+                updateManualPilotPhysics();
             }
+
+            renderCanvas();
         }
 
         function worldToScreen(wx, wy) {
@@ -2025,17 +2210,16 @@
             ctx.setLineDash([]);
             ctx.lineDashOffset = 0;
 
-            let t = gameState.phase === 'flying' ? gameState.flightProgress : (0.08 + Math.sin(trajAnimTick * 1.5) * 0.008);
+            let t = 0.08 + Math.sin(trajAnimTick * 1.5) * 0.008;
             const shipX = (1-t)*(1-t)*startPos.x + 2*(1-t)*t*0 + t*t*endPos.x;
             const shipY = (1-t)*(1-t)*startPos.y + 2*(1-t)*t*ctrlY + t*t*endPos.y;
             const dx = 2*(1-t)*(0 - startPos.x) + 2*t*(endPos.x - 0);
             const dy = 2*(1-t)*(ctrlY - startPos.y) + 2*t*(endPos.y - ctrlY);
             const angle = Math.atan2(dy, dx);
 
-            drawSpaceship(shipX, shipY, angle);
+            drawSpaceship(shipX, shipY, angle, false);
         }
 
-        // CHẾ ĐỘ HỆ MẶT TRỜI: HIỂN THỊ CÁC HÀNH TINH & TÀU VŨ TRỤ BAY QUANH HỆ MẶT TRỜI KHI PHÓNG
         function renderSolarSystemView() {
             SOLAR_SYSTEM_BODIES.forEach(body => {
                 if (body.orbitRadius > 0) {
@@ -2058,15 +2242,9 @@
                 ctx.fill();
             });
 
-            let earthCoords = { x: 145, y: 0 };
-            let targetCoords = { x: 212, y: 0 };
-
             SOLAR_SYSTEM_BODIES.forEach(body => {
                 const px = Math.cos(body.angle) * body.orbitRadius;
                 const py = Math.sin(body.angle) * body.orbitRadius;
-
-                if (body.id === 'earth') earthCoords = { x: px, y: py };
-                if (body.id === gameState.selectedDest.id) targetCoords = { x: px, y: py };
 
                 if (gameState.selectedPlanetId === body.id) {
                     ctx.beginPath();
@@ -2090,75 +2268,54 @@
                 });
             });
 
-            // Xác định tọa độ mục tiêu nếu mục tiêu là Vành Đai Tiểu Hành Tinh hoặc Vũ Trụ Sâu
-            if (gameState.selectedDest.id === 'asteroids') {
-                const aAngle = trajAnimTick * 0.25;
-                targetCoords = { x: Math.cos(aAngle) * 238, y: Math.sin(aAngle) * 238 };
-            } else if (gameState.selectedDest.id === 'deepspace') {
-                const dsAngle = -0.65;
-                targetCoords = { x: Math.cos(dsAngle) * 540, y: Math.sin(dsAngle) * 540 };
-                // Vẽ cổng không gian Vũ Trụ Sâu ở rìa Hệ Mặt Trời
-                drawRealisticPlanet(targetCoords.x, targetCoords.y, 20, 'deepspace', 'Vũ Trụ Sâu', trajAnimTick);
+            const target = getTargetCoordinates();
+            if (gameState.selectedDest.id === 'deepspace') {
+                drawRealisticPlanet(target.x, target.y, 20, 'deepspace', 'Vũ Trụ Sâu', trajAnimTick);
             }
 
-            // Vẽ vòng đánh dấu mục tiêu đang hướng tới trong Hệ Mặt Trời
-            const pulseTargetR = 26 + Math.sin(trajAnimTick * 3) * 5;
+            // Vòng radar đánh dấu vùng mục tiêu cần lái tên lửa tới
+            const pulseTargetR = target.radius + Math.sin(trajAnimTick * 3) * 4;
             ctx.beginPath();
-            ctx.arc(targetCoords.x, targetCoords.y, pulseTargetR, 0, Math.PI * 2);
-            ctx.strokeStyle = 'rgba(0, 243, 255, 0.65)';
-            ctx.lineWidth = 1.5;
+            ctx.arc(target.x, target.y, pulseTargetR, 0, Math.PI * 2);
+            ctx.strokeStyle = 'rgba(0, 243, 255, 0.75)';
+            ctx.lineWidth = 1.8;
             ctx.setLineDash([5, 5]);
             ctx.lineDashOffset = -trajAnimTick * 15;
             ctx.stroke();
             ctx.setLineDash([]);
             ctx.lineDashOffset = 0;
 
-            // Khi đang phóng (phase === 'flying'), vẽ đường bay chuyển tiếp & tên lửa bay quanh Hệ Mặt Trời
+            // Khi đang tự lái trong Hệ Mặt Trời
             if (gameState.phase === 'flying') {
-                const ctrlX = (earthCoords.x + targetCoords.x) * 0.5 - (targetCoords.y - earthCoords.y) * 0.35;
-                const ctrlY = (earthCoords.y + targetCoords.y) * 0.5 + (targetCoords.x - earthCoords.x) * 0.35;
-
-                // Đường quỹ đạo chuyển tiếp từ Trái Đất tới mục tiêu
+                // Vẽ đường dẫn hướng mờ từ tên lửa tới hành tinh mục tiêu
                 ctx.beginPath();
-                ctx.moveTo(earthCoords.x, earthCoords.y);
-                ctx.quadraticCurveTo(ctrlX, ctrlY, targetCoords.x, targetCoords.y);
-                ctx.strokeStyle = 'rgba(0, 243, 255, 0.55)';
-                ctx.setLineDash([6, 6]);
-                ctx.lineDashOffset = -trajAnimTick * 24;
-                ctx.lineWidth = 2;
+                ctx.moveTo(pilotShip.x, pilotShip.y);
+                ctx.lineTo(target.x, target.y);
+                ctx.strokeStyle = 'rgba(0, 243, 255, 0.35)';
+                ctx.setLineDash([4, 6]);
+                ctx.lineWidth = 1.5;
                 ctx.stroke();
                 ctx.setLineDash([]);
-                ctx.lineDashOffset = 0;
 
-                // Giai đoạn 0 -> 0.85: Bay liên hành tinh từ Trái Đất đến mục tiêu
-                // Giai đoạn 0.85 -> 1.0: Bay vòng quanh quỹ đạo hành tinh mục tiêu để thu thập dữ liệu
-                let shipX, shipY, angle;
-                if (gameState.flightProgress < 0.85) {
-                    const t = gameState.flightProgress / 0.85;
-                    shipX = (1-t)*(1-t)*earthCoords.x + 2*(1-t)*t*ctrlX + t*t*targetCoords.x;
-                    shipY = (1-t)*(1-t)*earthCoords.y + 2*(1-t)*t*ctrlY + t*t*targetCoords.y;
-                    const dx = 2*(1-t)*(ctrlX - earthCoords.x) + 2*t*(targetCoords.x - ctrlX);
-                    const dy = 2*(1-t)*(ctrlY - earthCoords.y) + 2*t*(targetCoords.y - ctrlY);
-                    angle = Math.atan2(dy, dx);
-                } else {
-                    const orbitT = ((gameState.flightProgress - 0.85) / 0.15) * Math.PI * 2;
-                    const orbitR = 32;
-                    shipX = targetCoords.x + Math.cos(orbitT) * orbitR;
-                    shipY = targetCoords.y + Math.sin(orbitT) * orbitR;
-                    angle = orbitT + Math.PI / 2;
+                // Vẽ vòng tiến trình quét quanh tàu khi ở gần hành tinh mục tiêu
+                if (gameState.flightProgress > 0) {
+                    ctx.beginPath();
+                    ctx.arc(pilotShip.x, pilotShip.y, 26, -Math.PI/2, -Math.PI/2 + Math.PI * 2 * gameState.flightProgress);
+                    ctx.strokeStyle = '#00ff88';
+                    ctx.lineWidth = 2.5;
+                    ctx.stroke();
                 }
 
                 ctx.save();
-                ctx.translate(shipX, shipY);
+                ctx.translate(pilotShip.x, pilotShip.y);
                 ctx.scale(0.32, 0.32);
-                drawSpaceship(0, 0, angle);
+                drawSpaceship(0, 0, pilotShip.angle, pilotShip.thrusting);
                 ctx.restore();
 
-                // Nhãn tên tàu bay theo tên lửa
                 ctx.font = 'bold 10px Orbitron, sans-serif';
                 ctx.fillStyle = '#00f3ff';
                 ctx.textAlign = 'center';
-                ctx.fillText(gameState.shipName, shipX, shipY - 24);
+                ctx.fillText(gameState.shipName, pilotShip.x, pilotShip.y - 24);
             }
         }
 
@@ -2331,7 +2488,7 @@
             ctx.restore();
         }
 
-        function drawSpaceship(x, y, angle) {
+        function drawSpaceship(x, y, angle, showFlame = false) {
             ctx.save();
             ctx.translate(x, y);
             ctx.rotate(angle + Math.PI / 2);
@@ -2341,11 +2498,11 @@
             const eId = comp.engine ? comp.engine.id : 'eng_chem';
             const protId = comp.protection ? comp.protection.id : 'prot_basic';
 
-            if (gameState.phase === 'flying' && !gameState.isPaused) {
+            if (showFlame && !gameState.isPaused) {
                 let flameColor = '#00f3ff';
-                let flameLen = 40 + Math.random() * 20;
-                if (eId === 'eng_ion') { flameColor = '#b026ff'; flameLen = 50 + Math.random() * 15; }
-                else if (eId === 'eng_nuclear') { flameColor = '#ffb700'; flameLen = 65 + Math.random() * 25; }
+                let flameLen = 45 + Math.random() * 22;
+                if (eId === 'eng_ion') { flameColor = '#b026ff'; flameLen = 55 + Math.random() * 18; }
+                else if (eId === 'eng_nuclear') { flameColor = '#ffb700'; flameLen = 70 + Math.random() * 25; }
 
                 const gradFlame = ctx.createLinearGradient(0, 50, 0, 50 + flameLen);
                 gradFlame.addColorStop(0, '#ffffff');
