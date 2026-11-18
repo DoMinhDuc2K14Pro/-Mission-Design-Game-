@@ -216,7 +216,7 @@
                 </button>
             </div>
 
-            <!-- Điều khiển nhỏ cho Hệ Mặt Trời -->
+            <!-- Điều khiển nhỏ cho Hệ Mặt Trời (tự ẩn khi đang bay để tránh đè HUD) -->
             <div id="solar-controls" onmousedown="event.stopPropagation()" class="hidden absolute top-20 left-4 z-30 flex flex-col gap-2 pointer-events-auto">
                 <button onclick="toggleSolarOrbitPause()" id="solar-orbit-btn" class="glass-panel px-3.5 py-2 rounded-xl text-xs font-orbitron text-amber-300 border border-amber-500/50 hover:bg-amber-950/60 transition flex items-center gap-2 shadow-lg cursor-pointer">
                     <i class="fa-solid fa-pause"></i> Dừng Quỹ Đạo
@@ -337,7 +337,7 @@
                 </div>
             </div>
 
-            <!-- BẢNG PHÍM LÁI TÀU TRÊN MÀN HÌNH (HỖ TRỢ CẢ CHUỘT & CẢM ỨNG + PHÍM WASD / MŨI TÊN) -->
+            <!-- BẢNG PHÍM LÁI TÀU TRÊN MÀN HÌNH -->
             <div id="manual-pilot-pad" onmousedown="event.stopPropagation()" class="hidden absolute bottom-14 right-4 z-30 glass-panel p-3 rounded-2xl border border-cyan-500/40 pointer-events-auto select-none shadow-2xl">
                 <div class="text-[10px] font-orbitron text-cyan-300 text-center mb-2">ĐIỀU KHIỂN: W/A/S/D HOẶC MŨI TÊN</div>
                 <div class="grid grid-cols-3 gap-1.5 w-36 mx-auto">
@@ -352,7 +352,7 @@
                         <i class="fa-solid fa-rotate-left"></i>
                     </button>
                     <button onmousedown="setPilotKey('down', true)" onmouseup="setPilotKey('down', false)" onmouseleave="setPilotKey('down', false)" ontouchstart="event.preventDefault(); setPilotKey('down', true)" ontouchend="setPilotKey('down', false)"
-                        class="h-10 rounded-xl bg-space-800 hover:bg-amber-600/40 active:bg-amber-500 border border-amber-500/40 text-amber-300 flex items-center justify-center font-bold" title="Phanh hãm tốc">
+                        class="h-10 rounded-xl bg-space-800 hover:bg-amber-600/40 active:bg-amber-500 border border-amber-500/40 text-amber-300 flex items-center justify-center font-bold" title="Phanh dừng hẳn">
                         <i class="fa-solid fa-arrow-down"></i>
                     </button>
                     <button onmousedown="setPilotKey('right', true)" onmouseup="setPilotKey('right', false)" onmouseleave="setPilotKey('right', false)" ontouchstart="event.preventDefault(); setPilotKey('right', true)" ontouchend="setPilotKey('right', false)"
@@ -1092,12 +1092,11 @@
             commander: { label: 'Chỉ Huy', time: 10, budgetReward: 200, sciReward: 1200 }
         };
 
-        // TRẠNG THÁI TỰ ĐIỀU KHIỂN TÊN LỬA
+        // TRẠNG THÁI TỰ ĐIỀU KHIỂN TÊN LỬA (LÁI BÁM HƯỚNG, KHÔNG BỊ TRƯỢT)
         let pilotShip = {
             x: 145,
             y: 0,
-            vx: 0,
-            vy: 0,
+            speed: 0,
             angle: -Math.PI / 2,
             thrusting: false
         };
@@ -1162,7 +1161,6 @@
             animate();
         };
 
-        // BẮT PHÍM TỰ LÁI (W/A/S/D HOẶC MŨI TÊN)
         function setupKeyboardControls() {
             window.addEventListener('keydown', (e) => {
                 if (gameState.phase !== 'flying') return;
@@ -1213,11 +1211,14 @@
             } else {
                 btnSolar.className = "px-3.5 py-2 rounded-xl bg-amber-500/25 text-amber-300 border border-amber-400/60 font-bold transition flex items-center gap-1.5 cursor-pointer";
                 btnTraj.className = "px-3.5 py-2 rounded-xl text-slate-300 hover:text-cyan-300 transition flex items-center gap-1.5 cursor-pointer";
-                solarControls.classList.remove('hidden');
-                hint.innerHTML = gameState.phase === 'flying'
-                    ? '<i class="fa-solid fa-gamepad text-cyan-400 mr-1.5"></i> Dùng phím W/A/S/D hoặc Mũi Tên để tự lái tên lửa bay tới hành tinh mục tiêu!'
-                    : '<i class="fa-solid fa-earth-asia text-amber-400 mr-1.5"></i> Bấm trực tiếp vào Mặt Trời hoặc bất kỳ hành tinh nào để đọc thông tin chi tiết!';
-                if (gameState.phase !== 'flying') resetCameraView();
+                if (gameState.phase === 'flying') {
+                    solarControls.classList.add('hidden');
+                    hint.innerHTML = '<i class="fa-solid fa-gamepad text-cyan-400 mr-1.5"></i> Dùng phím W/A/S/D hoặc Mũi Tên để tự lái tên lửa bay tới hành tinh mục tiêu!';
+                } else {
+                    solarControls.classList.remove('hidden');
+                    hint.innerHTML = '<i class="fa-solid fa-earth-asia text-amber-400 mr-1.5"></i> Bấm trực tiếp vào Mặt Trời hoặc bất kỳ hành tinh nào để đọc thông tin chi tiết!';
+                    resetCameraView();
+                }
             }
         }
 
@@ -1627,7 +1628,6 @@
             document.getElementById('launch-btn').disabled = !(validCost && validWeight);
         }
 
-        // KÍCH HOẠT PHÓNG TÊN LỬA -> CHUYỂN SANG HỆ MẶT TRỜI ĐỂ BẠN TỰ LÁI
         function startMissionLaunch() {
             const shipInput = document.getElementById('ship-name-input').value;
             if(shipInput.trim()) gameState.shipName = shipInput.trim();
@@ -1642,12 +1642,10 @@
             gameState.pausedForLibraryReading = false;
             gameState.cameraFollowShip = true;
 
-            // Đặt tàu xuất phát ngay tại vị trí hiện tại của Trái Đất trong Hệ Mặt Trời
             const earth = SOLAR_SYSTEM_BODIES.find(b => b.id === 'earth') || { angle: 0, orbitRadius: 145 };
             pilotShip.x = Math.cos(earth.angle) * earth.orbitRadius;
             pilotShip.y = Math.sin(earth.angle) * earth.orbitRadius - 22;
-            pilotShip.vx = 0;
-            pilotShip.vy = 0;
+            pilotShip.speed = 0;
             pilotShip.angle = -Math.PI / 2;
             pilotShip.thrusting = false;
             pilotKeys = { up: false, down: false, left: false, right: false };
@@ -1923,7 +1921,7 @@
             updateQuizHeaderStats();
         }
 
-        // ================= CANVAS ENGINE: TỰ LÁI TÊN LỬA TRONG HỆ MẶT TRỜI =================
+        // ================= CANVAS ENGINE: LÁI BÁM HƯỚNG KHÔNG TRƯỢT =================
         let canvas, ctx, stars = [], asteroidBelt = [], camX = 0, camY = 0, zoom = 1;
         let isDragging = false, hasMovedDuringDrag = false, dragStart = { x: 0, y: 0 };
         let renderedHitboxes = [];
@@ -2029,59 +2027,55 @@
             return { x: 212, y: 0, radius: 30 };
         }
 
+        // ĐIỀU KHIỂN TRỰC TIẾP BÁM HƯỚNG MŨI TÀU (KHÔNG BỊ TRƯỢT QUÁN TÍNH)
         function updateManualPilotPhysics() {
             const turnSpeed = 0.055;
             if (pilotKeys.left) pilotShip.angle -= turnSpeed;
             if (pilotKeys.right) pilotShip.angle += turnSpeed;
 
-            const thrustPower = 0.075 + (gameState.deltaV * 0.0022);
+            const maxSpeed = 3.4 + (gameState.deltaV * 0.08);
+            const accel = 0.14;
             pilotShip.thrusting = false;
 
             if (pilotKeys.up && gameState.fuel > 0) {
-                pilotShip.vx += Math.cos(pilotShip.angle) * thrustPower;
-                pilotShip.vy += Math.sin(pilotShip.angle) * thrustPower;
+                pilotShip.speed = Math.min(maxSpeed, pilotShip.speed + accel);
                 pilotShip.thrusting = true;
-                gameState.fuel = Math.max(0, gameState.fuel - 0.045);
-            }
-
-            if (pilotKeys.down) {
-                pilotShip.vx *= 0.95;
-                pilotShip.vy *= 0.95;
+                // Tiêu hao nhiên liệu rất tiết kiệm dựa theo sức chứa bồn
+                const fuelDrain = 0.012 * (100 / Math.max(100, gameState.maxFuelCap));
+                gameState.fuel = Math.max(0, gameState.fuel - fuelDrain);
+            } else if (pilotKeys.down) {
+                // Phanh dừng mượt mà khi bấm S hoặc Mũi tên xuống
+                pilotShip.speed *= 0.82;
+                if (pilotShip.speed < 0.05) pilotShip.speed = 0;
             } else {
-                // Giảm tốc nhẹ trong không gian để dễ điều khiển chính xác quanh hành tinh
-                pilotShip.vx *= 0.992;
-                pilotShip.vy *= 0.992;
+                // Tự giảm tốc độ khi thả phím ga để không bị trôi trượt mất kiểm soát
+                pilotShip.speed *= 0.94;
+                if (pilotShip.speed < 0.03) pilotShip.speed = 0;
             }
 
-            const maxSpeed = 4.6;
-            const currentSpeed = Math.hypot(pilotShip.vx, pilotShip.vy);
-            if (currentSpeed > maxSpeed) {
-                pilotShip.vx = (pilotShip.vx / currentSpeed) * maxSpeed;
-                pilotShip.vy = (pilotShip.vy / currentSpeed) * maxSpeed;
-            }
+            // Vận tốc luôn đi thẳng theo hướng mũi tàu -> hoàn toàn hết trượt ngang!
+            pilotShip.x += Math.cos(pilotShip.angle) * pilotShip.speed;
+            pilotShip.y += Math.sin(pilotShip.angle) * pilotShip.speed;
 
-            pilotShip.x += pilotShip.vx;
-            pilotShip.y += pilotShip.vy;
-
-            // Giới hạn vùng bay trong Hệ Mặt Trời (bán kính 720)
+            // Giữ tàu trong phạm vi Hệ Mặt Trời (bán kính 720)
             const distFromSun = Math.hypot(pilotShip.x, pilotShip.y);
             if (distFromSun > 720) {
-                const pullAngle = Math.atan2(-pilotShip.y, -pilotShip.x);
-                pilotShip.vx += Math.cos(pullAngle) * 0.12;
-                pilotShip.vy += Math.sin(pullAngle) * 0.12;
+                const limitAngle = Math.atan2(pilotShip.y, pilotShip.x);
+                pilotShip.x = Math.cos(limitAngle) * 720;
+                pilotShip.y = Math.sin(limitAngle) * 720;
             }
 
             if (gameState.cameraFollowShip) {
-                camX += (-pilotShip.x * zoom - camX) * 0.12;
-                camY += (-pilotShip.y * zoom - camY) * 0.12;
+                camX += (-pilotShip.x * zoom - camX) * 0.18;
+                camY += (-pilotShip.y * zoom - camY) * 0.18;
             }
 
-            // Kiểm tra khoảng cách tới mục tiêu để thu thập dữ liệu
+            // Kiểm tra khoảng cách tới hành tinh mục tiêu để thu thập dữ liệu
             const target = getTargetCoordinates();
             const distToTarget = Math.hypot(pilotShip.x - target.x, pilotShip.y - target.y);
 
             if (distToTarget <= target.radius + 24) {
-                gameState.flightProgress = Math.min(1.0, gameState.flightProgress + 0.0065);
+                gameState.flightProgress = Math.min(1.0, gameState.flightProgress + 0.0075);
             }
 
             if (gameState.flightProgress >= 0.33 && !gameState.checkpoint33Triggered) {
@@ -2098,7 +2092,7 @@
             document.getElementById('hud-distance').innerText = distToTarget <= target.radius + 24
                 ? 'ĐANG QUÉT MỤC TIÊU!'
                 : `${Math.round(distToTarget * 1.5)} Triệu km`;
-            document.getElementById('hud-speed').innerText = `${(currentSpeed * 6.5).toFixed(1)} km/s`;
+            document.getElementById('hud-speed').innerText = `${(pilotShip.speed * 7.2).toFixed(1)} km/s`;
             document.getElementById('hud-fuel').innerText = `${Math.round(gameState.fuel)}%`;
             document.getElementById('hud-hull').innerText = `${Math.round(gameState.hull)}%`;
 
@@ -2273,7 +2267,6 @@
                 drawRealisticPlanet(target.x, target.y, 20, 'deepspace', 'Vũ Trụ Sâu', trajAnimTick);
             }
 
-            // Vòng radar đánh dấu vùng mục tiêu cần lái tên lửa tới
             const pulseTargetR = target.radius + Math.sin(trajAnimTick * 3) * 4;
             ctx.beginPath();
             ctx.arc(target.x, target.y, pulseTargetR, 0, Math.PI * 2);
@@ -2285,9 +2278,7 @@
             ctx.setLineDash([]);
             ctx.lineDashOffset = 0;
 
-            // Khi đang tự lái trong Hệ Mặt Trời
             if (gameState.phase === 'flying') {
-                // Vẽ đường dẫn hướng mờ từ tên lửa tới hành tinh mục tiêu
                 ctx.beginPath();
                 ctx.moveTo(pilotShip.x, pilotShip.y);
                 ctx.lineTo(target.x, target.y);
@@ -2297,7 +2288,6 @@
                 ctx.stroke();
                 ctx.setLineDash([]);
 
-                // Vẽ vòng tiến trình quét quanh tàu khi ở gần hành tinh mục tiêu
                 if (gameState.flightProgress > 0) {
                     ctx.beginPath();
                     ctx.arc(pilotShip.x, pilotShip.y, 26, -Math.PI/2, -Math.PI/2 + Math.PI * 2 * gameState.flightProgress);
