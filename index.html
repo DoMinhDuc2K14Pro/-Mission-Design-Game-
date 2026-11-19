@@ -62,12 +62,12 @@
             </div>
             <div>
                 <h1 class="font-orbitron font-bold text-sm md:text-lg text-white tracking-wider flex items-center gap-2">SFS BLUEPRINT BUILDER</h1>
-                <p class="text-[10px] text-cyan-400 font-mono hidden xl:block">Hệ Thống Lắp Ráp SFS • Tự Lái Trong Hệ Mặt Trời & Kho 140 Thông Tin NASA</p>
+                <p class="text-[10px] text-cyan-400 font-mono hidden xl:block">Hệ Thống Lắp Ráp SFS • 15 Trạm Câu Hỏi Trên Chuyến Bay & Kho 140 Thông Tin NASA</p>
             </div>
         </div>
 
-        <!-- Mode Switcher Pills -->
-        <div class="flex items-center bg-space-950/90 p-1 rounded-xl border border-slate-700/80 font-orbitron text-[11px] md:text-xs">
+        <!-- Mode Switcher Pills + Hướng Dẫn -->
+        <div class="flex items-center bg-space-950/90 p-1 rounded-xl border border-slate-700/80 font-orbitron text-[11px] md:text-xs gap-1">
             <button onclick="switchGameMode('mission')" id="mode-btn-mission" class="px-3 py-1.5 rounded-lg bg-cyan-500/20 text-cyan-300 border border-cyan-500/50 font-bold transition flex items-center gap-1.5">
                 <i class="fa-solid fa-rocket"></i>
                 <span class="hidden sm:inline">Lắp Ráp & Lái Tàu</span>
@@ -77,6 +77,10 @@
                 <i class="fa-solid fa-brain"></i>
                 <span class="hidden sm:inline">Trạm Tri Thức & Săn Điểm KH</span>
                 <span class="sm:hidden">Tri Thức</span>
+            </button>
+            <button onclick="openGuideModal()" class="px-3 py-1.5 rounded-lg text-amber-300 hover:bg-amber-500/20 border border-amber-500/30 transition flex items-center gap-1.5 cursor-pointer">
+                <i class="fa-solid fa-circle-question"></i>
+                <span class="hidden md:inline">Hướng Dẫn</span>
             </button>
         </div>
 
@@ -216,7 +220,7 @@
                 </button>
             </div>
 
-            <!-- Điều khiển nhỏ cho Hệ Mặt Trời (tự ẩn khi đang bay để tránh đè HUD) -->
+            <!-- Điều khiển nhỏ cho Hệ Mặt Trời -->
             <div id="solar-controls" onmousedown="event.stopPropagation()" class="hidden absolute top-20 left-4 z-30 flex flex-col gap-2 pointer-events-auto">
                 <button onclick="toggleSolarOrbitPause()" id="solar-orbit-btn" class="glass-panel px-3.5 py-2 rounded-xl text-xs font-orbitron text-amber-300 border border-amber-500/50 hover:bg-amber-950/60 transition flex items-center gap-2 shadow-lg cursor-pointer">
                     <i class="fa-solid fa-pause"></i> Dừng Quỹ Đạo
@@ -226,7 +230,7 @@
                 </button>
             </div>
 
-            <!-- BẢNG THÔNG TIN CHI TIẾT KHI BẤM VÀO HÀNH TINH TRONG HỆ MẶT TRỜI -->
+            <!-- BẢNG THÔNG TIN CHI TIẾT KHI BẤM VÀO HÀNH TINH -->
             <div id="planet-info-card" onmousedown="event.stopPropagation()" class="hidden absolute top-20 right-4 bottom-16 w-[340px] md:w-[390px] glass-panel neon-border rounded-2xl z-30 flex flex-col overflow-hidden shadow-2xl pointer-events-auto">
                 <div class="p-4 border-b border-slate-800 bg-space-900/95 flex items-center justify-between">
                     <div class="flex items-center gap-3">
@@ -294,10 +298,10 @@
 
             <!-- Flight Telemetry HUD (TỰ LÁI TÊN LỬA) -->
             <div id="flight-hud" onmousedown="event.stopPropagation()" class="hidden absolute top-16 left-4 right-4 flex justify-between items-start pointer-events-none z-20 transition-all duration-500 opacity-0 transform -translate-y-4">
-                <div class="glass-panel p-4 rounded-xl font-mono text-xs space-y-2 pointer-events-auto min-w-[265px]">
+                <div class="glass-panel p-4 rounded-xl font-mono text-xs space-y-2 pointer-events-auto min-w-[275px]">
                     <div class="text-cyan-400 font-orbitron font-bold border-b border-cyan-900/60 pb-1.5 flex items-center justify-between">
                         <span>BUỒNG LÁI TỰ DO</span>
-                        <span id="hud-status" class="text-[10px] bg-emerald-900/80 text-emerald-300 px-2 py-0.5 rounded">TỰ ĐIỀU KHIỂN</span>
+                        <span id="hud-checkpoint-count" class="text-[10px] bg-purple-900/80 text-purple-300 px-2 py-0.5 rounded">0 / 15 TRẠM</span>
                     </div>
                     <div class="flex justify-between">
                         <span class="text-slate-400">Thu Thập Mục Tiêu:</span>
@@ -329,6 +333,9 @@
                 </div>
 
                 <div class="flex flex-wrap gap-2 pointer-events-auto justify-end">
+                    <button onclick="openGuideModal()" class="glass-panel px-3 py-2 rounded-lg text-xs font-orbitron text-amber-300 border border-amber-500/40 hover:bg-amber-950">
+                        <i class="fa-solid fa-circle-question"></i> Hướng Dẫn
+                    </button>
                     <button onclick="toggleLandingGear()" id="gear-btn" class="glass-panel px-3 py-2 rounded-lg text-xs font-orbitron text-amber-300 border border-amber-500/40 hover:bg-amber-950">
                         <i class="fa-solid fa-plane-arrival"></i> Chân Đáp [G]
                     </button>
@@ -371,7 +378,7 @@
                 </div>
             </div>
 
-            <!-- In-Flight Checkpoint Modal -->
+            <!-- In-Flight Checkpoint Modal (15 Trạm Câu Hỏi Trên Chuyến Bay) -->
             <div id="flight-quiz-modal" class="absolute inset-0 bg-space-950/85 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
                 <div class="glass-panel border border-cyan-500/50 p-6 rounded-2xl max-w-lg w-full space-y-4 shadow-2xl">
                     <div class="flex items-center justify-between text-xs font-mono text-cyan-400">
@@ -398,6 +405,54 @@
                                 Tiếp Tục Bay
                             </button>
                         </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Modal Hướng Dẫn Chơi -->
+            <div id="guide-modal" onmousedown="event.stopPropagation()" class="absolute inset-0 bg-space-950/85 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
+                <div class="glass-panel neon-border rounded-2xl max-w-2xl w-full p-6 space-y-4 shadow-2xl max-h-[88vh] overflow-y-auto custom-scrollbar text-xs md:text-sm">
+                    <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+                        <div class="flex items-center gap-2.5">
+                            <div class="w-9 h-9 rounded-xl bg-amber-500/20 border border-amber-400/50 text-amber-300 flex items-center justify-center text-base">
+                                <i class="fa-solid fa-book-open"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-orbitron font-bold text-base md:text-lg text-white">HƯỚNG DẪN CHƠI SỨ MỆNH VŨ TRỤ</h3>
+                                <p class="text-[11px] font-mono text-cyan-400">Lắp Ráp • Tự Lái Hệ Mặt Trời • 15 Trạm Đố Trên Chuyến Bay</p>
+                            </div>
+                        </div>
+                        <button onclick="closeGuideModal()" class="w-8 h-8 rounded-lg bg-space-800 hover:bg-red-500/30 text-slate-300 hover:text-red-300 flex items-center justify-center transition cursor-pointer">
+                            <i class="fa-solid fa-xmark"></i>
+                        </button>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
+                        <div class="bg-space-900/90 p-3.5 rounded-xl border border-slate-800 space-y-1.5">
+                            <div class="font-orbitron font-bold text-cyan-300"><i class="fa-solid fa-screwdriver-wrench mr-1"></i> 1. LẮP RÁP & MỞ KHÓA</div>
+                            <p class="text-slate-300 leading-relaxed">Chọn <strong>11 mục tiêu</strong> ở Bước 1, chọn <strong>Tải trọng / Động cơ / Khiên</strong> ở Bước 2 (không vượt <strong>120T</strong> và ngân sách). Dùng <strong>Điểm KH</strong> để mở khóa linh kiện xịn hơn.</p>
+                        </div>
+
+                        <div class="bg-space-900/90 p-3.5 rounded-xl border border-slate-800 space-y-1.5">
+                            <div class="font-orbitron font-bold text-emerald-300"><i class="fa-solid fa-gamepad mr-1"></i> 2. ĐIỀU KHIỂN TÀU TRÊN KHÔNG</div>
+                            <p class="text-slate-300 leading-relaxed">Dùng <strong>W / A / S / D</strong> hoặc phím <strong>Mũi Tên</strong> (hoặc bảng nút góc dưới phải) để xoay hướng và bay bám mũi tàu không trượt. Nhấn <strong>[G]</strong> để bung/thu <strong>Chân Đáp</strong> (cộng thêm +150 Điểm KH khi hoàn thành sứ mệnh).</p>
+                        </div>
+
+                        <div class="bg-space-900/90 p-3.5 rounded-xl border border-slate-800 space-y-1.5">
+                            <div class="font-orbitron font-bold text-purple-300"><i class="fa-solid fa-satellite mr-1"></i> 3. 15 TRẠM CÂU HỎI KHI ĐANG BAY</div>
+                            <p class="text-slate-300 leading-relaxed">Khi bay tới gần hành tinh mục tiêu và thu thập dữ liệu (từ <strong>7% đến 97%</strong>), bạn sẽ gặp <strong>15 câu hỏi vũ trụ</strong>. Trả lời đúng nhận <strong>+200 Điểm KH</strong>; trả lời sai giảm <strong>8% vỏ tàu</strong> và có thể mở phần Tìm Hiểu.</p>
+                        </div>
+
+                        <div class="bg-space-900/90 p-3.5 rounded-xl border border-slate-800 space-y-1.5">
+                            <div class="font-orbitron font-bold text-amber-300"><i class="fa-solid fa-brain mr-1"></i> 4. TRẠM TRI THỨC & KHO 140 NASA</div>
+                            <p class="text-slate-300 leading-relaxed">Vào <strong>Trạm Tri Thức</strong> để làm trắc nghiệm 5 cấp độ kiếm thêm <strong>Điểm KH & Ngân sách</strong> (lưu ý: trả lời sai bị trừ 1000 KH & $500M) hoặc tra cứu <strong>140 thông tin NASA</strong> kèm link Wikipedia.</p>
+                        </div>
+                    </div>
+
+                    <div class="flex justify-end pt-2">
+                        <button onclick="closeGuideModal()" class="px-6 py-2.5 rounded-xl bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white font-orbitron font-bold text-xs transition shadow-lg cursor-pointer">
+                            Đã Hiểu, Bắt Đầu Ngay!
+                        </button>
                     </div>
                 </div>
             </div>
@@ -624,7 +679,7 @@
         const INITIAL_BUDGET = 600;
         const MAX_WEIGHT_LIMIT = 120;
 
-        // DỮ LIỆU CHI TIẾT CÁC THIÊN THỂ TRONG HỆ MẶT TRỜI (ĐÃ BỔ SUNG SAO DIÊM VƯƠNG - PLUTO)
+        // DỮ LIỆU CHI TIẾT CÁC THIÊN THỂ TRONG HỆ MẶT TRỜI
         const SOLAR_SYSTEM_BODIES = [
             {
                 id: 'sun',
@@ -1068,7 +1123,7 @@
 
             { id: 129, category: "Công Nghệ Tên Lửa & Phi Hành Gia", text: "Tên lửa Saturn V của NASA cao 110 mét (cao hơn tượng Nữ thần Tự do) là tên lửa đưa con người lên Mặt Trăng trong chương trình Apollo.", wiki: "https://vi.wikipedia.org/wiki/Saturn_V" },
             { id: 130, category: "Công Nghệ Tên Lửa & Phi Hành Gia", text: "Phương trình tên lửa Tsiolkovsky mô tả mối quan hệ giữa vận tốc tên lửa, vận tốc khí phụt và tỷ lệ khối lượng nhiên liệu.", wiki: "https://vi.wikipedia.org/wiki/Ph%C6%B0%C6%A1ng_tr%C3%ACnh_t%C3%AAn_l%E1%BB%ADa_Tsiolkovsky" },
-            { id: 131, category: "Công Nghệ Tên Lửa & Phi Hành Gia", text: "Tách tầng tên lửa (Staging) giúp loại bỏ các bồn chứa nhiên liệu đã cạn, giảm trọng lượng để tên lửa tăng tốc hiệu quả hơn.", wiki: "https://vi.wikipedia.org/wiki/T%C3%AAn_l%E1%BB%ADa_nhi%E1%BB%81u_t%E1%BA%A7ng" },
+            { id: 131, category: "Công Nghệ Tên Lửa & Phi Hành Gia", text: "Tách tầng tên lửa (Staging) giúp loại bỏ các bồn chứa nhiên liệu đã cạn, giảm trọng lượng để tên lửa tăng tốc hiệu quả hơn.", wiki: "https://vi.wikipedia.org/wiki/T%C3%A1ch_t%E1%BA%A7ng_t%C3%AAn_l%E1%BB%ADa" },
             { id: 132, category: "Công Nghệ Tên Lửa & Phi Hành Gia", text: "Động cơ Ion tăng tốc các ion khí xenon bằng điện trường; lực đẩy nhỏ nhưng có thể hoạt động liên tục hàng năm trời.", wiki: "https://vi.wikipedia.org/wiki/%C4%90%E1%BB%99ng_c%C6%A1_ion" },
             { id: 133, category: "Công Nghệ Tên Lửa & Phi Hành Gia", text: "Bộ đồ phi hành gia (EMU) thực chất là một tàu vũ trụ thu nhỏ, cung cấp oxy, điều hòa nhiệt độ và chống bức xạ vi thiên thạch.", wiki: "https://vi.wikipedia.org/wiki/B%E1%BB%99_%C4%91%E1%BB%93_du_h%C3%A0nh_v%C5%A9_tr%E1%BB%A5" },
             { id: 134, category: "Công Nghệ Tên Lửa & Phi Hành Gia", text: "Trong môi trường vi trọng lực trên ISS, các phi hành gia có thể cao thêm khoảng 3 - 5 cm do cột sống được giãn ra.", wiki: "https://vi.wikipedia.org/wiki/T%C3%A1c_%C4%91%E1%BB%99ng_c%E1%BB%A7a_du_h%C3%A0nh_v%C5%A9_tr%E1%BB%A5_%C4%91%E1%BB%91i_v%E1%BB%9Bi_c%C6%A1_th%E1%BB%83_con_ng%C6%B0%E1%BB%9Di" },
@@ -1078,6 +1133,145 @@
             { id: 138, category: "Công Nghệ Tên Lửa & Phi Hành Gia", text: "Quỹ đạo địa tĩnh (GEO) nằm ở độ cao 35,786 km, nơi vệ tinh quay cùng tốc độ tự quay của Trái Đất nên luôn đứng yên trên một điểm.", wiki: "https://vi.wikipedia.org/wiki/Qu%E1%BB%B9_%C4%91%E1%BA%A1o_%C4%91%E1%BB%8Ba_t%C4%A9nh" },
             { id: 139, category: "Công Nghệ Tên Lửa & Phi Hành Gia", text: "Mạng lưới Không gian Sâu (Deep Space Network - DSN) của NASA gồm 3 trạm ăng-ten khổng lồ tại Mỹ, Tây Ban Nha và Úc để liên lạc với tàu vũ trụ.", wiki: "https://vi.wikipedia.org/wiki/Deep_Space_Network" },
             { id: 140, category: "Công Nghệ Tên Lửa & Phi Hành Gia", text: "Hệ thống phóng không gian SLS (Space Launch System) là tên lửa siêu nặng thế hệ mới của NASA phục vụ chương trình Artemis.", wiki: "https://vi.wikipedia.org/wiki/Space_Launch_System" }
+        ];
+
+        // 15 CÂU HỎI ĐỐ TRÊN CHUYẾN BAY KHI ĐANG THU THẬP DỮ LIỆU QUỸ ĐẠO
+        const IN_FLIGHT_QUESTIONS = [
+            {
+                threshold: 0.07,
+                title: "TRẠM BAY #01 / 15 (7% DỮ LIỆU)",
+                factId: 115,
+                q: "Khi tên lửa tiến vào môi trường chân không ngoài khí quyển, sóng âm và lực cản không khí thay đổi thế nào?",
+                options: ["Tăng lên cực đại", "Giảm dần về 0 (không truyền âm & không lực cản)", "Không thay đổi", "Biến đổi liên tục"],
+                answer: 1,
+                explanation: "Trong môi trường chân không vũ trụ không có không khí nên lực cản và sóng âm đều bằng 0."
+            },
+            {
+                threshold: 0.13,
+                title: "TRẠM BAY #02 / 15 (13% DỮ LIỆU)",
+                factId: 107,
+                q: "Vận tốc vũ trụ cấp 1 cần thiết để vệ tinh duy trì quỹ đạo tròn quanh Trái Đất là khoảng bao nhiêu?",
+                options: ["7.9 km/s", "1.5 km/s", "45.0 km/s", "300,000 km/s"],
+                answer: 0,
+                explanation: "Vận tốc vũ trụ cấp 1 xấp xỉ 7.9 km/s giúp cân bằng lực hấp dẫn để bay quanh Trái Đất."
+            },
+            {
+                threshold: 0.20,
+                title: "TRẠM BAY #03 / 15 (20% DỮ LIỆU)",
+                factId: 108,
+                q: "Vận tốc vũ trụ cấp 2 giúp tàu vũ trụ thoát khỏi lực hút của Trái Đất để bay tới các hành tinh khác là khoảng bao nhiêu?",
+                options: ["11.2 km/s", "3.2 km/s", "28.0 km/s", "100.0 km/s"],
+                answer: 0,
+                explanation: "Vận tốc thoát khỏi Trái Đất (vận tốc vũ trụ cấp 2) vào khoảng 11.2 km/s."
+            },
+            {
+                threshold: 0.27,
+                title: "TRẠM BAY #04 / 15 (27% DỮ LIỆU)",
+                factId: 17,
+                q: "Ánh sáng từ Mặt Trời mất khoảng bao lâu để đi hết quãng đường 150 triệu km tới Trái Đất?",
+                options: ["8 phút 20 giây", "1 giây", "24 giờ", "4 năm"],
+                answer: 0,
+                explanation: "Ánh sáng mặt trời mất khoảng 8 phút 20 giây để truyền tới Trái Đất."
+            },
+            {
+                threshold: 0.33,
+                title: "TRẠM BAY #05 / 15 (33% DỮ LIỆU)",
+                factId: 113,
+                q: "Quỹ đạo chuyển tiếp hình elip tiết kiệm nhiên liệu nhất để đưa tàu vũ trụ giữa hai quỹ đạo tròn gọi là gì?",
+                options: ["Quỹ đạo Hohmann", "Quỹ đạo cực", "Quỹ đạo địa tĩnh", "Quỹ đạo xoắn ốc"],
+                answer: 0,
+                explanation: "Quỹ đạo chuyển tiếp Hohmann là phương pháp tiết kiệm nhiên liệu nhất khi di chuyển giữa hai quỹ đạo."
+            },
+            {
+                threshold: 0.40,
+                title: "TRẠM BAY #06 / 15 (40% DỮ LIỆU)",
+                factId: 114,
+                q: "Kỹ thuật dùng lực hút của một hành tinh để tăng tốc và bẻ lái tàu vũ trụ mà không tốn nhiên liệu gọi là gì?",
+                options: ["Hỗ trợ hấp dẫn (Gravity Assist)", "Phanh khí động", "Tách tầng đẩy", "Đốt tăng lực"],
+                answer: 0,
+                explanation: "Hỗ trợ hấp dẫn (Gravity Assist) tận dụng trọng lực của hành tinh để thay đổi vận tốc và hướng bay."
+            },
+            {
+                threshold: 0.47,
+                title: "TRẠM BAY #07 / 15 (47% DỮ LIỆU)",
+                factId: 2,
+                q: "Vì sao Sao Kim có nhiệt độ bề mặt nóng hơn cả Sao Thủy dù nằm xa Mặt Trời hơn?",
+                options: ["Do hiệu ứng nhà kính cực mạnh của khí quyển CO2", "Do có lõi nguyên tử phát nhiệt", "Do quay quá nhanh", "Do không có từ trường"],
+                answer: 0,
+                explanation: "Khí quyển dày đặc CO2 trên Sao Kim giữ nhiệt cực mạnh khiến nhiệt độ lên tới khoảng 465°C."
+            },
+            {
+                threshold: 0.53,
+                title: "TRẠM BAY #08 / 15 (53% DỮ LIỆU)",
+                factId: 4,
+                q: "Ngọn núi lửa lớn nhất Hệ Mặt Trời (Olympus Mons, cao gần 22 km) nằm trên hành tinh nào?",
+                options: ["Sao Hỏa (Mars)", "Sao Mộc (Jupiter)", "Sao Kim (Venus)", "Trái Đất (Earth)"],
+                answer: 0,
+                explanation: "Olympus Mons nằm trên Sao Hỏa và cao gấp gần 3 lần đỉnh Everest."
+            },
+            {
+                threshold: 0.60,
+                title: "TRẠM BAY #09 / 15 (60% DỮ LIỆU)",
+                factId: 44,
+                q: "Vành đai tiểu hành tinh chính nằm ở khoảng không gian giữa hai quỹ đạo nào?",
+                options: ["Sao Hỏa và Sao Mộc", "Sao Kim và Trái Đất", "Sao Mộc và Sao Thổ", "Sao Thiên Vương và Sao Hải Vương"],
+                answer: 0,
+                explanation: "Vành đai tiểu hành tinh chính nằm giữa quỹ đạo Sao Hỏa và Sao Mộc."
+            },
+            {
+                threshold: 0.67,
+                title: "TRẠM BAY #10 / 15 (67% DỮ LIỆU)",
+                factId: 5,
+                q: "Đặc điểm nổi bật nào gắn liền với hành tinh khí khổng lồ Sao Mộc?",
+                options: ["Vết Đỏ Lớn – siêu bão khổng lồ tồn tại hàng trăm năm", "Vành đai băng sáng nhất Hệ Mặt Trời", "Trục quay nằm ngang 98 độ", "Có núi lửa Olympus Mons"],
+                answer: 0,
+                explanation: "Sao Mộc nổi tiếng với Vết Đỏ Lớn (Great Red Spot) – một cơn bão xoáy khổng lồ."
+            },
+            {
+                threshold: 0.73,
+                title: "TRẠM BAY #11 / 15 (73% DỮ LIỆU)",
+                factId: 26,
+                q: "Vệ tinh nào của Sao Thổ được xác nhận có các hồ và biển chất lỏng (methane/ethane) trên bề mặt?",
+                options: ["Titan", "Io", "Europa", "Triton"],
+                answer: 0,
+                explanation: "Titan là vệ tinh tự nhiên duy nhất ngoài Trái Đất có chất lỏng ổn định trên bề mặt."
+            },
+            {
+                threshold: 0.80,
+                title: "TRẠM BAY #12 / 15 (80% DỮ LIỆU)",
+                factId: 7,
+                q: "Hành tinh nào quay quanh Mặt Trời theo tư thế gần như 'lăn ngang' với trục nghiêng khoảng 98 độ?",
+                options: ["Sao Thiên Vương (Uranus)", "Sao Thủy (Mercury)", "Sao Hỏa (Mars)", "Sao Mộc (Jupiter)"],
+                answer: 0,
+                explanation: "Sao Thiên Vương có độ nghiêng trục gần 98 độ khiến nó lăn ngang trên quỹ đạo."
+            },
+            {
+                threshold: 0.87,
+                title: "TRẠM BAY #13 / 15 (87% DỮ LIỆU)",
+                factId: 8,
+                q: "Hành tinh nào trong Hệ Mặt Trời có những cơn gió thổi nhanh nhất (lên tới 2,100 km/h)?",
+                options: ["Sao Hải Vương (Neptune)", "Sao Kim (Venus)", "Trái Đất (Earth)", "Sao Thủy (Mercury)"],
+                answer: 0,
+                explanation: "Sao Hải Vương nổi tiếng với các cơn bão và gió siêu thanh mạnh nhất Hệ Mặt Trời."
+            },
+            {
+                threshold: 0.93,
+                title: "TRẠM BAY #14 / 15 (93% DỮ LIỆU)",
+                factId: 135,
+                q: "Khi tàu vũ trụ lao ngược vào khí quyển Trái Đất, bộ phận nào giúp bảo vệ tàu trước nhiệt độ hơn 1,600°C?",
+                options: ["Khiên nhiệt (Heat Shield)", "Ăng-ten liên lạc", "Cánh quạt năng lượng", "Đèn pha định vị"],
+                answer: 0,
+                explanation: "Khiên nhiệt hấp thụ và tán nhiệt khi ma sát nén khí tạo nhiệt độ cực cao lúc hồi quyển."
+            },
+            {
+                threshold: 0.97,
+                title: "TRẠM BAY #15 / 15 (97% DỮ LIỆU - CHẶNG CUỐI)",
+                factId: 132,
+                q: "Động cơ Ion hoạt động bằng cách tăng tốc các ion khí nhờ trường điện từ có ưu điểm gì nổi bật?",
+                options: ["Vô cùng tiết kiệm nhiên liệu và hoạt động bền bỉ lâu dài", "Tạo tiếng nổ lớn nhất vũ trụ", "Không cần điện năng", "Chỉ dùng được dưới nước"],
+                answer: 0,
+                explanation: "Động cơ Ion có hiệu suất sử dụng nhiên liệu rất cao, lý tưởng cho các sứ mệnh đường dài."
+            }
         ];
 
         const SPACE_QUESTIONS = [
@@ -1103,25 +1297,6 @@
             { difficulty: 'commander', category: 'VẬT LÝ THIÊN VĂN CỰC HẠN', factId: 4, q: 'Tên của ngọn núi lửa cao nhất Hệ Mặt Trời nằm trên bề mặt Sao Hỏa là gì?', options: ['Olympus Mons', 'Valles Marineris', 'Verona Rupes', 'Herschel'], answer: 0, explanation: 'Olympus Mons trên Sao Hỏa cao gần 22 km, gấp gần 3 lần đỉnh Everest.' }
         ];
 
-        const IN_FLIGHT_QUESTIONS = [
-            {
-                title: "TRẠM KIỂM TRA #1 (33% DỮ LIỆU)",
-                factId: 115,
-                q: "Khi tên lửa tiến vào môi trường chân không ngoài khí quyển, sóng âm và lực cản không khí thay đổi thế nào?",
-                options: ["Tăng lên cực đại", "Giảm dần về 0 (không truyền âm & không lực cản)", "Không thay đổi", "Biến đổi liên tục"],
-                answer: 1,
-                explanation: "Trong môi trường chân không vũ trụ không có không khí nên lực cản và sóng âm đều bằng 0."
-            },
-            {
-                title: "TRẠM KIỂM TRA #2 (66% DỮ LIỆU)",
-                factId: 107,
-                q: "Vận tốc vũ trụ cấp 1 cần thiết để vệ tinh duy trì quỹ đạo tròn quanh Trái Đất là khoảng bao nhiêu?",
-                options: ["7.9 km/s", "1.5 km/s", "45.0 km/s", "300,000 km/s"],
-                answer: 0,
-                explanation: "Vận tốc vũ trụ cấp 1 xấp xỉ 7.9 km/s giúp cân bằng lực hấp dẫn để bay quanh Trái Đất."
-            }
-        ];
-
         const DIFFICULTY_CONFIG = {
             rookie: { label: 'Tân Binh', time: 22, budgetReward: 30, sciReward: 150 },
             apprentice: { label: 'Tập Sự', time: 19, budgetReward: 55, sciReward: 300 },
@@ -1130,7 +1305,7 @@
             commander: { label: 'Chỉ Huy', time: 10, budgetReward: 200, sciReward: 1200 }
         };
 
-        // TRẠNG THÁI TỰ ĐIỀU KHIỂN TÊN LỬA (LÁI BÁM HƯỚNG, KHÔNG BỊ TRƯỢT)
+        // TRẠNG THÁI TỰ ĐIỀU KHIỂN TÊN LỬA
         let pilotShip = {
             x: 145,
             y: 0,
@@ -1173,10 +1348,10 @@
             fuel: 100,
             hull: 100,
             isPaused: false,
-            checkpoint33Triggered: false,
-            checkpoint66Triggered: false,
+            triggeredFlightCheckpoints: [],
             inFlightQuizActive: false,
             pausedForLibraryReading: false,
+            wasPausedBeforeGuide: false,
             fqTimer: null,
             fqTimeLeft: 15,
             logs: [],
@@ -1199,6 +1374,21 @@
             setupKeyboardControls();
             animate();
         };
+
+        function openGuideModal() {
+            gameState.wasPausedBeforeGuide = gameState.isPaused;
+            if (gameState.phase === 'flying' && !gameState.inFlightQuizActive) {
+                gameState.isPaused = true;
+            }
+            document.getElementById('guide-modal').classList.remove('hidden');
+        }
+
+        function closeGuideModal() {
+            document.getElementById('guide-modal').classList.add('hidden');
+            if (gameState.phase === 'flying' && !gameState.inFlightQuizActive && !gameState.wasPausedBeforeGuide && !gameState.pausedForLibraryReading) {
+                gameState.isPaused = false;
+            }
+        }
 
         function toggleLandingGear() {
             pilotShip.gearDeployed = !pilotShip.gearDeployed;
@@ -1266,7 +1456,7 @@
                 btnTraj.className = "px-3.5 py-2 rounded-xl text-slate-300 hover:text-cyan-300 transition flex items-center gap-1.5 cursor-pointer";
                 if (gameState.phase === 'flying') {
                     solarControls.classList.add('hidden');
-                    hint.innerHTML = '<i class="fa-solid fa-gamepad text-cyan-400 mr-1.5"></i> Dùng W/A/S/D hoặc Mũi Tên lái tàu • Phím [G] bung chân đáp khi tiếp cận đích!';
+                    hint.innerHTML = '<i class="fa-solid fa-gamepad text-cyan-400 mr-1.5"></i> Bay tới mục tiêu để thu thập dữ liệu & gặp 15 trạm câu hỏi • [G] bung chân đáp';
                 } else {
                     solarControls.classList.remove('hidden');
                     hint.innerHTML = '<i class="fa-solid fa-earth-asia text-amber-400 mr-1.5"></i> Bấm trực tiếp vào Mặt Trời hoặc bất kỳ hành tinh nào để đọc thông tin chi tiết!';
@@ -1689,8 +1879,7 @@
             gameState.flightProgress = 0;
             gameState.fuel = 100;
             gameState.hull = 100;
-            gameState.checkpoint33Triggered = false;
-            gameState.checkpoint66Triggered = false;
+            gameState.triggeredFlightCheckpoints = [];
             gameState.inFlightQuizActive = false;
             gameState.pausedForLibraryReading = false;
             gameState.cameraFollowShip = true;
@@ -1710,10 +1899,13 @@
                 hudGear.className = 'text-cyan-300 font-bold';
             }
 
+            const hudCp = document.getElementById('hud-checkpoint-count');
+            if (hudCp) hudCp.innerText = `0 / ${IN_FLIGHT_QUESTIONS.length} TRẠM`;
+
             setCanvasView('solarsystem');
             zoom = 1.25;
 
-            gameState.logs = [`Phi công tự lái tàu ${gameState.shipName} rời Trái Đất vào Hệ Mặt Trời hướng tới ${gameState.selectedDest.name}.`];
+            gameState.logs = [`Phi công tự lái tàu ${gameState.shipName} rời Trái Đất vào Hệ Mặt Trời hướng tới ${gameState.selectedDest.name} (15 trạm câu hỏi chờ đón).`];
 
             document.getElementById('design-panel').classList.add('hidden');
             document.getElementById('flight-hud').classList.remove('hidden', 'opacity-0', '-translate-y-4');
@@ -1785,6 +1977,9 @@
             gameState.inFlightQuizActive = true;
             gameState.isPaused = true;
             pilotKeys = { up: false, down: false, left: false, right: false };
+
+            const hudCp = document.getElementById('hud-checkpoint-count');
+            if (hudCp) hudCp.innerText = `${gameState.triggeredFlightCheckpoints.length} / ${IN_FLIGHT_QUESTIONS.length} TRẠM`;
             
             const qData = IN_FLIGHT_QUESTIONS[checkpointIndex];
             document.getElementById('fq-checkpoint-title').innerHTML = `<i class="fa-solid fa-satellite mr-1"></i> ${qData.title}`;
@@ -1834,19 +2029,19 @@
             if(isCorrect) {
                 feedbackBox.className = "text-xs font-mono p-3.5 rounded-xl border border-emerald-500/50 bg-emerald-950/40 text-emerald-300 space-y-3";
                 feedbackBox.innerHTML = `
-                    <div><i class="fa-solid fa-circle-check mr-1 text-emerald-400"></i> <strong class="text-emerald-400">ĐÚNG!</strong> +250 Điểm Khoa Học.<br><span class="text-slate-200 mt-1 block">${explanation}</span></div>
+                    <div><i class="fa-solid fa-circle-check mr-1 text-emerald-400"></i> <strong class="text-emerald-400">ĐÚNG!</strong> +200 Điểm Khoa Học.<br><span class="text-slate-200 mt-1 block">${explanation}</span></div>
                     <button onclick="resumeFlightManually()" class="w-full py-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-orbitron font-bold text-xs transition">
                         Đã Hiểu, Tiếp Tục Lái Tàu <i class="fa-solid fa-play ml-1"></i>
                     </button>
                 `;
-                gameState.accumulatedScience += 250;
-                gameState.logs.push(`Vượt qua trạm kiểm tra quỹ đạo: +250 KH`);
+                gameState.accumulatedScience += 200;
+                gameState.logs.push(`Trạm bay #${gameState.triggeredFlightCheckpoints.length} trả lời đúng: +200 KH`);
                 document.getElementById('fq-hint-prompt').classList.add('hidden');
             } else {
                 feedbackBox.className = "text-xs font-mono p-3 rounded-xl border border-red-500/50 bg-red-950/40 text-red-300";
-                feedbackBox.innerHTML = `<i class="fa-solid fa-triangle-exclamation mr-1 text-red-400"></i> <strong class="text-red-400">CHƯA CHÍNH XÁC!</strong> Vỏ tàu giảm 15%.<br><span class="text-slate-200 mt-1 block">${explanation}</span>`;
-                gameState.hull = Math.max(0, gameState.hull - 15);
-                gameState.logs.push(`Va chạm bụi vũ trụ tại trạm kiểm tra: Vỏ tàu còn ${gameState.hull}%`);
+                feedbackBox.innerHTML = `<i class="fa-solid fa-triangle-exclamation mr-1 text-red-400"></i> <strong class="text-red-400">CHƯA CHÍNH XÁC!</strong> Vỏ tàu giảm 8%.<br><span class="text-slate-200 mt-1 block">${explanation}</span>`;
+                gameState.hull = Math.max(0, gameState.hull - 8);
+                gameState.logs.push(`Trạm bay #${gameState.triggeredFlightCheckpoints.length} trả lời sai: Vỏ tàu còn ${gameState.hull}%`);
                 
                 document.getElementById('fq-hint-prompt').classList.remove('hidden');
                 document.getElementById('fq-goto-lib-btn').setAttribute('onclick', `goToFactFromFlight(${factId})`);
@@ -1987,7 +2182,7 @@
             updateQuizHeaderStats();
         }
 
-        // ================= CANVAS ENGINE: LÁI BÁM HƯỚNG KHÔNG TRƯỢT =================
+        // ================= CANVAS ENGINE =================
         let canvas, ctx, stars = [], asteroidBelt = [], camX = 0, camY = 0, zoom = 1;
         let isDragging = false, hasMovedDuringDrag = false, dragStart = { x: 0, y: 0 };
         let renderedHitboxes = [];
@@ -2093,7 +2288,6 @@
             return { x: 212, y: 0, radius: 30 };
         }
 
-        // ĐIỀU KHIỂN TRỰC TIẾP BÁM HƯỚNG MŨI TÀU (KHÔNG BỊ TRƯỢT QUÁN TÍNH)
         function updateManualPilotPhysics() {
             const turnSpeed = 0.055;
             if (pilotKeys.left) pilotShip.angle -= turnSpeed;
@@ -2135,15 +2329,17 @@
             const distToTarget = Math.hypot(pilotShip.x - target.x, pilotShip.y - target.y);
 
             if (distToTarget <= target.radius + 24) {
-                gameState.flightProgress = Math.min(1.0, gameState.flightProgress + 0.0075);
+                gameState.flightProgress = Math.min(1.0, gameState.flightProgress + 0.0085);
             }
 
-            if (gameState.flightProgress >= 0.33 && !gameState.checkpoint33Triggered) {
-                gameState.checkpoint33Triggered = true;
-                triggerInFlightQuiz(0);
-            } else if (gameState.flightProgress >= 0.66 && !gameState.checkpoint66Triggered) {
-                gameState.checkpoint66Triggered = true;
-                triggerInFlightQuiz(1);
+            // Kiểm tra lần lượt 15 câu hỏi trên chuyến bay theo tiến độ thu thập
+            for (let i = 0; i < IN_FLIGHT_QUESTIONS.length; i++) {
+                const cp = IN_FLIGHT_QUESTIONS[i];
+                if (gameState.flightProgress >= cp.threshold && !gameState.triggeredFlightCheckpoints.includes(i)) {
+                    gameState.triggeredFlightCheckpoints.push(i);
+                    triggerInFlightQuiz(i);
+                    break;
+                }
             }
 
             const pct = Math.min(100, Math.round(gameState.flightProgress * 100));
@@ -2348,7 +2544,6 @@
                 ctx.stroke();
                 ctx.setLineDash([]);
 
-                // Mũi tên Radar dẫn hướng xung quanh tàu để không bao giờ bị lạc mục tiêu
                 const angleToTarget = Math.atan2(target.y - pilotShip.y, target.x - pilotShip.x);
                 const distToTarget = Math.hypot(target.x - pilotShip.x, target.y - pilotShip.y);
                 if (distToTarget > 45) {
@@ -2575,16 +2770,13 @@
             const eId = comp.engine ? comp.engine.id : 'eng_chem';
             const protId = comp.protection ? comp.protection.id : 'prot_basic';
 
-            // Hệ thống chân đáp bung ra khi bật phím G
             if (pilotShip.gearDeployed) {
                 ctx.strokeStyle = '#cbd5e1';
                 ctx.lineWidth = 3.5;
                 ctx.beginPath();
-                // Chân trái
                 ctx.moveTo(-36, 40);
                 ctx.lineTo(-56, 76);
                 ctx.lineTo(-66, 76);
-                // Chân phải
                 ctx.moveTo(36, 40);
                 ctx.lineTo(56, 76);
                 ctx.lineTo(66, 76);
